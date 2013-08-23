@@ -29,9 +29,22 @@ public class JsonHelper {
 	}
 
 	public JsonObject getObjectFromJson() {
+		byte[] byteArray;
 		JsonObject o = null;
 		try {
-			o = mapper.readValue(FileUtils.readFileToByteArray(new File("src/main/resources/data.json")), Person.class);
+			byteArray = FileUtils.readFileToByteArray(new File("src/main/resources/data.json"));
+			o = getObjectFromJson(byteArray);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return o;
+	}
+	
+
+	public JsonObject getObjectFromJson(byte[] byteArray) {
+		JsonObject o = null;
+		try {
+			o = mapper.readValue(byteArray, Person.class);
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
