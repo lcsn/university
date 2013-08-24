@@ -4,38 +4,28 @@ import de.lsn.jackson.JsonHelper;
 
 public class Person implements JsonObject {
 
-	private String firstname;
+	private Name name;
 	
-	private String lastname;
-	
-	private int age;
+	private Age age;
 	
 	private Gender gender;
 
-	public String getFirstname() {
-		return firstname;
+	public Name getName() {
+		return name;
 	}
-
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
+	
+	public void setName(Name name) {
+		this.name = name;
 	}
-
-	public String getLastname() {
-		return lastname;
-	}
-
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
-	public int getAge() {
+	
+	public Age getAge() {
 		return age;
 	}
-
-	public void setAge(int age) {
+	
+	public void setAge(Age age) {
 		this.age = age;
 	}
-
+	
 	public Gender getGender() {
 		return gender;
 	}
@@ -46,7 +36,7 @@ public class Person implements JsonObject {
 
 	@Override
 	public String toString() {
-		return firstname+", "+lastname+", "+gender+", "+age;
+		return name.toString();
 	}
 	
 	public Class<? extends JsonObject> getTargetClass() {

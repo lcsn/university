@@ -11,7 +11,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.lsn.model.Gender;
 import de.lsn.model.JsonObject;
 import de.lsn.model.Person;
 
@@ -69,21 +68,4 @@ public class JsonHelper {
 		return writer.toString();
 	}
 
-	public static void main(String[] args) {
-		
-		System.out.println("Json to Object");
-		Person p = (Person) JsonHelper.getInstance().getObjectFromJson();
-		System.out.println(p.toString());
-		
-		System.out.println("Object to Json #1");		
-		System.out.println(p.toJson());
-		System.out.println("Object to Json #2");
-		Person p1 = new Person();
-		p1.setFirstname("Freddie");
-		p1.setLastname("Mercury");
-		p1.setAge(0);
-		p1.setGender(Gender.MALE);
-		System.out.println(p1.toJson());
-	}
-	
 }

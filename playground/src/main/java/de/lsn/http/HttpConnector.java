@@ -21,15 +21,8 @@ public class HttpConnector {
 	
 	private HttpClient client;
 	
-	private URI firebaseUri;
-	
 	public HttpConnector() {
 		this.client = new HttpClient();
-		try {
-			this.firebaseUri = new URI("https://boiii.firebaseIO.com/");
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		} 
 		Protocol.registerProtocol("https", new Protocol("https", (ProtocolSocketFactory) new SSLProtocolSocketFactory(), 443));
 	}
 	
@@ -41,10 +34,20 @@ public class HttpConnector {
 	}
 	
 	public JsonObject get(String path) {
+		URI uri = null;
+		try {
+			uri = new URI(path);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return get(uri);
+	}
+	
+	public JsonObject get(URI uri) {
 		GetMethod get = null;
 		JsonObject o = null;
 		try {
-			get = new GetMethod(firebaseUri.toString());
+			get = new GetMethod(uri.toString());
 			client.executeMethod(get);
 			String res = get.getResponseBodyAsString().trim();
 			o = JsonHelper.getInstance().getObjectFromJson(res.getBytes());
@@ -60,10 +63,20 @@ public class HttpConnector {
 		return o;
 	}
 	
-	public void post() {
+	public void post(String path) {
+		URI uri = null;
+		try {
+			uri = new URI(path);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		post(uri);
+	}
+	
+	public void post(URI uri) {
 		PostMethod postMethod = null;
 		try {
-			postMethod = new PostMethod(firebaseUri.toString());
+			postMethod = new PostMethod(uri.toString());
 			client.executeMethod(postMethod);
 		} catch (HttpException e) {
 			e.printStackTrace();
