@@ -6,6 +6,10 @@ public class Name {
 	
 	private String lastname;
 
+	public Name() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public Name(String firstname, String lastname) {
 		super();
 		this.firstname = firstname;

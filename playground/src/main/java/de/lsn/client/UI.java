@@ -6,7 +6,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.NumberUtils;
 
+import de.lsn.http.HttpConnector;
+import de.lsn.model.JsonObject;
 import de.lsn.resource.Constants;
+import de.lsn.resource.Request;
 import de.lsn.resource.UIPhase;
 
 public class UI {
@@ -15,9 +18,9 @@ public class UI {
 	
 	private static String url = Constants.firebaseURL;
 
-	private static String mainMenu = "[1] READ\n" + "[2] WRITE\n" + "[EXIT] EXIT" + ": ";
-	private static String readMenu = "[1] SEND GET TO " + url + "\n" + "[RET] RETURN" + ": ";
-	private static String writeMenu = "[1] SEND PUT TO " + url + "\n" + "[RET] RETURN" + ": ";
+	private static String mainMenu = "[1] READ\n" + "[2] WRITE\n" + "[E]XIT" + ": ";
+	private static String readMenu = "[1] SEND GET TO " + url + "\n" + "[R]ETURN" + ": ";
+	private static String writeMenu = "[1] SEND PUT TO " + url + "\n" + "[R]ETURN" + ": ";
 
 	private static Scanner scan = new Scanner(System.in);
 
@@ -46,7 +49,7 @@ public class UI {
 				System.out.println("SEND_GET not yet implemented!");
 				parentPhase = UIPhase.READ_MENU;
 				newPhase = parentPhase;
-				newPhase = parentPhase;
+				sendRequest(Request.GET);
 				showUI(newPhase);
 				break;
 			case WRITE_MENU:
@@ -59,6 +62,7 @@ public class UI {
 				System.out.println("SEND_PUT not yet implemented!");
 				parentPhase = UIPhase.WRITE_MENU;
 				newPhase = parentPhase;
+				sendRequest(Request.PUT);
 				showUI(newPhase);
 				break;
 			case RETURN:
@@ -74,7 +78,27 @@ public class UI {
 				break;
 			}
 	}
-
+	
+	private static void sendRequest(Request req) {
+		System.out.println("Prepare " + req + " request!");
+		switch (req) {
+		case GET:
+			System.out.print("Path e.g. \"/person/$ID\"\n: ");
+			String relPath = scan.next();
+			System.out.print("ID\n: ");
+			String id = scan.next();
+			String _relPath = relPath.replace("$ID", id);
+			JsonObject jsonObject = HttpConnector.getInstance().get(url+_relPath+"/.json");
+			System.out.println(jsonObject.toJson());
+			break;
+		case PUT:
+			System.out.println("Not yet implemented!");
+			break;
+		default:
+			break;
+		}
+	}
+	
 	private static String promptMainMenu() {
 		System.out.println(mainMenu);
 		String readVal = scan.next();

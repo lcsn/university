@@ -10,6 +10,10 @@ public class Age {
 	private Calendar birthday;
 	
 	private int age;
+
+	public Age() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	public Age(String birthday) {
 		this(DateConvenvience.dateStringToCalendar(birthday), DateConvenvience.yearsSinceGivenDate(birthday));
