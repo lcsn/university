@@ -1,8 +1,10 @@
 package de.lsn.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.lsn.jackson.JsonHelper;
 
-public class Person implements JsonObject {
+public class Person extends AbstractEntity implements JsonObject {
 
 	private Name name;
 	
@@ -39,6 +41,7 @@ public class Person implements JsonObject {
 		return name.toString();
 	}
 	
+	@JsonIgnore
 	public Class<? extends JsonObject> getTargetClass() {
 		return this.getClass();
 	}

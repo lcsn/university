@@ -1,4 +1,4 @@
-package de.lsn;
+package de.lsn.client;
 
 import de.lsn.http.HttpConnector;
 import de.lsn.jackson.JsonHelper;
@@ -10,13 +10,21 @@ import de.lsn.model.Person;
 public class Test {
 
 	public static void main(String[] args) {
-		testJsonHelper();
+//		testJsonHelper();
 		
 		testHttpConnector();
 	}
 	
 	private static void testHttpConnector() {
-		HttpConnector.getInstance().get("https://boiii.firebaseio.com/users/.json");
+//		HttpConnector.getInstance().get("https://boiii.firebaseio.com/.json");
+		
+		Person p1 = new Person();
+		p1.setName(new Name("Ano", "Nymous"));
+		p1.setAge(new Age("01.04.1992"));
+		p1.setGender(Gender.MALE);
+		System.out.println(p1.toJson());
+		
+		HttpConnector.getInstance().put("https://boiii.firebaseio.com/person/"+p1.getId()+"/.json", p1);
 	}
 	
 	private static void testJsonHelper() {
