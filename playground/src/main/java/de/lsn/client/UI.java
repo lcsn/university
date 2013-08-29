@@ -1,11 +1,9 @@
 package de.lsn.client;
 
-import java.lang.reflect.Field;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 import de.lsn.http.HttpConnector;
