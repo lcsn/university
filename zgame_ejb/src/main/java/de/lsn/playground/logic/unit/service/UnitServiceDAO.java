@@ -1,4 +1,4 @@
-package de.lsn.playground.logic.service.unit;
+package de.lsn.playground.logic.unit.service;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
