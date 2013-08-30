@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.lsn.playground.entity.UnitDefinition;
+import de.lsn.playground.entity.unit.UnitDefinition;
 
 @Remote
 public interface UnitDefinitionDAORemote {

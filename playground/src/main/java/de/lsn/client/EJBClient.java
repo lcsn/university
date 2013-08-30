@@ -4,7 +4,7 @@ import java.util.Properties;
 
 import javax.naming.Context;
 
-import de.lsn.playground.entity.Unit;
+import de.lsn.playground.entity.unit.Unit;
 import de.lsn.playground.framwork.remote.RemoteInterfaceFactory;
 import de.lsn.playground.logic.unit.UnitDAORemote;
 import de.lsn.playground.logic.unit.service.UnitServiceDAORemote;

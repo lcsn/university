@@ -6,7 +6,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 
-import de.lsn.playground.entity.Unit;
+import de.lsn.playground.entity.unit.Unit;
 import de.lsn.playground.logic.AbstractDAO;
 
 @Stateless

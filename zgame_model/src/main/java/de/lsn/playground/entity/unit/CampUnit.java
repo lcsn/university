@@ -1,4 +1,4 @@
-package de.lsn.playground.entity;
+package de.lsn.playground.entity.unit;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -11,13 +11,13 @@ import de.lsn.playground.framwork.Fraction;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="HiveUnit")
-@DiscriminatorValue(value="HIVE")
-public class HiveUnit extends Unit {
+@Table(name="CampUnit")
+@DiscriminatorValue(value="CAMP")
+public class CampUnit extends Unit {
 
 	@Column(name="FRACTION")
 	@Enumerated(EnumType.STRING)
-	private Fraction fraction = Fraction.HIVE;
+	private Fraction fraction = Fraction.CAMP;
 	
 	public Fraction getFraction() {
 		return fraction;

@@ -4,10 +4,10 @@ import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
-import de.lsn.playground.entity.CampUnit;
-import de.lsn.playground.entity.HiveUnit;
-import de.lsn.playground.entity.Unit;
-import de.lsn.playground.entity.UnitDefinition;
+import de.lsn.playground.entity.unit.CampUnit;
+import de.lsn.playground.entity.unit.HiveUnit;
+import de.lsn.playground.entity.unit.Unit;
+import de.lsn.playground.entity.unit.UnitDefinition;
 import de.lsn.playground.logic.AbstractDAO;
 import de.lsn.playground.logic.unit.definition.UnitDefinitionDAOLocal;
 
