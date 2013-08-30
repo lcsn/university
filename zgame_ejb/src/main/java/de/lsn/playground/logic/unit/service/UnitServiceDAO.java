@@ -1,6 +1,7 @@
 package de.lsn.playground.logic.unit.service;
 
 import javax.ejb.EJB;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
 import de.lsn.playground.entity.CampUnit;
@@ -11,6 +12,7 @@ import de.lsn.playground.logic.AbstractDAO;
 import de.lsn.playground.logic.unit.definition.UnitDefinitionDAOLocal;
 
 @Stateless
+@Remote(UnitServiceDAORemote.class)
 public class UnitServiceDAO extends AbstractDAO implements UnitServiceDAOLocal {
 
 	@EJB
@@ -38,6 +40,8 @@ public class UnitServiceDAO extends AbstractDAO implements UnitServiceDAOLocal {
 		default:
 			break;
 		}
+		newUnit.setUnitName(unitDefinition.getUnitName());
+		newUnit.setSkill(unitDefinition.getSkill());
 		newUnit.setTier(unitDefinition.getTier());
 		newUnit.setOffense(unitDefinition.getOffense());
 		newUnit.setDefense(unitDefinition.getDefense());
@@ -47,6 +51,9 @@ public class UnitServiceDAO extends AbstractDAO implements UnitServiceDAOLocal {
 		newUnit.setVulnerableToPoison(unitDefinition.isVulnerableToPoison());
 		newUnit.setVulnerableToRadiation(unitDefinition.isVulnerableToRadiation());
 		newUnit.setUnitDefinition(unitDefinition);
+		
+		em.persist(newUnit);
+		
 		return newUnit;
 	}
 

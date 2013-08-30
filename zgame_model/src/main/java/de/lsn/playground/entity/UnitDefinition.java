@@ -1,5 +1,8 @@
 package de.lsn.playground.entity;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -7,10 +10,17 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 import de.lsn.playground.framwork.Fraction;
+import de.lsn.playground.framwork.Skill;
+import de.lsn.playground.framwork.attribute.Defense;
+import de.lsn.playground.framwork.attribute.FiringRange;
+import de.lsn.playground.framwork.attribute.Health;
+import de.lsn.playground.framwork.attribute.MovingRange;
+import de.lsn.playground.framwork.attribute.Offense;
 
+@SuppressWarnings("serial")
 @NamedQueries({
-	@NamedQuery(name=UnitDefinition.FIND_ALL, query="SELECT o FROM UnitDefinition"),
-	@NamedQuery(name=UnitDefinition.FIND_BY_ID, query="SELECT o FROM UnitDefinition WHERE o.id = :id")
+	@NamedQuery(name=UnitDefinition.FIND_ALL, query="SELECT o FROM UnitDefinition AS o"),
+	@NamedQuery(name=UnitDefinition.FIND_BY_ID, query="SELECT o FROM UnitDefinition AS o WHERE o.id = :id")
 })
 @Entity
 public class UnitDefinition extends ZgameEntity {
@@ -18,30 +28,53 @@ public class UnitDefinition extends ZgameEntity {
 	public static final String FIND_ALL = "UnitDefinition.FIND_ALL";
 	public static final String FIND_BY_ID = "UnitDefinition.FIND_BY_ID";
 
-	private String tier;
+	private String unitName = "";
+	
+	private Integer tier;
 
 	@Enumerated(EnumType.STRING)
 	private Fraction fraction;
+	
+	@Enumerated(EnumType.STRING)
+	private Skill skill;
 
-	private Long offense;
+	@Embedded
+	@AttributeOverride(name="offenseValue", column=@Column(name="offense"))
+	private Offense offense;
 
-	private Long defense;
+	@Embedded
+	@AttributeOverride(name="defenseValue", column=@Column(name="defense"))
+	private Defense defense;
 
-	private Long health;
+	@Embedded
+	@AttributeOverride(name="healthPoints", column=@Column(name="health"))
+	private Health health;
 
-	private Integer firingRange;
+	@Embedded
+	@AttributeOverride(name="firingRangeValue", column=@Column(name="firingRange"))
+	private FiringRange firingRange;
 
-	private Integer movingRange;
+	@Embedded
+	@AttributeOverride(name="movingRangeValue", column=@Column(name="movingRange"))
+	private MovingRange movingRange;
 
 	private boolean vulnerableToPoison;
 
 	private boolean vulnerableToRadiation;
 
-	public String getTier() {
+	public String getUnitName() {
+		return unitName;
+	}
+	
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+	
+	public Integer getTier() {
 		return tier;
 	}
 
-	public void setTier(String tier) {
+	public void setTier(Integer tier) {
 		this.tier = tier;
 	}
 
@@ -52,44 +85,52 @@ public class UnitDefinition extends ZgameEntity {
 	public void setFraction(Fraction fraction) {
 		this.fraction = fraction;
 	}
+	
+	public Skill getSkill() {
+		return skill;
+	}
+	
+	public void setSkill(Skill skill) {
+		this.skill = skill;
+	}
 
-	public Long getOffense() {
+	public Offense getOffense() {
 		return offense;
 	}
 
-	public void setOffense(Long offense) {
+	public void setOffense(Offense offense) {
 		this.offense = offense;
 	}
 
-	public Long getDefense() {
+	public Defense getDefense() {
 		return defense;
 	}
 
-	public void setDefense(Long defense) {
+	public void setDefense(Defense defense) {
 		this.defense = defense;
 	}
 
-	public Long getHealth() {
+	public Health getHealth() {
 		return health;
 	}
 
-	public void setHealth(Long health) {
+	public void setHealth(Health health) {
 		this.health = health;
 	}
 
-	public Integer getFiringRange() {
+	public FiringRange getFiringRange() {
 		return firingRange;
 	}
 
-	public void setFiringRange(Integer firingRange) {
+	public void setFiringRange(FiringRange firingRange) {
 		this.firingRange = firingRange;
 	}
 
-	public Integer getMovingRange() {
+	public MovingRange getMovingRange() {
 		return movingRange;
 	}
 
-	public void setMovingRange(Integer movingRange) {
+	public void setMovingRange(MovingRange movingRange) {
 		this.movingRange = movingRange;
 	}
 

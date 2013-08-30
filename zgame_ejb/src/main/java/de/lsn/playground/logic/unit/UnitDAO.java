@@ -2,6 +2,7 @@ package de.lsn.playground.logic.unit;
 
 import java.util.List;
 
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 
@@ -9,6 +10,7 @@ import de.lsn.playground.entity.Unit;
 import de.lsn.playground.logic.AbstractDAO;
 
 @Stateless
+@Remote(UnitDAORemote.class)
 public class UnitDAO extends AbstractDAO implements UnitDAOLocal {
 
 	@SuppressWarnings("unchecked")
@@ -24,5 +26,5 @@ public class UnitDAO extends AbstractDAO implements UnitDAOLocal {
 		query.setParameter("id", id);
 		return (Unit) query.getSingleResult();
 	}
-
+	
 }
