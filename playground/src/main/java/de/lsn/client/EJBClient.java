@@ -6,7 +6,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import de.lsn.playground.logic.TestEJBRemote;
+import de.lsn.playground.logic.test.TestEJBRemote;
 
 public class EJBClient {
 
@@ -27,6 +27,7 @@ public class EJBClient {
 			
 			TestEJBRemote remote = (TestEJBRemote) ctx.lookup("java:global/zgame_ear/zgame_ejb/TestEJB!de.lsn.playground.logic.TestEJBRemote");
 			remote.moo();
+			remote.testPersistence(100);
 		} catch (NamingException e) {
 			e.printStackTrace();
 		}

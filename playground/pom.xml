@@ -12,6 +12,18 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb-client</type>
 		</dependency>
+		
+		<dependency>
+			<groupId>de.lsn.playground</groupId>
+			<artifactId>zgame_model</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>de.lsn.playground</groupId>
+			<artifactId>zgame_framework</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-lang</groupId>

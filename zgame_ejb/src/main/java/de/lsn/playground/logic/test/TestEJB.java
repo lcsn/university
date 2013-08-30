@@ -1,4 +1,4 @@
-package de.lsn.playground.logic;
+package de.lsn.playground.logic.test;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -6,6 +6,8 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import de.lsn.playground.entity.Test;
 
 @Stateless
 public class TestEJB implements TestEJBLocal, TestEJBRemote {
@@ -20,5 +22,15 @@ public class TestEJB implements TestEJBLocal, TestEJBRemote {
 		log.entry();
 		log.debug("moo1");
 	}
+
+	@Override
+	public void testPersistence(int n) {
+		Test t;
+		for (int i = 0; i < n; i++) {
+			t = new Test();
+			em.persist(t);
+		}
+	}
+	
 
 }

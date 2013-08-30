@@ -1,4 +1,4 @@
-package de.lsn.playground.logic;
+package de.lsn.playground.logic.test;
 
 import javax.ejb.Local;
 

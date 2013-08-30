@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class Test {
 
 	@Id
-	private Long id = UUID.randomUUID().getLeastSignificantBits();
+	private Long id = UUID.randomUUID().getMostSignificantBits();
 	
 	public Long getId() {
 		return id;

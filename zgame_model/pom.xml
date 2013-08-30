@@ -10,4 +10,12 @@
 		<relativePath>../zgame_build/pom.xml</relativePath>
 	</parent>
 
+	<dependencies>
+		<dependency>
+			<groupId>de.lsn.playground</groupId>
+			<artifactId>zgame_framework</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
 </project>
