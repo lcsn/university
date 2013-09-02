@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition lang="de" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+		<div align="center">
+			<H1>LOGIN - UNDER CONSTRUCTION</H1>
+			<h:form id="login">
+				<h:messages id="msgs" />
+				<h:panelGrid columns="2" style="">
+					<h:outputLabel for="username" value="Username" />
+					<h:inputText id="username" value="#{loginBean.username}" required="true" requiredMessage="Enter username" />
+					<h:outputLabel for="password" value="Password" />
+					<h:inputSecret id="password" value="#{loginBean.password}" required="true" requiredMessage="Enter password" />
+				</h:panelGrid>
+				<p>
+					<h:commandButton id="loginBtn" type="submit" value="Login" action="#{loginBean.enter}" />
+				</p>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>
