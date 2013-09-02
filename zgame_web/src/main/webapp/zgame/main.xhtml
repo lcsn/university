@@ -9,9 +9,14 @@
 			<H1>MAIN - UNDER CONSTRUCTION</H1>
 			<h:form id="main">
 				<h2>Hello, #{playerBean.player}</h2>
-				<p>
-					<h:commandButton action="#{loginBean.exit}" value="Exit" />
-				</p>
+				<h:panelGrid cellpadding="20">
+					<h:commandButton value="Button0"  />
+					<h:commandButton value="Button1" />
+					<h:commandButton value="Button2" />
+					<p>
+						<h:commandButton action="#{loginBean.exit}" value="Exit" />
+					</p>
+				</h:panelGrid>
 			</h:form>
 		</div>
 	</ui:define>
