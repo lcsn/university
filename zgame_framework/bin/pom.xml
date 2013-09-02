@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<artifactId>zgame_framework</artifactId>
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>de.lsn.playground</groupId>
+		<artifactId>zgame_build</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../zgame_build/pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+	</dependencies>
+
+</project>
