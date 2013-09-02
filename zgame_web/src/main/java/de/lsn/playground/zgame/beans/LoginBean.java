@@ -1,6 +1,9 @@
 package de.lsn.playground.zgame.beans;
 
+import java.util.Map;
+
 import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +30,15 @@ public class LoginBean {
 		return "main.xhtml";
 	}
 
+	public String exit() {
+		System.out.println("Login: "+username+":"+password);
+		
+		Map<String, Object> sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+		sessionMap.clear();
+		
+		return "welcome.xhtml";
+	}
+	
 	public String getUsername() {
 		return username;
 	}

@@ -6,7 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>glassfish-websocket</name>
+	<name>zgame</name>
 
 	<dependencies>
 		<dependency>
