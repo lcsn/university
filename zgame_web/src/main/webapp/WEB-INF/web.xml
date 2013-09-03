@@ -23,4 +23,9 @@
 		<url-pattern>*.jsf</url-pattern>
 	</servlet-mapping>
 
+	<error-page>
+		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+		<location>/welcome.jsf</location>
+	</error-page>
+
 </web-app>

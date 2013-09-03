@@ -19,6 +19,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>de.lsn.playground</groupId>
+			<artifactId>zgame_web</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>war</type>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -41,6 +47,11 @@
 							<artifactId>zgame_ejb</artifactId>
 							<bundleFileName>zgame_ejb.jar</bundleFileName>
 						</ejbModule>
+						<webModule>
+							<groupId>de.lsn.playground</groupId>
+							<artifactId>zgame_web</artifactId>
+							<bundleFileName>zgame_web.war</bundleFileName>
+						</webModule>
 					</modules>
 				</configuration>
 			</plugin>

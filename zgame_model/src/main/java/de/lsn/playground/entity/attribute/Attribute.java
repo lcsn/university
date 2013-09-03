@@ -1,4 +1,4 @@
-package de.lsn.playground.framwork.attribute;
+package de.lsn.playground.entity.attribute;
 
 import java.io.Serializable;
 

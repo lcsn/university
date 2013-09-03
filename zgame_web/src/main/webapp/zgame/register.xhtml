@@ -1,14 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition lang="de" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	template="/WEB-INF/templates/template.xhtml">
 	<ui:define name="content">
-		<div align="center">
+		<div align="center" style="margin-top: 220px">
 			<H1>REGISTER - UNDER CONSTRUCTION</H1>
 			<h:form id="register">
-
+				<h:messages id="msgs" errorStyle="color:red;" />
+				<h:panelGrid style="border: 2px solid #014b7d;" cellpadding="10px">
+					<h:inputText id="username" style="text-align:center"
+						value="#{registerBean.newPlayer.username}" required="true"
+						requiredMessage="Enter username">
+						<f:passThroughAttribute name="placeholder" value="Username" />
+					</h:inputText>
+					<h:inputText id="firstname" style="text-align:center"
+						value="#{registerBean.newPlayer.firstname}" required="true"
+						requiredMessage="Enter firstname">
+						<f:passThroughAttribute name="placeholder" value="Firstname" />
+					</h:inputText>
+					<h:inputText id="lastname" style="text-align:center"
+						value="#{registerBean.newPlayer.lastname}" required="true"
+						requiredMessage="Enter lastname">
+						<f:passThroughAttribute name="placeholder" value="Lastname" />
+					</h:inputText>
+					<h:inputText id="email" style="text-align:center"
+						value="#{registerBean.newPlayer.email}" required="true"
+						requiredMessage="Enter email">
+						<f:passThroughAttribute name="placeholder" value="Email" />
+						<f:passThroughAttribute name="type" value="email" />
+					</h:inputText>
+					<h:inputText id="birthday" style="text-align:center"
+						value="#{registerBean.newPlayer.birthday}" required="true"
+						requiredMessage="Enter birthday">
+						<f:passThroughAttribute name="placeholder" value="DayOfBirth" />
+						<f:passThroughAttribute name="type" value="date" />
+						<f:converter converterId="de.lsn.playground.zgame.converter.DateToCalendarConverter" />
+					</h:inputText>
+					<h:inputSecret id="password" style="text-align:center"
+						value="#{registerBean.newPlayer.password}"
+						required="true" requiredMessage="Enter password">
+						<f:passThroughAttribute name="placeholder" value="Password" />
+					</h:inputSecret>
+					<h:inputSecret id="repeat_password" style="text-align:center"
+						value="#{registerBean.newPlayer._password}"
+						required="true" requiredMessage="Repeat password" onblur="validatePass(document.getElementById('password'), this);" >
+						<f:passThroughAttribute name="placeholder" value="Repeat Password" />
+					</h:inputSecret>
+				</h:panelGrid>
+				<p style="margin-top: 20px">
+					<h:commandButton id="registerBtn" type="submit" value="Fight!"
+						action="#{registerBean.register}" onclick="" />
+				</p>
+				<script type="text/javascript">
+				function validatePass(p1, p2) {
+				    if (p1.value != p2.value || p1.value == '' || p2.value == '') {
+				        p2.setCustomValidity('Password incorrect');
+				    } else {
+				        p2.setCustomValidity('');
+				    }
+				}
+				</script>
 			</h:form>
 		</div>
 	</ui:define>

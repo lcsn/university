@@ -2,19 +2,23 @@ package de.lsn.playground.zgame.beans;
 
 import java.util.Map;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
-import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import de.lsn.playground.entity.player.Player;
+import de.lsn.playground.framwork.ZgameConstants;
+import de.lsn.playground.logic.player.PlayerDAOLocal;
+import de.lsn.playground.zgame.security.HashService;
 
 @Named
 @RequestScoped
 public class LoginBean {
 
-	@Inject
-	protected HttpServletRequest request;
+	@EJB
+	private PlayerDAOLocal playerDAO;
 	
 	private String username;
 	
@@ -22,20 +26,15 @@ public class LoginBean {
 	
 	public String enter() {
 		System.out.println("Login: "+username+":"+password);
-		
-		HttpSession session = request.getSession();
-		
-		session.setAttribute("player", username);
-		
+		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+		Player player = playerDAO.findPlayerByUsernameAndPassword(username, HashService.getDigest(username, password));
+		session.setAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE, player);
 		return "main.xhtml";
 	}
 
 	public String exit() {
-		System.out.println("Login: "+username+":"+password);
-		
 		Map<String, Object> sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 		sessionMap.clear();
-		
 		return "welcome.xhtml";
 	}
 	

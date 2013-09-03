@@ -18,13 +18,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import de.lsn.playground.entity.ZgameEntity;
+import de.lsn.playground.entity.attribute.Defense;
+import de.lsn.playground.entity.attribute.FiringRange;
+import de.lsn.playground.entity.attribute.Health;
+import de.lsn.playground.entity.attribute.MovingRange;
+import de.lsn.playground.entity.attribute.Offense;
 import de.lsn.playground.framwork.Experience;
 import de.lsn.playground.framwork.Skill;
-import de.lsn.playground.framwork.attribute.Defense;
-import de.lsn.playground.framwork.attribute.FiringRange;
-import de.lsn.playground.framwork.attribute.Health;
-import de.lsn.playground.framwork.attribute.MovingRange;
-import de.lsn.playground.framwork.attribute.Offense;
 
 @SuppressWarnings("serial")
 @NamedQueries({
