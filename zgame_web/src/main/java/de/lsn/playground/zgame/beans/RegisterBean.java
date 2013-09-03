@@ -27,9 +27,11 @@ public class RegisterBean {
 	}
 	
 	public String register() {
-		playerDAO.createPlayer(this.newPlayer);
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-		newPlayer.setPassword(HashService.getRandomPasswordData(newPlayer.getUsername())[1]);
+		newPlayer.setPassword(HashService.getDigest(newPlayer.getUsername(), newPlayer.getPassword()));
+
+		playerDAO.createPlayer(this.newPlayer);
+		
 		session.setAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE, newPlayer);
 		return "main.xhtml";
 	}

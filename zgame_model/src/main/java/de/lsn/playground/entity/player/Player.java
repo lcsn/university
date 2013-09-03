@@ -25,15 +25,16 @@ public class Player extends ZgameEntity {
 
 	public static final String FIND_BY_USERNAME_AND_PASSWORD = "Player.FIND_BY_USERNAME_AND_PASSWORD";
 
-	@Size(max=12)
+	@NotNull
+	@Size(min=3)
 	private String username;
 	
-	@Size(max=32)
 	@NotNull
+	@Size(min=3)
 	private String firstname;
 	
-	@Size(max=32)
 	@NotNull
+	@Size(min=3)
 	private String lastname;
 	
 	@NotNull
@@ -43,7 +44,7 @@ public class Player extends ZgameEntity {
 	private Calendar birthday;
 	
 	@NotNull
-	@Size(min=8, max=24)
+	@Size(min=6)
 	private String password;
 	
 	@Transient

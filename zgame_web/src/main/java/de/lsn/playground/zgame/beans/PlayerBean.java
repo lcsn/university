@@ -8,20 +8,23 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
+import de.lsn.playground.entity.player.Player;
+import de.lsn.playground.framwork.ZgameConstants;
+
 @SuppressWarnings("serial")
 @Named
 @SessionScoped
 public class PlayerBean implements Serializable {
 
-	private String player;
+	private Player player;
 	
 	@PostConstruct
 	private void init() {
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-		this.player = (String) session.getAttribute("player");
+		this.player = (Player) session.getAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE);
 	}
 	
-	public String getPlayer() {
+	public Player getPlayer() {
 		return player;
 	}
 	
