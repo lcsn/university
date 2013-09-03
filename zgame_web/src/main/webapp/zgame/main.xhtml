@@ -5,7 +5,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	template="/WEB-INF/templates/template.xhtml">
 	<ui:define name="content">
-		<div align="center">
+		<div align="center" style="margin-top: 120px">
 			<H1>MAIN - UNDER CONSTRUCTION</H1>
 			<h:form id="main">
 				<h2>Hello, #{playerBean.player.firstname} (#{playerBean.player.username})</h2>
@@ -13,10 +13,10 @@
 					<h:commandButton value="Button0"  />
 					<h:commandButton value="Button1" />
 					<h:commandButton value="Button2" />
-					<p>
-						<h:commandButton action="#{loginBean.exit}" value="Runaway!" />
-					</p>
 				</h:panelGrid>
+				<p style="margin-top: 20px">
+					<h:commandButton action="#{loginBean.exit}" value="Runaway!" />
+				</p>
 			</h:form>
 		</div>
 	</ui:define>

@@ -5,35 +5,35 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	template="/WEB-INF/templates/template.xhtml">
 	<ui:define name="content">
-		<div align="center" style="margin-top: 220px">
+		<div align="center" style="margin-top: 120px">
 			<H1>REGISTER - UNDER CONSTRUCTION</H1>
 			<h:form id="register">
 				<h:messages id="msgs" errorStyle="color:red;" />
 				<h:panelGrid style="border: 2px solid #014b7d;" cellpadding="10px">
 					<h:inputText id="username" style="text-align:center"
 						value="#{registerBean.newPlayer.username}" required="true"
-						requiredMessage="Enter username">
+						requiredMessage="Enter username" autocomplete="off">
 						<f:passThroughAttribute name="placeholder" value="Username" />
 					</h:inputText>
 					<h:inputText id="firstname" style="text-align:center"
 						value="#{registerBean.newPlayer.firstname}" required="true"
-						requiredMessage="Enter firstname">
+						requiredMessage="Enter firstname" autocomplete="off">
 						<f:passThroughAttribute name="placeholder" value="Firstname" />
 					</h:inputText>
 					<h:inputText id="lastname" style="text-align:center"
 						value="#{registerBean.newPlayer.lastname}" required="true"
-						requiredMessage="Enter lastname">
+						requiredMessage="Enter lastname" autocomplete="off">
 						<f:passThroughAttribute name="placeholder" value="Lastname" />
 					</h:inputText>
 					<h:inputText id="email" style="text-align:center"
 						value="#{registerBean.newPlayer.email}" required="true"
-						requiredMessage="Enter email">
+						requiredMessage="Enter email" autocomplete="off">
 						<f:passThroughAttribute name="placeholder" value="Email" />
 						<f:passThroughAttribute name="type" value="email" />
 					</h:inputText>
 					<h:inputText id="birthday" style="text-align:center"
 						value="#{registerBean.newPlayer.birthday}" required="true"
-						requiredMessage="Enter birthday">
+						requiredMessage="Enter birthday" autocomplete="off">
 						<f:passThroughAttribute name="placeholder" value="DayOfBirth" />
 						<f:passThroughAttribute name="type" value="date" />
 						<f:converter converterId="de.lsn.playground.zgame.converter.DateToCalendarConverter" />
