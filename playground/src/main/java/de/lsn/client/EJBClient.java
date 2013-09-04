@@ -1,8 +1,11 @@
 package de.lsn.client;
 
+import java.io.File;
 import java.util.Properties;
 
 import javax.naming.Context;
+
+import org.apache.commons.io.FileUtils;
 
 import de.lsn.playground.entity.unit.Unit;
 import de.lsn.playground.framwork.remote.RemoteInterfaceFactory;
@@ -58,6 +61,8 @@ public class EJBClient {
 		newUnit = unitServiceDAORemote.createUnit(6l);
 		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
 		
+//		File json = new File("src/main/resources/unit_0.json");
+//		FileUtils.writeByteArrayToFile(json, data);
 		
 	}
 	
