@@ -1,6 +1,7 @@
 package de.lsn.client;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.naming.Context;
@@ -40,30 +41,39 @@ public class EJBClient {
 //		UnitDefinition unitDefinition = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitDefinitionDAORemote.class).findUnitDefintionById(1l);
 //		System.out.println(unitDefinition.getId());
 		
-		UnitServiceDAORemote unitServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitServiceDAORemote.class);
+//		UnitServiceDAORemote unitServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitServiceDAORemote.class);
 		UnitDAORemote unitDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitDAORemote.class);
 		
-		Unit newUnit = unitServiceDAORemote.createUnit(1l);
-		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
+//		Unit newUnit = unitServiceDAORemote.createUnit(1l);
+//		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
+//		newUnit = unitServiceDAORemote.createUnit(2l);
+//		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
+//		newUnit = unitServiceDAORemote.createUnit(3l);
+//		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
+//		newUnit = unitServiceDAORemote.createUnit(4l);
+//		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
+//		newUnit = unitServiceDAORemote.createUnit(5l);
+//		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
+//		newUnit = unitServiceDAORemote.createUnit(6l);
+//		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
 		
-		newUnit = unitServiceDAORemote.createUnit(2l);
-		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
+		try {
+			File json = new File("src/main/resources/unit_0.json");
+			FileUtils.writeByteArrayToFile(json, unitDAORemote.findUnitById(81l).toJson().getBytes());
+			json = new File("src/main/resources/unit_1.json");
+			FileUtils.writeByteArrayToFile(json, unitDAORemote.findUnitById(82l).toJson().getBytes());
+			json = new File("src/main/resources/unit_2.json");
+			FileUtils.writeByteArrayToFile(json, unitDAORemote.findUnitById(83l).toJson().getBytes());
+			json = new File("src/main/resources/unit_3.json");
+			FileUtils.writeByteArrayToFile(json, unitDAORemote.findUnitById(84l).toJson().getBytes());
+			json = new File("src/main/resources/unit_4.json");
+			FileUtils.writeByteArrayToFile(json, unitDAORemote.findUnitById(85l).toJson().getBytes());
+			json = new File("src/main/resources/unit_5.json");
+			FileUtils.writeByteArrayToFile(json, unitDAORemote.findUnitById(86l).toJson().getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 
-		newUnit = unitServiceDAORemote.createUnit(3l);
-		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
-		
-		newUnit = unitServiceDAORemote.createUnit(4l);
-		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
-		
-		newUnit = unitServiceDAORemote.createUnit(5l);
-		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
-		
-		newUnit = unitServiceDAORemote.createUnit(6l);
-		System.out.println(unitDAORemote.findUnitById(newUnit.getId()));
-		
-//		File json = new File("src/main/resources/unit_0.json");
-//		FileUtils.writeByteArrayToFile(json, data);
-		
 	}
 	
 }
