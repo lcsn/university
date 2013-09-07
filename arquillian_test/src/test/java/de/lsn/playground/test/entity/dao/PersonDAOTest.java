@@ -39,8 +39,8 @@ public class PersonDAOTest {
 //	private EntityManager em;
 	
 //	@EJB(mappedName="java:global/ejb-test/PersonDAO!de.lsn.playground.test.entity.dao.PersonDAORemote")
-	@EJB(mappedName="java:global/ejb-test/PersonDAO!de.lsn.playground.test.entity.dao.PersonDAOLocal")
-//	@EJB
+//	@EJB(mappedName="java:global/ejb-test/PersonDAO!de.lsn.playground.test.entity.dao.PersonDAOLocal")
+	@EJB
 	private PersonDAO personDAO;
 
 	@PersistenceContext
