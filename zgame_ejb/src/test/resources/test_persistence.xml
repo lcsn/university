@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+	<persistence-unit name="zgame" transaction-type="JTA">
+
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		
+		<jta-data-source>jdbc/wwz_db</jta-data-source>
+    	<exclude-unlisted-classes>false</exclude-unlisted-classes>
+
+		<properties>
+			<property name="javax.persistence.jdbc.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="javax.persistence.jdbc.show_sql" value="true" />
+
+			<property name="javax.persistence.jdbc.driver_class" value="org.postgresql.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/wwz" />
+			<property name="javax.persistence.jdbc.username" value="lars_simon" />
+			<property name="javax.persistence.jdbc.password" value="4711" />
+
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="test_zgame_createDDL.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="test_zgame_dropDDL.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+
+		</properties>
+	</persistence-unit>
+</persistence>
