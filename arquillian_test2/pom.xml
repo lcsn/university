@@ -128,9 +128,6 @@
 		</profile>
 		<profile>
 			<id>arq-test-gf-4.x</id>
-			<properties>
-				<version.glassfish>4.0-b72</version.glassfish>
-			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>org.jboss.arquillian.container</groupId>
