@@ -6,18 +6,69 @@
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<h:outputStylesheet name="css/screen.css" />
+	<!--
 	<script src="modernizr.min.js"></script>
+	-->
 </h:head>
 <h:body>
-	<div id="content">
-		<ui:insert name="content">
+	<div id="container">
+		<div id="header">
+			<h1>Zgame - Menschen. Zombies. Ende.</h1>
+			<div style="float: right;">Join it. Play it. Love it.</div>
+			<br />
+			<div style="float: right;">- Lars</div>
+		</div>
+		<div id="main">
+			<div id="navigation">
+				<h:form id="nav_form" prependId="false">
+					<ul>
+						<li><h:commandLink value="Home" action="welcome" /></li>
+						<li><h:commandLink value="About me" action="#" /></li>
+						<li><h:commandLink value="Contact me" action="#" /></li>
+					</ul>
+					<ul style="float: right;">
+						<li><h:commandLink value="Login" action="login" /></li>
+						<li><h:commandLink value="Registrieren" action="register" /></li>
+					</ul>
+				</h:form>
+			</div>
+			<div id="content-container">
+				<div id="section-navigation">
+					<ul>
+						<h:form id="side_nav_form" prependId="false">
+							<ul>
+								<li><h:commandLink value="Meine Spiele" action="my_games" /></li>
+								<li><h:commandLink value="Neues Spiel" action="new_game" /></li>
+								<li><h:commandLink value="Spiel finden" action="find_game" /></li>
+								<li><h:commandLink value="Mein Profil" action="my_profile" /></li>
+								<li><h:commandLink value="Einheiten" action="units" /></li>
+								<li><h:commandLink value="Story" action="story" /></li>
+							</ul>
+						</h:form>
+					</ul>
+				</div>
+				<div id="content">
+					<ui:insert name="content">
                     [Template content will be inserted here]
-         </ui:insert>
-	</div>
-	<div align="center" style="border: 1px solid red">
-		<p>
-			<br />SPREAD OR SURVIVE.<br />
-		</p>
+         			</ui:insert>
+				</div>
+				<div id="aside">
+					<h3>Aside heading</h3>
+					<p>Duis autem vel eum iriure dolor in hendrerit in vulputate
+						velit esse molestie consequat, vel illum dolore eu feugiat nulla
+						facilisis at vero eros et accumsan.</p>
+				</div>
+			</div>
+		</div>
+		<div id="footer">
+			<footer>
+				<p>
+					<br />SPREAD OR SURVIVE.<br />
+				</p>
+				<div style="float: right;">Copyright © Site Lars-Christian
+					Simon, 2013</div>
+			</footer>
+		</div>
 	</div>
 </h:body>
 </html>
