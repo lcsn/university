@@ -29,6 +29,13 @@
 							requiredMessage="Enter lastname" autocomplete="off">
 							<f:passThroughAttribute name="placeholder" value="Lastname" />
 						</h:inputText>
+						<h:outputLabel for="gender" value="Sex" />
+						<h:selectOneMenu id="gender" value="#{registerBean.newPlayer.gender}" required="true" requiredMessage="Choose gender"
+							converter="de.lsn.playground.zgame.converter.StringToGenderConverter">
+							<f:selectItem itemLabel="Bitte wählen.." noSelectionOption="true" />
+							<f:selectItem itemLabel="Male" itemValue="MALE"/>
+							<f:selectItem itemLabel="Female" itemValue="FEMALE"/>
+						</h:selectOneMenu>
 					</h:panelGrid>
 					<h:panelGrid columns="2" cellpadding="20px">
 						<h:outputLabel for="email" value="E-Mail" />

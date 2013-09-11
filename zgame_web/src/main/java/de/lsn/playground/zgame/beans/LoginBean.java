@@ -18,7 +18,7 @@ import de.lsn.playground.zgame.security.HashService;
 
 @Named
 @RequestScoped
-public class LoginBean {
+public class LoginBean extends AbstractBackingBean {
 
 	@EJB
 	private PlayerDAOLocal playerDAO;
@@ -47,10 +47,6 @@ public class LoginBean {
 		Map<String, Object> sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 		sessionMap.clear();
 		return "welcome.xhtml";
-	}
-	
-	private void addMessage(Severity severity, String summary, String detail) {
-		FacesContext.getCurrentInstance().addMessage("", new FacesMessage(severity, summary, detail));
 	}
 	
 	public String getUsername() {

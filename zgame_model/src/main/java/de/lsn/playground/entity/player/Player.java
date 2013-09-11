@@ -3,6 +3,8 @@ package de.lsn.playground.entity.player;
 import java.util.Calendar;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -14,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.lsn.playground.entity.ZgameEntity;
+import de.lsn.playground.framwork.Gender;
 
 @SuppressWarnings("serial")
 @NamedQueries({
@@ -36,6 +39,12 @@ public class Player extends ZgameEntity {
 	@NotNull
 	@Size(min=3)
 	private String lastname;
+
+	private Long score = 1000l;
+
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	private Gender gender;
 	
 	@NotNull
 	private String email;
@@ -49,6 +58,8 @@ public class Player extends ZgameEntity {
 	
 	@Transient
 	private String _password;
+	
+	private boolean locked;
 	
 	/*
 	 Score
@@ -78,6 +89,22 @@ public class Player extends ZgameEntity {
 	
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+	
+	public Long getScore() {
+		return score;
+	}
+	
+	protected void setScore(Long score) {
+		this.score = score;
+	}
+	
+	public Gender getGender() {
+		return gender;
+	}
+	
+	public void setGender(Gender gender) {
+		this.gender = gender;
 	}
 	
 	public String getEmail() {
@@ -110,6 +137,24 @@ public class Player extends ZgameEntity {
 	
 	public void set_password(String _password) {
 		this._password = _password;
+	}
+	
+	public boolean isLocked() {
+		return locked;
+	}
+	
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+	
+	public boolean passMatch() {
+		boolean res = false;
+		if(null != this.password && null != this._password) {
+			if (this.password.equals(_password)) {
+				res = true;
+			}
+		}
+		return res;
 	}
 	
 }

@@ -22,13 +22,13 @@
 			<div id="navigation">
 				<h:form id="nav_form" prependId="false">
 					<ul>
-						<li><h:commandLink value="Home" action="welcome" /></li>
-						<li><h:commandLink value="About me" action="#" /></li>
-						<li><h:commandLink value="Contact me" action="#" /></li>
+						<li><h:commandLink value="Home" action="/zgame/welcome" /></li>
+						<li><h:commandLink value="About me" action="/zgame/aboutme" /></li>
+						<li><h:commandLink value="Contact me" action="/zgame/contactme" /></li>
 					</ul>
 					<ul style="float: right;">
-						<li><h:commandLink value="Login" action="login" /></li>
-						<li><h:commandLink value="Registrieren" action="register" /></li>
+						<li><h:commandLink value="Login" action="/zgame/login" /></li>
+						<li><h:commandLink value="Registrieren" action="/zgame/register" /></li>
 					</ul>
 				</h:form>
 			</div>
@@ -37,12 +37,12 @@
 					<ul>
 						<h:form id="side_nav_form" prependId="false">
 							<ul>
-								<li><h:commandLink value="Meine Spiele" action="my_games" /></li>
-								<li><h:commandLink value="Neues Spiel" action="new_game" /></li>
-								<li><h:commandLink value="Spiel finden" action="find_game" /></li>
-								<li><h:commandLink value="Mein Profil" action="my_profile" /></li>
-								<li><h:commandLink value="Einheiten" action="units" /></li>
-								<li><h:commandLink value="Story" action="story" /></li>
+								<li><h:commandLink value="Meine Spiele" action="/zgame/content/my_games" /></li>
+								<li><h:commandLink value="Neues Spiel" action="/zgame/content/new_game" /></li>
+								<li><h:commandLink value="Spiel finden" action="/zgame/content/find_game" /></li>
+								<li><h:commandLink value="Mein Profil" action="/zgame/content/my_profile" /></li>
+								<li><h:commandLink value="Einheiten" action="/zgame/content/units" /></li>
+								<li><h:commandLink value="Story" action="/zgame/content/story" /></li>
 							</ul>
 						</h:form>
 					</ul>
