@@ -28,7 +28,7 @@ public class RegisterBean extends AbstractBackingBean {
 	}
 	
 	public String register() {
-		if(!newPlayer.passMatch()) {
+		if(!newPlayer.doesPassMatch()) {
 			addMessage(FacesMessage.SEVERITY_ERROR, "Passwörter stimmen nicht überein", "");
 			return "";
 		}

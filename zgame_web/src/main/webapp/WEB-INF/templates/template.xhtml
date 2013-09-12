@@ -6,7 +6,10 @@
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<h:outputStylesheet name="css/screen.css" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
 	<!--
+	<script type="text/javascript" src="js/vendor/jquery-1.10.2.min.js" />
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script src="modernizr.min.js"></script>
 	-->
 </h:head>
@@ -37,6 +40,7 @@
 					<ul>
 						<h:form id="side_nav_form" prependId="false">
 							<ul>
+								<li><h:commandLink value="Map Test" action="/zgame/content/map_test" /></li>
 								<li><h:commandLink value="Meine Spiele" action="/zgame/content/my_games" /></li>
 								<li><h:commandLink value="Neues Spiel" action="/zgame/content/new_game" /></li>
 								<li><h:commandLink value="Spiel finden" action="/zgame/content/find_game" /></li>

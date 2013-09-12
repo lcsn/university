@@ -1,12 +1,19 @@
 package de.lsn.playground.entity.player;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,15 +22,21 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import de.lsn.playground.entity.PlayerImage;
+import de.lsn.playground.entity.Role;
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.framwork.Gender;
+import de.lsn.playground.framwork.PlayerRole;
 
 @SuppressWarnings("serial")
 @NamedQueries({
 	@NamedQuery(name=Player.FIND_BY_USERNAME_AND_PASSWORD, query="SELECT o FROM Player AS o WHERE o.username = :username AND o.password = :password")
 })
 @Entity
-@Table(name="Player", uniqueConstraints={@UniqueConstraint(columnNames={"username"})})
+@Table(name="Player", uniqueConstraints={
+		@UniqueConstraint(columnNames={"username"})
+	}
+)
 public class Player extends ZgameEntity {
 
 	public static final String FIND_BY_USERNAME_AND_PASSWORD = "Player.FIND_BY_USERNAME_AND_PASSWORD";
@@ -61,11 +74,11 @@ public class Player extends ZgameEntity {
 	
 	private boolean locked;
 	
-	/*
-	 Score
-	 Gender
-	 Photo
-	 */
+	@OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	private List<Role> roles;
+
+	@OneToOne(mappedBy = "player", fetch = FetchType.LAZY)
+	private PlayerImage playerImage;
 	
 	public String getUsername() {
 		return username;
@@ -146,8 +159,16 @@ public class Player extends ZgameEntity {
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
 	
-	public boolean passMatch() {
+	protected void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+	
+	public boolean doesPassMatch() {
 		boolean res = false;
 		if(null != this.password && null != this._password) {
 			if (this.password.equals(_password)) {
@@ -155,6 +176,14 @@ public class Player extends ZgameEntity {
 			}
 		}
 		return res;
+	}
+
+	@PrePersist
+	private void prePersistAction() {
+		if (null == this.roles) {
+			this.roles = new ArrayList<Role>();
+		}
+		this.roles.add(new Role(this, PlayerRole.DEFAULT.val()));
 	}
 	
 }

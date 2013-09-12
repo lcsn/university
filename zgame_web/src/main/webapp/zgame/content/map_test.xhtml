@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition lang="de" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+		<div align="center">
+			<H1>MAP_TEST</H1>
+			<h:form id="map_test">
+				<h:messages id="msgs" errorStyle="color:red;" />
+				<canvas id="mapCanvas" width="500" height="300">Upgrade your browser!</canvas>
+			</h:form>
+		</div>
+		
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var canvas = $("#mapCanvas")[0];
+				alert(canvas);
+				var c = canvas.getContext("2d");
+				c.beginPath();
+				c.lineTo(16*Math.sin(1*2*Math.PI/6)+28*1+30, 16*Math.cos(1*2*Math.PI/6)+25*1+30);
+				c.lineTo(16*Math.sin(2*2*Math.PI/6)+28*1+30, 16*Math.cos(2*2*Math.PI/6)+25*1+30);
+				c.lineTo(16*Math.sin(3*2*Math.PI/6)+28*1+30, 16*Math.cos(3*2*Math.PI/6)+25*1+30);
+				c.lineTo(16*Math.sin(4*2*Math.PI/6)+28*1+30, 16*Math.cos(4*2*Math.PI/6)+25*1+30);
+				c.lineTo(16*Math.sin(5*2*Math.PI/6)+28*1+30, 16*Math.cos(5*2*Math.PI/6)+25*1+30);
+				c.lineTo(16*Math.sin(6*2*Math.PI/6)+28*1+30, 16*Math.cos(6*2*Math.PI/6)+25*1+30);
+				c.closePath();
+				c.stroke();
+
+				moo();
+				
+			})
+
+			function moo() {
+				alert('moo()');
+			}
+			
+			function drawPolygon() {
+				int xoffset = 16;
+				int yoffset = 16;
+				if ((column % 2) != 0){
+					xoffset = 30;
+				}
+				ctx.beginPath();
+				for (var i = 0; i &lt; 6; i++) {
+					ctx.lineTo(16*Math.sin(i*2*Math.PI/6)+28*row+xoffset, 16*Math.cos(i*2*Math.PI/6)+25*column+yoffset);
+				}
+				ctx.closePath();
+			}
+					
+		</script>
+		
+	</ui:define>
+</ui:composition>
