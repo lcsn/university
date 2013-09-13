@@ -1,55 +1,269 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui:composition lang="de" xmlns="http://www.w3.org/1999/xhtml"
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	template="/WEB-INF/templates/template.xhtml">
-	<ui:define name="content">
-		<div align="center">
-			<H1>MAP_TEST</H1>
-			<h:form id="map_test">
-				<h:messages id="msgs" errorStyle="color:red;" />
-				<canvas id="mapCanvas" width="500" height="300">Upgrade your browser!</canvas>
-			</h:form>
-		</div>
-		
-		<script type="text/javascript">
-			$(document).ready(function(){
-				var canvas = $("#mapCanvas")[0];
-				alert(canvas);
-				var c = canvas.getContext("2d");
-				c.beginPath();
-				c.lineTo(16*Math.sin(1*2*Math.PI/6)+28*1+30, 16*Math.cos(1*2*Math.PI/6)+25*1+30);
-				c.lineTo(16*Math.sin(2*2*Math.PI/6)+28*1+30, 16*Math.cos(2*2*Math.PI/6)+25*1+30);
-				c.lineTo(16*Math.sin(3*2*Math.PI/6)+28*1+30, 16*Math.cos(3*2*Math.PI/6)+25*1+30);
-				c.lineTo(16*Math.sin(4*2*Math.PI/6)+28*1+30, 16*Math.cos(4*2*Math.PI/6)+25*1+30);
-				c.lineTo(16*Math.sin(5*2*Math.PI/6)+28*1+30, 16*Math.cos(5*2*Math.PI/6)+25*1+30);
-				c.lineTo(16*Math.sin(6*2*Math.PI/6)+28*1+30, 16*Math.cos(6*2*Math.PI/6)+25*1+30);
-				c.closePath();
-				c.stroke();
-
-				moo();
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<h:outputStylesheet name="css/map.css" />
+	<script
+		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+	<!--
+	<script type="text/javascript" src="js/vendor/jquery-1.10.2.min.js" />
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src="modernizr.min.js"></script>
+	-->
+	<script type="text/javascript">
 				
-			})
+		var mapHeight = 15;
+		var mapWidth = 20;
 
-			function moo() {
-				alert('moo()');
+		var fieldSize = 20;
+		
+		var mapFields;
+
+		$(document).ready(function(){
+
+			initMap();
+			
+			highlightField();
+			
+		})
+
+		function highlightField() {
+			var canvas = $("#mapCanvas")[0];
+			var c = canvas.getContext("2d");
+			for (var i = 0; i &lt; 200; i++) {
+				for (var j = 0; j &lt; 200; j++) {
+
+					var s = fieldSize;
+					var h = Math.sin(30) * s;
+					var r = Math.cos(30) * s;
+					var b = s + 2 * h;
+					var a = 2 * r;
+						
+					var pixel_x = Math.floor(i/(2*r));
+					var pixel_y = Math.floor(j/(h+s));
+
+					var sect_pixel_x = i - pixel_x * 2 * r;
+					var sect_pixel_y = j - pixel_y * (h + s)
+					
+					var m = h/r;
+					var m_neg = -h/r;
+					
+					var x;
+					var y;
+					if(pixel_y % 1 == 0) {
+						//A
+						//MID
+						x = pixel_x;	
+						y = pixel_y;
+						//LEFT
+						if(sect_pixel_y &lt; (h - sect_pixel_x * m)) {
+							x = pixel_x - 1;	
+							y = pixel_y - 1;
+						}
+						//RIGHT
+						if(sect_pixel_y &lt; (-h + sect_pixel_x * m)) {
+							x = pixel_x;	
+							y = pixel_y - 1;
+						}
+					}
+					else {
+						//B
+						//RIGHT
+						if(sect_pixel_x &gt;= r) {
+							if(sect_pixel_y &lt; (2 * h - sect_pixel_x * m)) {
+								x = pixel_x - 1;
+								y = pixel_y - 1;
+							}
+							else {
+								x = pixel_x;
+								y = pixel_y;
+							}
+						}
+						//LEFT
+						if(sect_pixel_x &lt; r) {
+							if(sect_pixel_y &lt; (sect_pixel_x * m)) {
+								x = pixel_x;
+								y = pixel_y - 1;
+							}
+							else {
+								x = pixel_x - 1;
+								y = pixel_y;
+							}
+						}
+					}
+
+					if((x==2)&amp;&amp;(y==2)) {
+						c.fillStyle = "rgba("+60+","+0+","+0+","+(0.5)+")";
+						c.fillRect(i, j, 1, 1);
+					}
+					
+					/*
+					var q = ((1/3*Math.sqrt(3) * i - 1/3 * j) / fieldSize);
+					var r = (2/3 * j / fieldSize);
+					
+					if((Math.floor(q)==0)&amp;&amp;(Math.floor(r)==0)) {
+						c.fillStyle = "rgba("+60+","+0+","+0+","+(0.5)+")";
+						c.fillRect(i, j, 1, 1);
+					}
+					if((Math.floor(q)==0)&amp;&amp;(Math.floor(r)==1)) {
+						c.fillStyle = "rgba("+120+","+0+","+0+","+(0.5)+")";
+						c.fillRect(i, j, 1, 1);
+					}
+					if((Math.floor(q)==1)&amp;&amp;(Math.floor(r)==0)) {
+						c.fillStyle = "rgba("+180+","+0+","+0+","+(0.5)+")";
+						c.fillRect(i, j, 1, 1);
+					}
+					if((Math.floor(q)==1)&amp;&amp;(Math.floor(r)==1)) {
+						c.fillStyle = "rgba("+240+","+0+","+0+","+(0.5)+")";
+						c.fillRect(i, j, 1, 1);
+					}
+					*/
+				}
+			}
+		}
+		
+		function writeMessage(canvas, message) {
+	        var context = canvas.getContext('2d');
+	        context.clearRect(0, 0, canvas.width, canvas.height);
+	        context.font = '18pt Calibri';
+	        context.fillStyle = 'black';
+	        context.fillText(message, 10, 25);
+		}
+		
+		function onMouseMove(e) {
+			var canvas = $("#mapCanvas")[0];
+			var hexPos = getHexPosition(e);
+	        var message = 'Mouse position: ' + hexPos.x + ',' + hexPos.y;
+	        writeCoords(message);
+		}
+
+		function getMousePos(e) {
+			var canvas = $("#mapCanvas")[0];
+	        var rect = canvas.getBoundingClientRect();
+	        return {
+	          x: e.clientX - rect.left,
+	          y: e.clientY - rect.top
+	        };
+		}
+		
+		function getHexPosition(e) {
+		    var mousePos = getMousePos(e);
+			var x = mousePos.x;
+		    var y = mousePos.y;
+		    
+			var q = ((1/3*Math.sqrt(3) * x - 1/3 * y) / fieldSize);
+			var r = (2/3 * y / fieldSize);
+
+			return {
+				x: Math.floor(q),
+				y: Math.floor(r)
+	        };
+		}
+
+
+		function onMapClick(e) {
+			var hexPos = getHexPosition(e);
+			alert(hexPos.x+", "+hexPos.y);
+		}
+		
+		function initMap() {
+			drawMap();
+			var canvas = $("#mapCanvas")[0];
+			canvas.addEventListener("click", onMapClick, false);
+			canvas.addEventListener("mousemove", onMouseMove, false);
+		} 
+		
+		function drawMap() {
+			var canvas = $("#mapCanvas")[0];
+		    canvas.width = 1200;
+		    canvas.height = 600;
+			var c = canvas.getContext("2d");
+		    c.clearRect(0, 0, canvas.width, canvas.height);
+			for (var i = 0; i &lt; mapWidth; i++) {
+				for (var j = 0; j &lt; mapHeight; j++) {
+					drawHexagon(c, i, j);
+				}
+			}
+		}
+
+		function drawHexagon(c, row, column) {
+			c.beginPath();
+
+			var center_x = row * (fieldSize + (3/4*fieldSize));
+			var center_y = column * (fieldSize + (1/2*fieldSize));
+
+			if((column % 2) != 0) {
+				center_x = center_x + Math.sqrt(3)/2 * fieldSize;
 			}
 			
-			function drawPolygon() {
-				int xoffset = 16;
-				int yoffset = 16;
-				if ((column % 2) != 0){
-					xoffset = 30;
+			for (var i = 0; i &lt; 6; i++) {
+
+				//Math.sin(i * 2 * Math.PI / 6))+28*(row)+xoffset)
+				//16*Math.cos(i * 2 * Math.PI / 6))+25*(column)+yoffset);
+				
+				var angle = 2 * Math.PI / 6 * (i + 0.5);
+				var x = center_x + fieldSize * Math.cos(angle) + fieldSize;
+    			var y = center_y + fieldSize * Math.sin(angle) + fieldSize;
+				if (i==0){
+					c.moveTo(x, y);
 				}
-				ctx.beginPath();
-				for (var i = 0; i &lt; 6; i++) {
-					ctx.lineTo(16*Math.sin(i*2*Math.PI/6)+28*row+xoffset, 16*Math.cos(i*2*Math.PI/6)+25*column+yoffset);
+				else {
+					c.lineTo(x, y);
 				}
-				ctx.closePath();
 			}
-					
+			c.closePath();
+			c.strokeStyle = "#f00";
+			c.stroke();
+		}
+
+		function writeCoords(message) {
+			var coords = $("#coords")[0];
+			coords.innerHTML = message;
+		}
+
+		function writeToScreen(content) {
+			var outDiv = $("#output")[0];
+			var pElem = document.createElement("p");
+			pElem.style.wordWrap = "break-word";
+			pElem.innerHTML = content;
+           	output.appendChild(pElem);
+		}
+
 		</script>
-		
-	</ui:define>
-</ui:composition>
+</h:head>
+<h:body>
+	<div id="container">
+		<div id="header">
+			<h1>Zgame - Menschen. Zombies. Ende.</h1>
+			<div style="float: right;">Join it. Play it. Love it.</div>
+			<br />
+			<div style="float: right;">- Lars</div>
+		</div>
+		<div id="content-container">
+			<div align="center">
+				<H1>MAP_TEST</H1>
+				<h:form id="map_test">
+					<h:messages id="msgs" errorStyle="color:red;" />
+
+					<output id="coords" style="float:left;">Mouse position:  n.a, n.a</output>
+					<br />
+					<canvas id="mapCanvas" height="800" width="1200">Upgrade your browser!</canvas>
+
+
+				</h:form>
+			</div>
+		</div>
+		<div id="footer">
+			<footer>
+				<p>
+					<br />SPREAD OR SURVIVE.<br />
+				</p>
+				<div>Copyright © Site Lars-Christian Simon, 2013</div>
+			</footer>
+		</div>
+	</div>
+</h:body>
+</html>
