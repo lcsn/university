@@ -34,6 +34,8 @@
 
 			mapCanvas.addEventListener("mousemove", onMouseMove, false);
 
+			mapCanvas.addEventListener("click", onMouseClick, false);
+
 			//mapCanvas.onclick = findCell;
 			
 			// Set the style properties.
@@ -47,26 +49,32 @@
 			zgameMap.draw(mapContext);
 		}
 		
+		function onMouseClick(e) {
+			var rect = mapCanvas.getBoundingClientRect();
+			var x = e.clientX - rect.left;
+			var y = e.clientY - rect.top;
+			var zgameField = zgameMap.findField(x, y);
+		}
+		
 		function onMouseMove(e) {
 			var rect = mapCanvas.getBoundingClientRect();
 			var x = e.clientX - rect.left;
 			var y = e.clientY - rect.top;
-
-			var result = zgameMap.findField(x, y);
-			if (result != null) {
-				//if(result.getId() != selectedZgameField.getId()) {
+			var zgameField = zgameMap.findField(x, y);
+			if (zgameField != null) {
+				//if(zgameField.getId() != selectedZgameField.getId()) {
 				
 				if(selectedZgameField == null) {
-					selectedZgameField = result;
+					selectedZgameField = zgameField;
 				}
-				if(result.gridX != selectedZgameField.gridX || result.gridY != selectedZgameField.gridY) {
+				if(zgameField.gridX != selectedZgameField.gridX || zgameField.gridY != selectedZgameField.gridY) {
 					selectedZgameField.unselect(mapContext);
-					selectedZgameField = result;
+					selectedZgameField = zgameField;
 				}
 				
-				result.select(mapContext);
+				zgameField.select(mapContext);
 		        
-				var message = 'Hex position: ' + result.gridX + ', ' + result.gridY;
+				var message = 'Hex position: ' + zgameField.gridX + ', ' + zgameField.gridY;
 		        writeHexCoords(message);
 			}
 			
@@ -74,6 +82,15 @@
 	        writeCoords(message);
 		}
 		
+		function Unit(aName) {
+			
+			var name = aName;
+			
+			this.getName = function() {
+				return name;				
+			}
+			
+		}
 
 		function ZgameField(aSize, aX, aY) {
 			
@@ -88,6 +105,25 @@
 			var a = size/4;
 			var h = size/4*2;
 			var o = TANSIXTY*a;
+			
+			
+			this.recalc = function() {
+				a = size/4;
+				h = size/4*2;
+				o = TANSIXTY*a;
+			}
+			
+			this.reset = function() {
+				size += 10;
+				x -= 5;
+				this.recalc();
+			}
+			
+			this.setAsMarker = function() {
+				size -= 10;
+				x += 5;
+				this.recalc();
+			}
 			
 			this.getA = function() {
 				return a;
@@ -107,19 +143,20 @@
 			
 			this.select = function(context) {
 				if(!selected) {
-					context.fillStyle = 'rgba('+180+','+0+','+0+','+(0.5)+')';
-					context.strokeStyle = '#000';
-					context.lineWidth = 1;
+					context.save();
+					//context.fillStyle = 'rgba('+255+','+0+','+0+','+(0.5)+')';
+					context.strokeStyle = '#f00';
+					context.lineWidth = 3;
+					this.setAsMarker();
 					this.draw(context);
 					this.setSelected(true);
+					this.reset();
+					context.restore();
 				}
 			}
 			
 			this.unselect = function(context) {
 				if(selected) {
-					context.fillStyle = '#fff';
-					context.strokeStyle = '#000';
-					context.lineWidth = 1;
 					this.draw(context);
 					this.setSelected(false);
 				}
@@ -188,7 +225,7 @@
 				}
 			}
 
-			// Given a 2D drawing context on an HTML5 &lt;canvas> tag, draw the tiledMap
+			// Given a 2D drawing context on an HTML5 canvas tag, draw the tiledMap
 			this.draw = function(context) {
 				for(var i = 0; i &lt; height; i++) {
 					for(var j = 0; j &lt; width; j++) {
