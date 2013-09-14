@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<h:outputStylesheet name="css/map.css" />
+	<script
+		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+	<!--
+	<script type="text/javascript" src="js/vendor/jquery-1.10.2.min.js" />
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src="modernizr.min.js"></script>
+	-->
+	<script type="text/javascript">
+				
+		$(document).ready(function(){
+
+			initZgame();
+			
+		})
+		
+		var mapCanvas;
+		var mapContext;
+		
+		var zgameMap;
+		
+		var selectedZgameField;
+		
+		function initZgame() {
+			mapCanvas = $("#mapCanvas")[0];
+			mapContext = mapCanvas.getContext("2d");
+
+			mapCanvas.addEventListener("mousemove", onMouseMove, false);
+
+			//mapCanvas.onclick = findCell;
+			
+			// Set the style properties.
+			mapContext.fillStyle   = '#fff';
+			mapContext.strokeStyle = '#000';
+			mapContext.lineWidth   = 1;
+			
+			// Parameters to constructor are cell-size, tiledMap-height, tiledMap-width, tiledMap-top, tiledMap-left
+			zgameMap = new ZgameMap(100, 5, 5, 0, 0);
+
+			zgameMap.draw(mapContext);
+		}
+		
+		function onMouseMove(e) {
+			var rect = mapCanvas.getBoundingClientRect();
+			var x = e.clientX - rect.left;
+			var y = e.clientY - rect.top;
+
+			var result = zgameMap.findField(x, y);
+			if (result != null) {
+				//if(result.getId() != selectedZgameField.getId()) {
+				
+				if(selectedZgameField == null) {
+					selectedZgameField = result;
+				}
+				if(result.gridX != selectedZgameField.gridX || result.gridY != selectedZgameField.gridY) {
+					selectedZgameField.unselect(mapContext);
+					selectedZgameField = result;
+				}
+				
+				result.select(mapContext);
+		        
+				var message = 'Hex position: ' + result.gridX + ', ' + result.gridY;
+		        writeHexCoords(message);
+			}
+			
+			var message = 'Mouse position: ' + x + ', ' + y;
+	        writeCoords(message);
+		}
+		
+
+		function ZgameField(aSize, aX, aY) {
+			
+			var TANSIXTY = Math.tan(2*Math.PI/360*60);
+			
+			var selected = false;
+			
+			var x = aX;
+			var y = aY;
+			
+			var size = aSize;
+			var a = size/4;
+			var h = size/4*2;
+			var o = TANSIXTY*a;
+			
+			this.getA = function() {
+				return a;
+			}
+			
+			this.getH = function() {
+				return h;	
+			}
+						
+			this.getO = function() {
+				return o;
+			}
+			
+			this.setSelected = function(aSelected) {
+				selected = aSelected;
+			}
+			
+			this.select = function(context) {
+				if(!selected) {
+					context.fillStyle = 'rgba('+180+','+0+','+0+','+(0.5)+')';
+					context.strokeStyle = '#000';
+					context.lineWidth = 1;
+					this.draw(context);
+					this.setSelected(true);
+				}
+			}
+			
+			this.unselect = function(context) {
+				if(selected) {
+					context.fillStyle = '#fff';
+					context.strokeStyle = '#000';
+					context.lineWidth = 1;
+					this.draw(context);
+					this.setSelected(false);
+				}
+			}
+			
+			this.draw = function(context) {
+						context.beginPath();
+						context.moveTo(x, y);
+						context.lineTo(x+a, y-o);
+						context.lineTo(x+a+h, y-o);
+						context.lineTo(x+a+a+h, y);
+						context.lineTo(x+a+h, y+o);
+						context.lineTo(x+a, y+o);
+						context.lineTo(x, y);
+						context.fill();
+						context.stroke();
+						context.closePath();
+			}
+			
+			this.contains = function(u, v) {
+				var retval = false;
+
+				// Box in centre of hexagon
+				var inBox = u >= (x+a) &amp; u &lt;= (x+a+h) &amp; v >= (y-o) &amp; v &lt;= (y+o);
+
+				// Triangle to the left of box
+				var inLeftTriangle = u >= x &amp; u &lt;= x + a &amp; v >= y - (u - x) * TANSIXTY &amp; v &lt;= y + (u - x) * TANSIXTY;
+
+				// Triangle to the right of box
+				var inRightTriangle = u >= x + a + h &amp; u &lt;= x + a + h + a &amp; v >= y - (x + a + h + a - u) * TANSIXTY &amp; v &lt;= y + (x + a + h + a - u) * TANSIXTY;
+
+				if (inLeftTriangle || inBox || inRightTriangle) {
+					retval = true;
+				}
+
+				return retval;
+			}
+			
+		}
+		
+		function ZgameMap(aFieldSize, aWidth, aHeight, aLeft, aTop) {
+			
+			var tiledMap = new Array();
+			var fieldSize = aFieldSize;
+			var width = aWidth;
+			var height = aHeight;
+			
+			var left = aLeft;
+			var top = aTop;
+			
+			// Create a dummy hexagon to get offset-values for positioning
+			var h = new ZgameField(fieldSize, 0, 0);
+			var horizOffset = h.getH()*2+h.getA()*2;
+			var verticOffset = h.getO();
+			var evenLineOffset = h.getH()+h.getA();
+
+			// Create the tiledMap in memory
+			for(var i = 0; i &lt; height; i++) {
+				tiledMap[i] = new Array();
+				for(var j = 0; j &lt; width; j++) {
+					if (i%2 == 0) { // Offset every other row to give tessallation
+						tiledMap[i][j] = new ZgameField(fieldSize, (j*horizOffset+evenLineOffset)+left, ((i+1)*verticOffset)+top);
+					} else {
+						tiledMap[i][j] = new ZgameField(fieldSize, (j*horizOffset)+left, ((i+1)*verticOffset)+top);
+					}
+				}
+			}
+
+			// Given a 2D drawing context on an HTML5 &lt;canvas> tag, draw the tiledMap
+			this.draw = function(context) {
+				for(var i = 0; i &lt; height; i++) {
+					for(var j = 0; j &lt; width; j++) {
+						tiledMap[i][j].draw(context);
+					}
+				}
+			}
+
+			// Find the zgameField containing point (u, v)
+			this.findField = function(u, v) {
+				var retval = null;
+
+				for(var i = 0; i &lt; height; i++) {
+					for(var j = 0; j &lt; width; j++) {
+						if (tiledMap[i][j].contains(u, v))  {
+							retval = tiledMap[i][j];
+
+							// Add tiledMap coordinates of cell to returned object
+							retval.gridX = j;
+							retval.gridY = i;
+						}
+					}
+				}
+
+				return retval;
+			}
+			
+		}
+		
+		function writeCoords(message) {
+			var coords = $("#coords")[0];
+			coords.innerHTML = message;
+		}
+		
+		function writeHexCoords(message) {
+			var hexCoords = $("#hexCoords")[0];
+			hexCoords.innerHTML = message;
+		}
+		
+		</script>
+</h:head>
+<h:body>
+	<div id="container">
+		<div id="header">
+			<h1>Zgame - Menschen. Zombies. Ende.</h1>
+			<div style="float: right;">Join it. Play it. Love it.</div>
+			<br />
+			<div style="float: right;">- Lars</div>
+		</div>
+		<div id="content-container">
+			<div align="center">
+				<H1>MAP_TEST_1</H1>
+				<h:form id="map_test_1">
+					<h:messages id="msgs" errorStyle="color:red;" />
+
+					<output id="coords" style="float:left;"><b>Mouse position:</b> n.a, n.a</output>
+					<br />
+					<output id="hexCoords" style="float:left;"><b>Hex position:</b> n.a, n.a</output>
+					<br />
+					<canvas id="mapCanvas" height="800" width="1200">Upgrade your browser!</canvas>
+
+
+				</h:form>
+			</div>
+		</div>
+		<div id="footer">
+			<footer>
+				<p>
+					<br />SPREAD OR SURVIVE.<br />
+				</p>
+				<div>Copyright © Site Lars-Christian Simon, 2013</div>
+			</footer>
+		</div>
+	</div>
+</h:body>
+</html>
