@@ -26,6 +26,7 @@
 		
 		var zgameMap;
 		
+		var markedZgameField;
 		var selectedZgameField;
 		
 		function initZgame() {
@@ -47,6 +48,10 @@
 			zgameMap = new ZgameMap(100, 5, 5, 0, 0);
 
 			zgameMap.draw(mapContext);
+			
+			zgameMap.addUnit(new Unit('S'), 0, 1, mapContext);
+			zgameMap.addUnit(new Unit('W'), 2, 4, mapContext);
+			zgameMap.addUnit(new Unit('W'), 2, 2, mapContext);
 		}
 		
 		function onMouseClick(e) {
@@ -54,6 +59,16 @@
 			var x = e.clientX - rect.left;
 			var y = e.clientY - rect.top;
 			var zgameField = zgameMap.findField(x, y);
+			zgameField.select(mapContext);
+			selectedZgameField = zgameField;
+			var message;
+			if(zgameField.getUnit() != null) {
+				message = '<b>Einheit:</b> ' + zgameField.getUnit().getName();
+			}
+			else {
+				message = '<b>Einheit:</b> NONE';
+			}
+			writeUnitInfo(message);
 		}
 		
 		function onMouseMove(e) {
@@ -62,23 +77,23 @@
 			var y = e.clientY - rect.top;
 			var zgameField = zgameMap.findField(x, y);
 			if (zgameField != null) {
-				//if(zgameField.getId() != selectedZgameField.getId()) {
+				//if(zgameField.getId() != markedZgameField.getId()) {
 				
-				if(selectedZgameField == null) {
-					selectedZgameField = zgameField;
+				if(markedZgameField == null) {
+					markedZgameField = zgameField;
 				}
-				if(zgameField.gridX != selectedZgameField.gridX || zgameField.gridY != selectedZgameField.gridY) {
-					selectedZgameField.unselect(mapContext);
-					selectedZgameField = zgameField;
+				if(zgameField.gridX != markedZgameField.gridX || zgameField.gridY != markedZgameField.gridY) {
+					markedZgameField.unmark(mapContext);
+					markedZgameField = zgameField;
 				}
 				
-				zgameField.select(mapContext);
+				zgameField.mark(mapContext);
 		        
-				var message = 'Hex position: ' + zgameField.gridX + ', ' + zgameField.gridY;
+				var message = '<b>Hex position:</b> ' + zgameField.gridX + ', ' + zgameField.gridY;
 		        writeHexCoords(message);
 			}
 			
-			var message = 'Mouse position: ' + x + ', ' + y;
+			var message = '<b>Mouse position:</b> ' + x + ', ' + y;
 	        writeCoords(message);
 		}
 		
@@ -96,6 +111,7 @@
 			
 			var TANSIXTY = Math.tan(2*Math.PI/360*60);
 			
+			var marked = false;
 			var selected = false;
 			
 			var x = aX;
@@ -106,6 +122,15 @@
 			var h = size/4*2;
 			var o = TANSIXTY*a;
 			
+			var unit;
+			
+			this.getUnit = function() {
+				return unit;
+			}
+			
+			this.setUnit = function(aUnit) {
+				unit = aUnit;
+			}
 			
 			this.recalc = function() {
 				a = size/4;
@@ -137,6 +162,18 @@
 				return o;
 			}
 			
+			this.isMarked = function() {
+				return marked;
+			}
+			
+			this.setMarked = function(aMarked) {
+				marked = aMarked;
+			}
+			
+			this.isSelected = function() {
+				return selected;
+			}
+			
 			this.setSelected = function(aSelected) {
 				selected = aSelected;
 			}
@@ -145,7 +182,7 @@
 				if(!selected) {
 					context.save();
 					//context.fillStyle = 'rgba('+255+','+0+','+0+','+(0.5)+')';
-					context.strokeStyle = '#f00';
+					context.strokeStyle = '#0f0';
 					context.lineWidth = 3;
 					this.setAsMarker();
 					this.draw(context);
@@ -158,7 +195,29 @@
 			this.unselect = function(context) {
 				if(selected) {
 					this.draw(context);
+					this.mark(context);
 					this.setSelected(false);
+				}
+			}
+			
+			this.mark = function(context) {
+				if(!marked &amp;&amp; !selected) {
+					context.save();
+					//context.fillStyle = 'rgba('+255+','+0+','+0+','+(0.5)+')';
+					context.strokeStyle = '#f00';
+					context.lineWidth = 3;
+					this.setAsMarker();
+					this.draw(context);
+					this.setMarked(true);
+					this.reset();
+					context.restore();
+				}
+			}
+			
+			this.unmark = function(context) {
+				if(marked &amp;&amp; !selected) {
+					this.draw(context);
+					this.setMarked(false);
 				}
 			}
 			
@@ -174,6 +233,13 @@
 						context.fill();
 						context.stroke();
 						context.closePath();
+						if(unit != null) {
+							context.save();
+							context.fillStyle = "black";
+							context.font = "bold 16px Arial";
+							context.fillText(unit.getName(), x+o, y);
+							context.restore();
+						}
 			}
 			
 			this.contains = function(u, v) {
@@ -224,6 +290,11 @@
 					}
 				}
 			}
+			
+			this.addUnit = function(aUnit, aY, aX, context) {
+				tiledMap[aX][aY].setUnit(aUnit);
+				tiledMap[aX][aY].draw(context);
+			}
 
 			// Given a 2D drawing context on an HTML5 canvas tag, draw the tiledMap
 			this.draw = function(context) {
@@ -265,6 +336,11 @@
 			hexCoords.innerHTML = message;
 		}
 		
+		function writeUnitInfo(message) {
+			var unitInfo = $("#unitInfo")[0];
+			unitInfo.innerHTML = message;
+		}
+		
 		</script>
 </h:head>
 <h:body>
@@ -284,6 +360,8 @@
 					<output id="coords" style="float:left;"><b>Mouse position:</b> n.a, n.a</output>
 					<br />
 					<output id="hexCoords" style="float:left;"><b>Hex position:</b> n.a, n.a</output>
+					<br />
+					<output id="unitInfo" style="float:left;"><b>Einheit:</b> n.a</output>
 					<br />
 					<canvas id="mapCanvas" height="800" width="1200">Upgrade your browser!</canvas>
 
