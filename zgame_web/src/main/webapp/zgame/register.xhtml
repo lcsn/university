@@ -51,8 +51,7 @@
 							requiredMessage="Enter birthday" autocomplete="off">
 							<f:passThroughAttribute name="placeholder" value="DayOfBirth" />
 							<f:passThroughAttribute name="type" value="date" />
-							<f:converter
-								converterId="de.lsn.playground.zgame.converter.DateToCalendarConverter" />
+							<f:converter converterId="de.lsn.playground.zgame.converter.DateToCalendarConverter" />
 						</h:inputText>
 						<h:outputLabel for="password" value="Passwort" />
 						<h:inputSecret id="password" style="text-align:center"
@@ -64,8 +63,7 @@
 							title="Passwort wiederholen" />
 						<h:inputSecret id="repeat_password" style="text-align:center"
 							value="#{registerBean.newPlayer._password}" required="true"
-							requiredMessage="Repeat password"
-							onblur="validatePass(document.getElementById('password'), this);">
+							requiredMessage="Repeat password">
 							<f:passThroughAttribute name="placeholder"
 								value="Repeat Password" />
 						</h:inputSecret>
@@ -75,15 +73,6 @@
 					<h:commandButton id="registerBtn" type="submit" value="Fight!"
 						action="#{registerBean.register}" onclick="" />
 				</p>
-				<script type="text/javascript">
-				function validatePass(p1, p2) {
-				    if (p1.value != p2.value || p1.value == '' || p2.value == '') {
-				        p2.setCustomValidity('Password incorrect');
-				    } else {
-				        p2.setCustomValidity('');
-				    }
-				}
-				</script>
 			</h:form>
 		</div>
 	</ui:define>
