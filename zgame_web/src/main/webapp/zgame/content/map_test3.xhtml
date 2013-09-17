@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<h:outputStylesheet name="css/map.css" />
+	<script
+		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+	<!--
+	<script type="text/javascript" src="js/vendor/jquery-1.10.2.min.js" />
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src="modernizr.min.js"></script>
+	-->
+	<script type="text/javascript">
+				
+		$(document).ready(function(){
+
+			initZgame();
+			
+		})
+
+		var mapCanvas;
+		var mapContext;
+
+		var rows;
+		var cols;
+		var type;
+		
+		function update() {
+			mapContext.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+			
+			rows = $("#rowsIn").val();
+			cols = $("#colsIn").val();
+			type = $("select[name='type'] option:selected").val();
+			alert(rows+" x "+cols+", "+(type==0?'flat':'pointy'));
+			initZgame();
+		}
+		
+		function initZgame() {
+			mapCanvas = $("#mapCanvas")[0];
+			mapContext = mapCanvas.getContext("2d");
+
+			mapCanvas.addEventListener("mousemove", onMouseMove, false);
+			mapCanvas.addEventListener("click", onMouseClick, false);
+
+			mapContext.fillStyle   = '#fff';
+			mapContext.strokeStyle = '#000';
+			mapContext.lineWidth   = 1;
+
+			zgameMap = new ZgameMap(50, (rows==null?5:rows), (cols==null?5:cols), 0, 0, (type==null?0:type));
+			zgameMap.draw(mapContext);
+			
+		}
+
+		function onMouseClick(e) {
+			var rect = mapCanvas.getBoundingClientRect();
+			var x = e.clientX - rect.left;
+			var y = e.clientY - rect.top;
+			alert(x+"|"+y);
+		}
+		
+		function onMouseMove(e) {
+			var rect = mapCanvas.getBoundingClientRect();
+			var x = e.clientX - rect.left;
+			var y = e.clientY - rect.top;
+			var message = '<b>Mouse position:</b> ' + Math.floor(x) + ', ' + Math.floor(y);
+	        writeCoords(message);
+		}
+
+		function ZgameMap(aFieldSize, aWidth, aHeight, aLeft, aTop) {
+
+			var tiledMap = new Array();
+			var fieldSize = aFieldSize;
+			var height = aHeight;
+			var width = aWidth;
+
+			var left = aLeft;
+			var top = aTop;
+			
+			var a = fieldSize/4;
+			var h = fieldSize/4*2;
+			
+			//pointy top
+			/*
+			var hexHeight = a*2;
+			var hexWidth = Math.sqrt(3)/2*hexHeight;
+			var	hDistance = hexWidth;
+			var	vDistance = 0.75*hexHeight;
+			*/
+
+			//flat top
+			var hexWidth = a * 2;
+			var hexHeight = Math.sqrt(3)/2*hexWidth;
+			var	vDistance = hexHeight;
+			var	hDistance = 0.75*hexWidth;
+
+			for(var i = 0; i &lt; height; i++) {
+				tiledMap[i] = new Array();
+				for(var j = 0; j &lt; width; j++) {
+					//pointy top
+					/*
+					if (j%2 == 0) { // Offset every other row to give tessallation
+						tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*2, j*vDistance*2);
+					} else {
+						tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*2+hDistance, j*vDistance*2);
+					}
+					*/
+					//flat top
+					if (j%2 == 0) { // Offset every other row to give tessallation
+						tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*4, j*vDistance);
+					} else {
+						tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*4+hDistance*2, j*vDistance);
+					}
+				}
+			}
+
+			this.draw = function(context) {
+				for(var i = 0; i &lt; height; i++) {
+					for(var j = 0; j &lt; width; j++) {
+						tiledMap[i][j].draw(context);
+					}
+				}
+			}
+			
+		}
+			
+		function ZgameField(aSize, aX, aY) {
+			var size = aSize;
+
+			var a = size/4;
+			
+			var x = aX;
+			var y = aY;
+
+			this.getA = function() {
+				return a;
+			}
+			
+			this.getH = function() {
+				return h;	
+			}
+						
+			this.getO = function() {
+				return o;
+			}
+			
+			this.draw = function(context) {
+				context.beginPath();
+
+				for (var i = 0; i &lt; 6; i++) {
+
+					//pointy
+					//var angle = 2 * Math.PI / 6 * (i + 0.5);
+					//flat
+					var angle = 2 * Math.PI / 6 * (i);
+					var x_i = x + size/2 * Math.cos(angle) + size/2;
+	    			var y_i = y + size/2 * Math.sin(angle) + size/2;
+					if (i==0){
+						context.moveTo(x_i, y_i);
+					}
+					else {
+						context.lineTo(x_i, y_i);
+					}
+				}
+				context.closePath();
+				context.strokeStyle = "#000";
+				context.fillStyle = "white";
+				context.fill();
+				context.stroke();
+			}
+		}
+		
+		function writeCoords(message) {
+			var coords = $("#coords")[0];
+			coords.innerHTML = message;
+		}
+		
+		function writeHexCoords(message) {
+			var hexCoords = $("#hexCoords")[0];
+			hexCoords.innerHTML = message;
+		}
+		
+		function writeUnitInfo(message) {
+			var unitInfo = $("#unitInfo")[0];
+			unitInfo.innerHTML = message;
+		}
+		
+		</script>
+</h:head>
+<h:body>
+	<div id="container">
+		<div id="header">
+			<h1>Zgame - Menschen. Zombies. Ende.</h1>
+			<div style="float: right;">Join it. Play it. Love it.</div>
+			<br />
+			<div style="float: right;">- Lars</div>
+		</div>
+		<div id="content-container">
+			<div align="center">
+				<H1>MAP_TEST_1</H1>
+				<h:form id="map_test_3">
+					<h:messages id="msgs" errorStyle="color:red;" />
+					
+					<h:panelGrid style="float:left;" columns="1">
+						<p>
+							<output id="coords" style="float:left;"><b>Mouse position:</b> n.a, n.a</output>
+						</p>
+						<p>
+							<output id="hexCoords" style="float:left;"><b>Hex position:</b> n.a, n.a</output>
+						</p>
+						<p>
+							<output id="unitInfo" style="float:left;"><b>Einheit:</b> n.a</output>
+						</p>
+						<input id="rowsIn" style="text-align:center" type="text" />
+						<div align="center">
+							<b>times</b>
+						</div>
+						<input id="colsIn" style="text-align:center" type="text" />
+						<h:selectOneMenu id="type" style="display:inline;list-style-type:none;">
+							<f:passThroughAttribute name="name" value="type" />
+							<f:selectItem itemLabel="Flat" itemValue="0"/>
+							<f:selectItem itemLabel="Pointy" itemValue="1"/>
+						</h:selectOneMenu>
+						<div align="center">
+							<h:commandButton type="button" value="Render" onclick="update();" />
+						</div>
+					</h:panelGrid>
+					<canvas id="mapCanvas" height="800" width="1200">Upgrade your browser!</canvas>
+
+
+				</h:form>
+			</div>
+		</div>
+		<div id="footer">
+			<footer>
+				<p>
+					<br />SPREAD OR SURVIVE.<br />
+				</p>
+				<div>Copyright © Site Lars-Christian Simon, 2013</div>
+			</footer>
+		</div>
+	</div>
+</h:body>
+</html>

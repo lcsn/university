@@ -45,13 +45,13 @@
 			mapContext.lineWidth   = 1;
 			
 			// Parameters to constructor are cell-size, tiledMap-height, tiledMap-width, tiledMap-top, tiledMap-left
-			zgameMap = new ZgameMap(100, 6, 7, 0, 0);
+			zgameMap = new ZgameMap(100, 1, 1, 0, 0);
 
 			zgameMap.draw(mapContext);
 			
-			zgameMap.addUnit(new Unit('S'), 0, 1, mapContext);
-			zgameMap.addUnit(new Unit('W'), 2, 4, mapContext);
-			zgameMap.addUnit(new Unit('W'), 2, 2, mapContext);
+			//zgameMap.addUnit(new Unit('S'), 0, 1, mapContext);
+			//zgameMap.addUnit(new Unit('W'), 2, 4, mapContext);
+			//zgameMap.addUnit(new Unit('W'), 2, 2, mapContext);
 		}
 		
 		function onMouseClick(e) {
@@ -231,16 +231,9 @@
 			this.draw = function(context) {
 						context.beginPath();
 
-						/*
-						context.moveTo(x+a, y-a);
-						context.lineTo(x+h, y-o);
-						context.lineTo(x+a+h, y-a);
-						context.lineTo(x+a+h, y+a);
-						context.lineTo(x+h, y+o);
-						context.lineTo(x+a, y+a);
-						context.lineTo(x+a, y-a);
-						*/
-						
+						context.moveTo(x, y);
+						context.lineTo(x+(size/2), y);
+
 						context.moveTo(x, y);
 						context.lineTo(x+a, y-o);
 						context.lineTo(x+a+h, y-o);
@@ -249,9 +242,9 @@
 						context.lineTo(x+a, y+o);
 						context.lineTo(x, y);
 						
+						context.closePath();
 						context.fill();
 						context.stroke();
-						context.closePath();
 						if(unit != null) {
 							context.save();
 							context.fillStyle = "black";

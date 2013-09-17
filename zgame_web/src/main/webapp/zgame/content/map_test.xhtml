@@ -24,12 +24,114 @@
 
 		$(document).ready(function(){
 
-			initMap();
-			
-			highlightField();
+			//initMap();
+			//highlightField();
+
+			initZgame();
 			
 		})
+		
+		function initZgame() {
+			mapCanvas = $("#mapCanvas")[0];
+			mapContext = mapCanvas.getContext("2d");
 
+			// Set the style properties.
+			mapContext.fillStyle   = '#fff';
+			mapContext.strokeStyle = '#000';
+			mapContext.lineWidth   = 1;
+			
+			// Parameters to constructor are cell-size, tiledMap-height, tiledMap-width, tiledMap-top, tiledMap-left
+			zgameMap = new ZgameMap(20, 2, 2);
+
+			zgameMap.draw(mapContext);
+			
+		}
+
+		function ZgameField(aSize, aX, aY) {
+
+			var size = aSize;
+
+			var a = size/4;
+			var h = size*2;
+
+			var q = aX;
+			var r = aY;
+
+			this.getA = function() {
+				return a;
+			}
+			
+			this.getH = function() {
+				return h;	
+			}
+			
+			this.draw = function(context) {
+				context.beginPath();
+
+				var center_x = q * (size + (3/4*size));
+				var center_y = r * (size + (1/2*size));
+
+				if((r % 2) != 0) {
+					center_x = center_x + Math.sqrt(3)/2 * size;
+				}
+				
+				for (var i = 0; i &lt; 6; i++) {
+
+					var angle = 2 * Math.PI / 6 * (i + 0.5);
+					var x = center_x + size * Math.cos(angle) + size;
+	    			var y = center_y + size * Math.sin(angle) + size;
+					if (i==0){
+						context.moveTo(x, y);
+					}
+					else {
+						context.lineTo(x, y);
+					}
+				}
+				context.closePath();
+				context.strokeStyle = "#f00";
+				context.stroke();
+			}
+		}
+		
+		function ZgameMap(aFieldSize, aWidth, aHeight) {
+			var tiledMap = new Array();
+			var fieldSize = aFieldSize;
+			var width = aWidth;
+			var height = aHeight;
+			
+			// Create a dummy hexagon to get offset-values for positioning
+			var h = new ZgameField(fieldSize, 0, 0);
+
+			var horizOffset = fieldSize * 2;
+			var verticOffset = 1;
+			var evenLineOffset = 1;
+			
+			// Create the tiledMap in memory
+			for(var i = 0; i &lt; height; i++) {
+				tiledMap[i] = new Array();
+				for(var j = 0; j &lt; width; j++) {
+					tiledMap[i][j] = new ZgameField(fieldSize, j, i);
+				}
+			}
+
+			// Find the zgameField containing point (u, v)
+			this.findField = function(u, v) {
+				var q = (1/3*Math.sqrt(3) * u - 1/3 * v) / fieldSize;
+				var r = 2/3 * v / size;
+				return tieldMap[u][v];
+			}
+
+			// Given a 2D drawing context on an HTML5 canvas tag, draw the tiledMap
+			this.draw = function(context) {
+				for(var i = 0; i &lt; height; i++) {
+					for(var j = 0; j &lt; width; j++) {
+						tiledMap[i][j].draw(context);
+					}
+				}
+			}
+			
+		}
+		
 		function highlightField() {
 			var canvas = $("#mapCanvas")[0];
 			var c = canvas.getContext("2d");
