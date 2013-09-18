@@ -27,6 +27,7 @@
 		var rows;
 		var cols;
 		var type;
+		var fSize;
 		
 		function update() {
 			mapContext.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
@@ -34,7 +35,10 @@
 			rows = $("#rowsIn").val();
 			cols = $("#colsIn").val();
 			type = $("select[name='type'] option:selected").val();
-			alert(rows+" x "+cols+", "+(type==0?'flat':'pointy'));
+			fSize = $("#fSize").val();
+
+			alert(rows+" x "+cols+", "+(type==0?'flat':'pointy') + ", " + fSize);
+
 			initZgame();
 		}
 		
@@ -49,7 +53,7 @@
 			mapContext.strokeStyle = '#000';
 			mapContext.lineWidth   = 1;
 
-			zgameMap = new ZgameMap(50, (rows==null?5:rows), (cols==null?5:cols), 0, 0, (type==null?0:type));
+			zgameMap = new ZgameMap((fSize==null?50:fSize), (rows==null?5:rows), (cols==null?5:cols), 0, 0, (type==null?0:type));
 			zgameMap.draw(mapContext);
 			
 		}
@@ -58,7 +62,8 @@
 			var rect = mapCanvas.getBoundingClientRect();
 			var x = e.clientX - rect.left;
 			var y = e.clientY - rect.top;
-			alert(x+"|"+y);
+			var result = zgameMap.findField(x, y);
+			alert(result.gridX+"|"+result.gridY);
 		}
 		
 		function onMouseMove(e) {
@@ -69,9 +74,11 @@
 	        writeCoords(message);
 		}
 
-		function ZgameMap(aFieldSize, aWidth, aHeight, aLeft, aTop) {
+		function ZgameMap(aFieldSize, aWidth, aHeight, aLeft, aTop, aType) {
 
 			var tiledMap = new Array();
+
+			var type = aType;
 			var fieldSize = aFieldSize;
 			var height = aHeight;
 			var width = aWidth;
@@ -82,36 +89,50 @@
 			var a = fieldSize/4;
 			var h = fieldSize/4*2;
 			
-			//pointy top
-			/*
-			var hexHeight = a*2;
-			var hexWidth = Math.sqrt(3)/2*hexHeight;
-			var	hDistance = hexWidth;
-			var	vDistance = 0.75*hexHeight;
-			*/
-
-			//flat top
-			var hexWidth = a * 2;
-			var hexHeight = Math.sqrt(3)/2*hexWidth;
-			var	vDistance = hexHeight;
-			var	hDistance = 0.75*hexWidth;
+			var hexHeight;
+			var hexWidth;
+			var	hDistance;
+			var	vDistance;
+			
+			if(type == 1) {
+				//pointy top
+				hexHeight = a*2;
+				hexWidth = Math.sqrt(3)/2*hexHeight;
+				hDistance = hexWidth;
+				vDistance = 0.75*hexHeight;
+			}
+			else if(type == 0) {
+				//flat top
+				hexWidth = a * 2;
+				hexHeight = Math.sqrt(3)/2*hexWidth;
+				vDistance = hexHeight;
+				hDistance = 0.75*hexWidth;
+			}
+			else {
+				// error
+			}
 
 			for(var i = 0; i &lt; height; i++) {
 				tiledMap[i] = new Array();
 				for(var j = 0; j &lt; width; j++) {
-					//pointy top
-					/*
-					if (j%2 == 0) { // Offset every other row to give tessallation
-						tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*2, j*vDistance*2);
-					} else {
-						tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*2+hDistance, j*vDistance*2);
+					if(type == 1) {
+						//pointy top
+						if (j%2 == 0) { // Offset every other row to give tessallation
+							tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*2, j*vDistance*2, 1);
+						} else {
+							tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*2+hDistance, j*vDistance*2, 1);
+						}
 					}
-					*/
-					//flat top
-					if (j%2 == 0) { // Offset every other row to give tessallation
-						tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*4, j*vDistance);
-					} else {
-						tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*4+hDistance*2, j*vDistance);
+					else if(type == 0) {
+						//flat top
+						if (j%2 == 0) { // Offset every other row to give tessallation
+							tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*4, j*vDistance, 0);
+						} else {
+							tiledMap[i][j] = new ZgameField(fieldSize, i*hDistance*4+hDistance*2, j*vDistance, 0);
+						}
+					}
+					else {
+						// error
 					}
 				}
 			}
@@ -123,10 +144,39 @@
 					}
 				}
 			}
+
+			this.findField = function(x, y) {
+				alert(x+"|"+y);
+
+				var _gridX;
+				var _gridY;
+				
+				if(type == 1) {
+					//pointy
+					alert('pointy');
+					_gridX = (1/3*Math.sqrt(3) * x - 1/3 * y / a);
+					_gridY = 2/3 * y / a;
+				}
+				else if(type == 0) {
+					//flat
+					alert('flat');
+					_gridX = 2/3 * x / a;
+					_gridY = (1/3*Math.sqrt(3) * y - 1/3 * x / a);
+				}
+				else {
+					// error
+				}
+
+				alert(_gridX+"|"+_gridY);
+				
+				//result = tiledMap[result.gridX][result.gridY];
+			}
 			
 		}
 			
-		function ZgameField(aSize, aX, aY) {
+		function ZgameField(aSize, aX, aY, aType) {
+
+			var type = aType;
 			var size = aSize;
 
 			var a = size/4;
@@ -138,27 +188,31 @@
 				return a;
 			}
 			
-			this.getH = function() {
-				return h;	
-			}
-						
-			this.getO = function() {
-				return o;
-			}
-			
 			this.draw = function(context) {
 				context.beginPath();
 
+				var center_x;
+				var center_y;
+				
 				for (var i = 0; i &lt; 6; i++) {
-
-					//pointy
-					//var angle = 2 * Math.PI / 6 * (i + 0.5);
-					//flat
-					var angle = 2 * Math.PI / 6 * (i);
-					var x_i = x + size/2 * Math.cos(angle) + size/2;
-	    			var y_i = y + size/2 * Math.sin(angle) + size/2;
+					var angle;
+					if(type == 1) {
+						//pointy
+						angle = 2 * Math.PI / 6 * (i + 0.5);
+					}
+					else if(type == 0) {
+						//flat
+						angle = 2 * Math.PI / 6 * (i);
+					}
+					else {
+						// error
+					}
+					var x_i = x + 2*a * Math.cos(angle) + 2*a;
+	    			var y_i = y + 2*a * Math.sin(angle) + 2*a;
 					if (i==0){
 						context.moveTo(x_i, y_i);
+						center_x = x_i;
+						center_y = y_i;
 					}
 					else {
 						context.lineTo(x_i, y_i);
@@ -169,7 +223,18 @@
 				context.fillStyle = "white";
 				context.fill();
 				context.stroke();
+
+				context.save();
+				context.beginPath();
+				context.rect(center_x, center_y, 10, 10);
+				context.fillStyle = 'yellow';
+				context.fill();
+				context.lineWidth = 2;
+				context.strokeStyle = 'black';
+				context.stroke();
+				context.restore();
 			}
+
 		}
 		
 		function writeCoords(message) {
@@ -198,37 +263,62 @@
 			<div style="float: right;">- Lars</div>
 		</div>
 		<div id="content-container">
-			<div align="center">
+			<div id="aside0" class="sidebar">
+				<div>
+					<h3>Settings</h3>
+					<h:panelGrid>
+						<p>
+							<h:panelGroup>
+								<input id="rowsIn" style="text-align: center" type="text"
+									placeholder="rows" maxlength="5" size="5" />
+								<b>x</b>
+								<input id="colsIn" style="text-align: center" type="text"
+									placeholder="columns" maxlength="5" size="5" />
+							</h:panelGroup>
+						</p>
+						<h:panelGrid columns="2">
+							<input id="fSize" style="text-align: center" type="text"
+								placeholder="size" maxlength="3" size="4" />
+							<h:selectOneMenu id="type">
+								<f:passThroughAttribute name="name" value="type" />
+								<f:selectItem itemLabel="Flat" itemValue="0" />
+								<f:selectItem itemLabel="Pointy" itemValue="1" />
+							</h:selectOneMenu>
+						</h:panelGrid>
+						<p>
+							<h:commandButton type="button" value="Render" onclick="update();" />
+						</p>
+					</h:panelGrid>
+				</div>
+				<div>
+					<h3>Info</h3>
+					<h:panelGrid>
+						<p>
+							<output id="coords" style="float: left;">
+								<b>Mouse position:</b> n.a, n.a
+							</output>
+						</p>
+						<p>
+							<output id="hexCoords" style="float: left;">
+								<b>Hex position:</b> n.a, n.a
+							</output>
+						</p>
+						<p>
+							<output id="unitInfo" style="float: left;">
+								<b>Einheit:</b> n.a
+							</output>
+						</p>
+					</h:panelGrid>
+				</div>
+			</div>
+			<div id="content" align="center">
 				<H1>MAP_TEST_1</H1>
 				<h:form id="map_test_3">
 					<h:messages id="msgs" errorStyle="color:red;" />
-					
-					<h:panelGrid style="float:left;" columns="1">
-						<p>
-							<output id="coords" style="float:left;"><b>Mouse position:</b> n.a, n.a</output>
-						</p>
-						<p>
-							<output id="hexCoords" style="float:left;"><b>Hex position:</b> n.a, n.a</output>
-						</p>
-						<p>
-							<output id="unitInfo" style="float:left;"><b>Einheit:</b> n.a</output>
-						</p>
-						<input id="rowsIn" style="text-align:center" type="text" />
-						<div align="center">
-							<b>times</b>
-						</div>
-						<input id="colsIn" style="text-align:center" type="text" />
-						<h:selectOneMenu id="type" style="display:inline;list-style-type:none;">
-							<f:passThroughAttribute name="name" value="type" />
-							<f:selectItem itemLabel="Flat" itemValue="0"/>
-							<f:selectItem itemLabel="Pointy" itemValue="1"/>
-						</h:selectOneMenu>
-						<div align="center">
-							<h:commandButton type="button" value="Render" onclick="update();" />
-						</div>
-					</h:panelGrid>
-					<canvas id="mapCanvas" height="800" width="1200">Upgrade your browser!</canvas>
-
+		
+					<div style="overflow-x: scroll;overflow-y: scroll;">
+						<canvas id="mapCanvas" height="1000" width="2100">Upgrade your browser!</canvas>
+					</div>
 
 				</h:form>
 			</div>
