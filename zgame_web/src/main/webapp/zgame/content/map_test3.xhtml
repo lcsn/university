@@ -37,7 +37,7 @@
 			type = $("select[name='type'] option:selected").val();
 			fSize = $("#fSize").val();
 
-			alert(rows+" x "+cols+", "+(type==0?'flat':'pointy') + ", " + fSize);
+			//alert(rows+" x "+cols+", "+(type==0?'flat':'pointy') + ", " + fSize);
 
 			initZgame();
 		}
@@ -62,8 +62,8 @@
 			var rect = mapCanvas.getBoundingClientRect();
 			var x = e.clientX - rect.left;
 			var y = e.clientY - rect.top;
-			var result = zgameMap.findField(x, y);
-			alert(result.gridX+"|"+result.gridY);
+			var result = zgameMap.findField(x, y, (x+y)*(-1));
+			//alert(result.gridX+"|"+result.gridY);
 		}
 		
 		function onMouseMove(e) {
@@ -145,12 +145,39 @@
 				}
 			}
 
-			this.findField = function(x, y) {
-				alert(x+"|"+y);
+			this.findField = function(x, y, z) {
+				
+				alert(x+"|"+y+"|"+z);
 
 				var _gridX;
 				var _gridY;
+				var _gridZ;
+
+				var rx = Math.round(x);
+				var ry = Math.round(y);
+				var rz = Math.round(z);
+
+				alert(rx+"|"+ry+"|"+rz);
 				
+				var x_err = Math.abs(rx-x);
+				var y_err = Math.abs(ry-y);
+				var z_err = Math.abs(rz-z);
+
+				alert(x_err+"|"+y_err+"|"+z_err);
+
+				if (x_err > y_err &amp;&amp; x_err > z_err) {
+			        rx = -ry-rz
+				}
+			    else if (y_err > z_err) {
+			        ry = -rx-rz
+				}
+			    else {
+			        rz = -rx-ry
+				}
+
+				alert(rx+"|"+ry+"|"+rz);
+				
+				/*				
 				if(type == 1) {
 					//pointy
 					alert('pointy');
@@ -168,7 +195,7 @@
 				}
 
 				alert(_gridX+"|"+_gridY);
-				
+				*/
 				//result = tiledMap[result.gridX][result.gridY];
 			}
 			
@@ -184,6 +211,10 @@
 			var x = aX;
 			var y = aY;
 
+			var center_x;
+			var center_y;
+			var center_z;
+
 			this.getA = function() {
 				return a;
 			}
@@ -191,9 +222,6 @@
 			this.draw = function(context) {
 				context.beginPath();
 
-				var center_x;
-				var center_y;
-				
 				for (var i = 0; i &lt; 6; i++) {
 					var angle;
 					if(type == 1) {
@@ -211,8 +239,20 @@
 	    			var y_i = y + 2*a * Math.sin(angle) + 2*a;
 					if (i==0){
 						context.moveTo(x_i, y_i);
-						center_x = x_i;
-						center_y = y_i;
+						if(type == 1) {
+							//pointy
+							center_x = x_i - (a*Math.sqrt(3));
+							center_y = y_i - a;
+						}
+						else if(type == 0) {
+							//flat
+							center_x = x_i - 2*a;
+							center_y = y_i;
+						}
+						else {
+							// error
+						}
+						center_z = (center_x+center_y)*(-1);
 					}
 					else {
 						context.lineTo(x_i, y_i);
@@ -225,13 +265,12 @@
 				context.stroke();
 
 				context.save();
-				context.beginPath();
-				context.rect(center_x, center_y, 10, 10);
-				context.fillStyle = 'yellow';
-				context.fill();
+
+				context.font = '16pt Calibri';
 				context.lineWidth = 2;
 				context.strokeStyle = 'black';
-				context.stroke();
+				context.strokeText(Math.floor(center_x)+"|"+Math.floor(center_y)+"|"+Math.floor(center_z), center_x-80, center_y);
+
 				context.restore();
 			}
 
@@ -312,7 +351,7 @@
 				</div>
 			</div>
 			<div id="content" align="center">
-				<H1>MAP_TEST_1</H1>
+				<H1>MAP_TEST_3</H1>
 				<h:form id="map_test_3">
 					<h:messages id="msgs" errorStyle="color:red;" />
 		
