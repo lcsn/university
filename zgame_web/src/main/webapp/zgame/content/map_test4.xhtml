@@ -79,10 +79,12 @@
 				}
 				selectedZgameField.select(mapContext);
 				
-				var neighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY);
-				for(var i = 0; i &lt; 6; i++) {
+				var neighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY, 1);
+				/*
+				for(var i = 0; i &lt; neighbors.length; i++) {
 					neighbors[i].select(mapContext);
-				}			
+				}
+				*/
 			}
 		}
 		
@@ -128,11 +130,13 @@
 			var	hDistance;
 			var	vDistance;
 
-			var neighbors = [
-			     			[[1, 0],[1, -1],[0, -1],[-1, 0],[0, 1],[1, 1]],
-			     			[[1, 0],[0, -1],[-1, -1],[-1, 0],[-1, 1],[0, 1]]
-			     			]
-
+			//pointy top
+			var neighbor_odd_r = [ [ [-1, -1], [0, -1], [1, 0], [0, 1], [-1, 1], [-1, 0] ], [ [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 0] ] ];
+			var neighbor_even_r = [ [ [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 0] ], [ [-1, -1], [0, -1], [1, 0], [0, 1], [-1, 1], [-1, 0] ] ];
+			//flat top
+			var neighbor_odd_q = [ [ [-1, -1], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 0] ], [ [-1, 0], [0, -1], [1, 0], [1, 1], [0, 1], [-1, 1] ] ];
+			var neighbor_even_q = [ [ [-1, 0], [0, -1], [1, 0], [1, 1], [0, 1], [-1, 1] ], [ [-1, -1], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 0] ] ];
+			
 			if(type == 1) {
 				//pointy top
 				hexHeight = a*2;
@@ -198,59 +202,142 @@
 				return result;
 			}
 
-			this.getNeighbors = function(q, r) {
+			/*
+			this.getNeighborRecursive = function(q, r, d, direction, i) {
+				if(d > 0) {
+										
+					getNeighborRecursive(q, r, d-1, direction, i+1);
+				}
+			}
+			*/
+
+			this.getNeighbor = function(d, q, r) {
+				alert(width+", "+height);
+				for (var i = 0; i &lt; 6; i++) {
+					var dI = d[i];
+					var qI = q+dI[0];
+					var rI = r+dI[1];
+					if((-1 &lt; qI &amp;&amp; qI &lt; width) &amp;&amp; (-1 &lt; rI &amp;&amp; rI &lt; height)) {
+						alert(qI+", "+rI);
+					}	
+				}
+			}
+			
+			this.getNeighbors = function(q, r, d) {
 
 				var j = 0;
 				var parity;
-				var fields = new Array();
+				var fields;
 
 				if(type == 1) {
 					//pointy top
-					 parity = r &amp; 1;
-					 if(parity == dir) {
-							//odd
-							fields[0] = tiledMap[q-1][r-1];
-							fields[1] = tiledMap[q][r-1];
-							fields[2] = tiledMap[q+1][r];
-							fields[3] = tiledMap[q][r+1];
-							fields[4] = tiledMap[q-1][r+1];
-							fields[5] = tiledMap[q-1][r];
-						}
-						else {
-						 	//even
-							fields[0] = tiledMap[q][r-1];
-							fields[1] = tiledMap[q+1][r-1];
-							fields[2] = tiledMap[q+1][r];
-							fields[3] = tiledMap[q+1][r+1];
-							fields[4] = tiledMap[q][r+1];
-							fields[5] = tiledMap[q-1][r];
-						}				
+					parity = r &amp; 1;
+					alert(parity);
+					var d0, d1, d2, d3, d4, d5;
+					if(dir == 0) {
+						this.getNeighbor(neighbor_odd_r[parity], q, r);
+						/*
+						d0 = neighbor_odd_r[parity][0]
+						d1 = neighbor_odd_r[parity][1]
+						d2 = neighbor_odd_r[parity][2]
+						d3 = neighbor_odd_r[parity][3]
+						d4 = neighbor_odd_r[parity][4]
+						d5 = neighbor_odd_r[parity][5]
+						*/
+					}
+					else {
+						this.getNeighbor(neighbor_even_r[parity], q, r);
+						/*
+						d0 = neighbor_even_r[parity][0]
+						d1 = neighbor_even_r[parity][1]
+						d2 = neighbor_even_r[parity][2]
+						d3 = neighbor_even_r[parity][3]
+						d4 = neighbor_even_r[parity][4]
+						d5 = neighbor_even_r[parity][5]
+						*/
+					}
 				}
 				else if(type == 0) {
 					//flat top
-					 parity = q &amp; 1;
-					 if(parity == dir) {
-							fields[0] = tiledMap[q-1][r-1];
-							fields[1] = tiledMap[q][r-1];
-							fields[2] = tiledMap[q+1][r-1];
-							fields[3] = tiledMap[q+1][r];
-							fields[4] = tiledMap[q][r+1];
-							fields[5] = tiledMap[q-1][r];
-						}
-						else {
-							fields[2] = tiledMap[q+1][r];
-							fields[0] = tiledMap[q][r-1];
-							fields[3] = tiledMap[q+1][r+1];
-							fields[4] = tiledMap[q][r+1];
-							fields[5] = tiledMap[q-1][r];
-							fields[1] = tiledMap[q-1][r+1];
-						}
+					parity = q &amp; 1;
+					alert(parity);
+					if(dir == 0) {
+						this.getNeighbor(neighbor_odd_q[parity], q, r);
+						/*
+						d0 = neighbor_odd_q[parity][0]
+						d1 = neighbor_odd_q[parity][1]
+						d2 = neighbor_odd_q[parity][2]
+						d3 = neighbor_odd_q[parity][3]
+						d4 = neighbor_odd_q[parity][4]
+						d5 = neighbor_odd_q[parity][5]
+						*/
+					}
+					else {
+						this.getNeighbor(neighbor_even_q[parity], q, r);
+						/*
+						d0 = neighbor_even_q[parity][0]
+						d1 = neighbor_even_q[parity][1]
+						d2 = neighbor_even_q[parity][2]
+						d3 = neighbor_even_q[parity][3]
+						d4 = neighbor_even_q[parity][4]
+						d5 = neighbor_even_q[parity][5]
+						*/
+					}
 				}
 				else {
 					// error
 				}
 
-				alert(parity);
+				/*
+				if(type == 1) {
+					//pointy top
+					 parity = r &amp; 1;
+					 if(parity == dir) {
+						//odd
+						fields[0] = tiledMap[q-1][r-1];
+						fields[1] = tiledMap[q][r-1];
+						fields[2] = tiledMap[q+1][r];
+						fields[3] = tiledMap[q][r+1];
+						fields[4] = tiledMap[q-1][r+1];
+						fields[5] = tiledMap[q-1][r];
+					}
+					else {
+					 	//even
+						fields[0] = tiledMap[q][r-1];
+						fields[1] = tiledMap[q+1][r-1];
+						fields[2] = tiledMap[q+1][r];
+						fields[3] = tiledMap[q+1][r+1];
+						fields[4] = tiledMap[q][r+1];
+						fields[5] = tiledMap[q-1][r];
+					}				
+				}
+				else if(type == 0) {
+					//flat top
+					 parity = q &amp; 1;
+					 if(parity == dir) {
+							//odd
+						fields[0] = tiledMap[q-1][r-1];
+						fields[1] = tiledMap[q][r-1];
+						fields[2] = tiledMap[q+1][r-1];
+						fields[3] = tiledMap[q+1][r];
+						fields[4] = tiledMap[q][r+1];
+						fields[5] = tiledMap[q-1][r];
+					}
+					else {
+					 	//even
+						fields[2] = tiledMap[q+1][r];
+						fields[0] = tiledMap[q][r-1];
+						fields[3] = tiledMap[q+1][r+1];
+						fields[4] = tiledMap[q][r+1];
+						fields[5] = tiledMap[q-1][r];
+						fields[1] = tiledMap[q-1][r+1];
+					}
+				}
+				else {
+					// error
+				}
+				*/
+				//alert(parity);
 				
 				/*
 				for (var i = 0; i &lt; 6; i++) {
@@ -265,7 +352,7 @@
 				return fields;
 				*/
 
-				return fields;
+				//return fields;
 				
 			}
 			
@@ -355,7 +442,6 @@
 				context.fill();
 				context.stroke();
 
-				/*
 				context.save();
 				context.font = '16pt Calibri';
 				context.lineWidth = 2;
@@ -369,7 +455,6 @@
 				context.strokeText(x+"|"+y+"|"+z, center_x-60, center_z+30);
 				context.strokeText(x+"|"+z, center_x-60, center_z+50);
 				context.restore();
-				*/
 			}
 
 			this.mark = function(context) {
