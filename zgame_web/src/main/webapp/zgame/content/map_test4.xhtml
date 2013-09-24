@@ -41,6 +41,7 @@
 			fSize = $("#fSize").val();
 			dir = $("select[name='direction'] option:selected").val();
 			markedZgameField = null;
+			selectedZgameField = null;
 			//alert(rows+" x "+cols+", "+(type==0?'flat':'pointy') + ", " + fSize);
 
 			initZgame();
@@ -66,8 +67,8 @@
 			var rect = mapCanvas.getBoundingClientRect();
 			var x = e.clientX - rect.left;
 			var y = e.clientY - rect.top;
-			var result = zgameMap.findFieldB(x, y);
-			var zgameField = zgameMap.findFieldB(x, y);
+			var result = zgameMap.findField(x, y);
+			var zgameField = zgameMap.findField(x, y);
 			if (zgameField != null) {
 				if(selectedZgameField == null) {
 					selectedZgameField = zgameField;
@@ -77,6 +78,11 @@
 					selectedZgameField = zgameField;
 				}
 				selectedZgameField.select(mapContext);
+				
+				var neighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY);
+				for(var i = 0; i &lt; 6; i++) {
+					neighbors[i].select(mapContext);
+				}			
 			}
 		}
 		
@@ -86,7 +92,7 @@
 			var y = e.clientY - rect.top;
 			var message0 = '<b>Mouse position:</b> ' + Math.floor(x) + ', ' + Math.floor(y);
 	        writeCoords(message0);
-			var zgameField = zgameMap.findFieldB(x, y);
+			var zgameField = zgameMap.findField(x, y);
 			if (zgameField != null) {
 				if(markedZgameField == null) {
 					markedZgameField = zgameField;
@@ -121,7 +127,12 @@
 			var hexWidth;
 			var	hDistance;
 			var	vDistance;
-			
+
+			var neighbors = [
+			     			[[1, 0],[1, -1],[0, -1],[-1, 0],[0, 1],[1, 1]],
+			     			[[1, 0],[0, -1],[-1, -1],[-1, 0],[-1, 1],[0, 1]]
+			     			]
+
 			if(type == 1) {
 				//pointy top
 				hexHeight = a*2;
@@ -173,7 +184,7 @@
 				}
 			}
 
-			this.findFieldB = function(x, y) {
+			this.findField = function(x, y) {
 				var result = null;
 				for(var i = 0; i &lt; height; i++) {
 					for(var j = 0; j &lt; width; j++) {
@@ -186,106 +197,76 @@
 				}
 				return result;
 			}
-			
-			this.findField = function(aX, aY) {
 
-				var result = new Object();
+			this.getNeighbors = function(q, r) {
 
-				var x = aX-hDistance/2;
-				var y = aY-vDistance/2;
-				var q;
-				var r;
+				var j = 0;
+				var parity;
+				var fields = new Array();
 
 				if(type == 1) {
-					//pointy
-					q = (1/3*Math.sqrt(3) * x - 1/3 * y / a);
-					r = 2/3 * y / a;
+					//pointy top
+					 parity = r &amp; 1;
+					 if(parity == dir) {
+							//odd
+							fields[0] = tiledMap[q-1][r-1];
+							fields[1] = tiledMap[q][r-1];
+							fields[2] = tiledMap[q+1][r];
+							fields[3] = tiledMap[q][r+1];
+							fields[4] = tiledMap[q-1][r+1];
+							fields[5] = tiledMap[q-1][r];
+						}
+						else {
+						 	//even
+							fields[0] = tiledMap[q][r-1];
+							fields[1] = tiledMap[q+1][r-1];
+							fields[2] = tiledMap[q+1][r];
+							fields[3] = tiledMap[q+1][r+1];
+							fields[4] = tiledMap[q][r+1];
+							fields[5] = tiledMap[q-1][r];
+						}				
 				}
 				else if(type == 0) {
-					//flat
-					q = 2/3 * x / a;
-					r = (1/3*Math.sqrt(3) * y - 1/3 * x / a);
+					//flat top
+					 parity = q &amp; 1;
+					 if(parity == dir) {
+							fields[0] = tiledMap[q-1][r-1];
+							fields[1] = tiledMap[q][r-1];
+							fields[2] = tiledMap[q+1][r-1];
+							fields[3] = tiledMap[q+1][r];
+							fields[4] = tiledMap[q][r+1];
+							fields[5] = tiledMap[q-1][r];
+						}
+						else {
+							fields[2] = tiledMap[q+1][r];
+							fields[0] = tiledMap[q][r-1];
+							fields[3] = tiledMap[q+1][r+1];
+							fields[4] = tiledMap[q][r+1];
+							fields[5] = tiledMap[q-1][r];
+							fields[1] = tiledMap[q-1][r+1];
+						}
 				}
 				else {
 					// error
 				}
 
-				result.x = Math.floor(q);
-				result.y = Math.floor(r);
-
-				return result;
+				alert(parity);
 				
 				/*
-				
-				var x = aY;
-				var z = aX;
-				var y = (x+z)*(-1);
-
-				var ix, iy, iz;
-				var rx, ry, rz;
-				
-				ix = rx = Math.round(x);
-				iy = ry = Math.round(y);
-				iz = rz = Math.round(z);
-
-				var s = rx + ry + rz;
-				if(s) {
-					var abs_dx = Math.abs(rx-x);
-					var abs_dy = Math.abs(ry-y);
-					var abs_dz = Math.abs(rz-z);
-					
-					if(abs_dx >= abs_dy &amp;&amp; abs_dx >= abs_dz) {
-						ix -= s;
-						//abs_dx is max.
-					}
-				    else if(abs_dy >= abs_dx &amp;&amp; abs_dy >= abs_dz) {
-						iy -= s;
-						//abs_dy is max.
-					}
-				    else {
-					    iz-=s;					
-				    }
+				for (var i = 0; i &lt; 6; i++) {
+					var d = neighbors[parity][i];
+					var qN = q + d[0];
+					var rN = r + d[1];
+					if((qN > 0 &amp;&amp; qN &lt;= width) &amp;&amp; (rN > 0 &amp;&amp; rN &lt;= height)) {
+						fields[j] = tiledMap[qN][rN];
+						j++;
+					}			
 				}
-
-				//alert("HEX: "+ix+"|"+iy+"|"+iz);
-				
-				result.x = ix;
-				result.y = iy;
-				result.z = iz;
-
-				return result;
-				
-				alert(x+"|"+y+"|"+z);
-
-				//var _gridX;
-				//var _gridY;
-				//var _gridZ;
-				
-				var rx = Math.round(x);
-				var ry = Math.round(y);
-				var rz = Math.round(z);
-
-				alert(rx+"|"+ry+"|"+rz);
-				
-				var x_err = Math.abs(rx-x);
-				var y_err = Math.abs(ry-y);
-				var z_err = Math.abs(rz-z);
-
-				alert(x_err+"|"+y_err+"|"+z_err);
-
-				if (x_err > y_err &amp;&amp; x_err > z_err) {
-			        rx = -ry-rz
-				}
-			    else if (y_err > z_err) {
-			        ry = -rx-rz
-				}
-			    else {
-			        rz = -rx-ry
-				}
-
-				alert(rx+"|"+ry+"|"+rz);
-
+				return fields;
 				*/
+
+				return fields;
+				
 			}
 			
 		}
@@ -293,6 +274,7 @@
 		function ZgameField(aSize, aQ, aR, aXOffset, aYOffset, aType) {
 
 			var marked = false;
+			var selected = false;
 			
 			var type = aType;
 			var size = aSize;
@@ -313,18 +295,6 @@
 			var center_y;
 			var center_z;
 
-			this.getA = function() {
-				return a;
-			}
-
-			this.setMarked = function(aMarked) {
-				marked = aMarked;
-			}
-
-			this.isMarked = function() {
-				return marked;
-			}
-			
 			this.draw = function(context) {
 				context.beginPath();
 
@@ -365,10 +335,18 @@
 					}
 				}
 				context.closePath();
+				
 				context.strokeStyle = "#000";
-				if(marked) {
+				if(selected) {
 					context.beginPath();
-					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-5, 0, 2 * Math.PI, false);
+					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-2, 0, 2 * Math.PI, false);
+					context.strokeStyle = "#0f0";
+					context.lineWidth = 2;
+					context.stroke();	
+				}
+				else if(marked) {
+					context.beginPath();
+					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-2, 0, 2 * Math.PI, false);
 					context.strokeStyle = "#f00";
 					context.lineWidth = 2;
 					context.stroke();
@@ -382,12 +360,12 @@
 				context.font = '16pt Calibri';
 				context.lineWidth = 2;
 				context.strokeStyle = 'black';
-				var rx, ry, rz;
-				rx = Math.floor(center_x/size);
-				rz = Math.floor(center_z/size);
-				ry = (rx+rz)*(-1);
-				context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
-				context.strokeText(Math.floor(center_x)+"|"+Math.floor(center_y)+"|"+Math.floor(center_z), center_x-60, center_z+10);
+				//var rx, ry, rz;
+				//rx = Math.floor(center_x/size);
+				//rz = Math.floor(center_z/size);
+				//ry = (rx+rz)*(-1);
+				//context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
+				//context.strokeText(Math.floor(center_x)+"|"+Math.floor(center_y)+"|"+Math.floor(center_z), center_x-60, center_z+10);
 				context.strokeText(x+"|"+y+"|"+z, center_x-60, center_z+30);
 				context.strokeText(x+"|"+z, center_x-60, center_z+50);
 				context.restore();
@@ -395,23 +373,42 @@
 			}
 
 			this.mark = function(context) {
-				if(!marked) {// &amp;&amp; !selected) {
+				if(!marked &amp;&amp; !selected) {
 					context.save();
 					context.strokeStyle = '#f00';
 					context.lineWidth = 3;
-					this.setMarked(true);
+					marked = true;
 					this.draw(context);
 					context.restore();
 				}
 			}
 			
 			this.unmark = function(context) {
-				if(marked) {// &amp;&amp; !selected) {
-					this.setMarked(false);
+				if(marked &amp;&amp; !selected) {
+					marked = false;
 					this.draw(context);
 				}
 			}
 
+			this.select = function(context) {
+				if(!selected) {
+					context.save();
+					context.strokeStyle = '#0f0';
+					context.lineWidth = 3;
+					selected = true;
+					this.draw(context);
+					context.restore();
+				}
+			}
+
+			this.unselect = function(context) {
+				if(selected) {
+					selected = false;
+					marked = false;
+					this.draw(context);
+				}
+			}
+			
 			this.contains = function(x, y) {
 				var result = false;
 
@@ -511,8 +508,8 @@
 				</div>
 			</div>
 			<div id="content" align="center">
-				<H1>MAP_TEST_3</H1>
-				<h:form id="map_test_3">
+				<H1>MAP_TEST_4</H1>
+				<h:form id="map_test_4">
 					<h:messages id="msgs" errorStyle="color:red;" />
 		
 					<div style="overflow-x: scroll;overflow-y: scroll;">
