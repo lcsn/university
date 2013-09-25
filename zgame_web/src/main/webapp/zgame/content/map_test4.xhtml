@@ -80,11 +80,9 @@
 				selectedZgameField.select(mapContext);
 				
 				var neighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY, 1);
-				/*
 				for(var i = 0; i &lt; neighbors.length; i++) {
 					neighbors[i].select(mapContext);
 				}
-				*/
 			}
 		}
 		
@@ -190,12 +188,23 @@
 
 			this.findField = function(x, y) {
 				var result = null;
+
+				//var pI = Math.floor(x/fieldSize);
+				//var pJ = Math.floor(y/fieldSize);
+				//ry = (rx+rz)*(-1);
+				
+				//alert(pI+", "+pJ);
+				
+				//var message = '<b>Selection offset:</b> ' + pI + ', ' + pJ;
+				//writeSelectionOffset(message);
+				
 				for(var i = 0; i &lt; height; i++) {
 					for(var j = 0; j &lt; width; j++) {
 						if (tiledMap[i][j].contains(x, y))  {
 							result = tiledMap[i][j];
 							result.gridX = i;
 							result.gridY = j;
+							//return result;
 						}
 					}
 				}
@@ -213,14 +222,19 @@
 
 			this.getNeighbor = function(d, q, r) {
 				alert(width+", "+height);
+				var n_fields = new Array();
+				var j = 0;
 				for (var i = 0; i &lt; 6; i++) {
 					var dI = d[i];
 					var qI = q+dI[0];
 					var rI = r+dI[1];
-					if((-1 &lt; qI &amp;&amp; qI &lt; width) &amp;&amp; (-1 &lt; rI &amp;&amp; rI &lt; height)) {
-						alert(qI+", "+rI);
-					}	
+					if((-1 &lt; qI &amp;&amp; qI &lt; height) &amp;&amp; (-1 &lt; rI &amp;&amp; rI &lt; width)) {
+						//alert(qI+", "+rI);
+						n_fields[j] = tiledMap[qI][rI];
+						j++
+					}
 				}
+				return n_fields;
 			}
 			
 			this.getNeighbors = function(q, r, d) {
@@ -233,9 +247,9 @@
 					//pointy top
 					parity = r &amp; 1;
 					alert(parity);
-					var d0, d1, d2, d3, d4, d5;
+					//var d0, d1, d2, d3, d4, d5;
 					if(dir == 0) {
-						this.getNeighbor(neighbor_odd_r[parity], q, r);
+						fields = this.getNeighbor(neighbor_odd_r[parity], q, r);
 						/*
 						d0 = neighbor_odd_r[parity][0]
 						d1 = neighbor_odd_r[parity][1]
@@ -246,7 +260,7 @@
 						*/
 					}
 					else {
-						this.getNeighbor(neighbor_even_r[parity], q, r);
+						fields = this.getNeighbor(neighbor_even_r[parity], q, r);
 						/*
 						d0 = neighbor_even_r[parity][0]
 						d1 = neighbor_even_r[parity][1]
@@ -262,7 +276,7 @@
 					parity = q &amp; 1;
 					alert(parity);
 					if(dir == 0) {
-						this.getNeighbor(neighbor_odd_q[parity], q, r);
+						fields = this.getNeighbor(neighbor_odd_q[parity], q, r);
 						/*
 						d0 = neighbor_odd_q[parity][0]
 						d1 = neighbor_odd_q[parity][1]
@@ -273,7 +287,7 @@
 						*/
 					}
 					else {
-						this.getNeighbor(neighbor_even_q[parity], q, r);
+						fields = this.getNeighbor(neighbor_even_q[parity], q, r);
 						/*
 						d0 = neighbor_even_q[parity][0]
 						d1 = neighbor_even_q[parity][1]
@@ -287,7 +301,7 @@
 				else {
 					// error
 				}
-
+				
 				/*
 				if(type == 1) {
 					//pointy top
@@ -352,10 +366,10 @@
 				return fields;
 				*/
 
-				//return fields;
+				return fields;
 				
 			}
-			
+
 		}
 			
 		function ZgameField(aSize, aQ, aR, aXOffset, aYOffset, aType) {
@@ -442,19 +456,21 @@
 				context.fill();
 				context.stroke();
 
+				/*
 				context.save();
 				context.font = '16pt Calibri';
 				context.lineWidth = 2;
 				context.strokeStyle = 'black';
-				//var rx, ry, rz;
-				//rx = Math.floor(center_x/size);
-				//rz = Math.floor(center_z/size);
-				//ry = (rx+rz)*(-1);
-				//context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
-				//context.strokeText(Math.floor(center_x)+"|"+Math.floor(center_y)+"|"+Math.floor(center_z), center_x-60, center_z+10);
-				context.strokeText(x+"|"+y+"|"+z, center_x-60, center_z+30);
+				var rx, ry, rz;
+				rx = Math.floor(center_x/size);
+				rz = Math.floor(center_z/size);
+				ry = (rx+rz)*(-1);
+				context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
+				context.strokeText(Math.floor(center_x)+"|"+Math.floor(center_y)+"|"+Math.floor(center_z), center_x-60, center_z+10);
+				//context.strokeText(x+"|"+y+"|"+z, center_x-60, center_z+30);
 				context.strokeText(x+"|"+z, center_x-60, center_z+50);
 				context.restore();
+				*/
 			}
 
 			this.mark = function(context) {
@@ -511,6 +527,11 @@
 				return result;			
 			}
 			
+		}
+
+		function writeSelectionOffset(message) {
+			var selectionOffset = $("#selectionOffset")[0];
+			selectionOffset.innerHTML = message;
 		}
 		
 		function writeCoords(message) {
@@ -577,6 +598,11 @@
 						<p>
 							<output id="coords" style="float: left;">
 								<b>Mouse position:</b> n.a, n.a
+							</output>
+						</p>
+						<p>
+							<output id="selectionOffset" style="float: left;">
+								<b>Selection offset:</b> n.a, n.a
 							</output>
 						</p>
 						<p>
