@@ -74,20 +74,24 @@
 			if (zgameField != null) {
 				if(selectedZgameField == null) {
 					selectedZgameField = zgameField;
-					selectedNeighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY, 1);
+					selectedNeighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY, 2);
 				}
 				if(zgameField.gridX != selectedZgameField.gridX || zgameField.gridY != selectedZgameField.gridY) {
 					selectedZgameField.unselect(mapContext);
-					for(var i = 0; i &lt; selectedNeighbors.length; i++) {
-						selectedNeighbors[i].unselect(mapContext);
+					for (var key in selectedNeighbors) {
+						if (selectedNeighbors.hasOwnProperty(key)) {
+							selectedNeighbors[key].unselect(mapContext);
+						}
 					}
 					selectedZgameField = zgameField;
 				}
 				selectedZgameField.select(mapContext);
 				
-				selectedNeighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY, 1);
+				selectedNeighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY, 2);
 				for (var key in selectedNeighbors) {
-					selectedNeighbors[key].select(mapContext);
+					if (selectedNeighbors.hasOwnProperty(key)) {
+						selectedNeighbors[key].select(mapContext);
+					}
 				}
 			}
 		}
@@ -220,26 +224,25 @@
 				return result;
 			}
 			
-			this.getNeighborRecursive = function(f, q, r, d) {
-				var resultMap = {};
-				if(d > 0) {
-					alert(q+"|"+r+"|"+d);
+			this.getNeighborRecursive = function(resultMap, q, r, d) {
+				if(d > 0) {// &amp;&amp; !resultMap.hasOwnProperty(q+""+r)) {
+					var n = this.neighborhood(q, r);
 					for (var i = 0; i &lt; 6; i++) {
-						var fI = f[i];
-						var qI = q+fI[0];
-						var rI = r+fI[1];
+						var qI = q+n[i][0];
+						var rI = r+n[i][1];
 						if((-1 &lt; qI &amp;&amp; qI &lt; height) &amp;&amp; (-1 &lt; rI &amp;&amp; rI &lt; width)) {
-							var field = tiledMap[q][r];
-							resultMap[field.getKey()] = field;
+							this.getNeighborRecursive(resultMap, qI, rI, d-1);
 						}
 					}
+					console.log(q+", "+r+", "+d);
 				}
-				alert(q+"|"+r);
+				var field = tiledMap[q][r];
+				field.distance = d;
+				resultMap[field.getKey()] = field;
 				return resultMap;
 			}
 
 			this.getNeighbor = function(f, q, r) {
-				//alert(width+", "+height);
 				var n_fields = new Array();
 				var j = 0;
 				for (var i = 0; i &lt; 6; i++) {
@@ -247,146 +250,46 @@
 					var qI = q+fI[0];
 					var rI = r+fI[1];
 					if((-1 &lt; qI &amp;&amp; qI &lt; height) &amp;&amp; (-1 &lt; rI &amp;&amp; rI &lt; width)) {
-						//alert(qI+", "+rI);
 						n_fields[j] = tiledMap[qI][rI];
 						j++
 					}
 				}
 				return n_fields;
 			}
+
+			this.neighborhood = function(q, r) {
+				var _neighborhood;
+				var parity;
+				if(type == 1) {
+					parity = r &amp; 1;
+					if(dir == 0) {
+						_neighborhood = neighbor_odd_r[parity];
+					}
+					else {
+						_neighborhood = neighbor_even_r[parity];
+					}
+				}
+				else if(type == 0) {
+					parity = q &amp; 1;
+					if(dir == 0) {
+						_neighborhood = neighbor_odd_q[parity];
+					}
+					else {
+						_neighborhood = neighbor_even_q[parity];
+					}
+				}
+				else {
+					// error
+				}
+				return _neighborhood;
+			}
 			
 			this.getNeighbors = function(q, r, d) {
 
 				var j = 0;
-				var parity;
 				var fields = {};
-
-				if(type == 1) {
-					//pointy top
-					parity = r &amp; 1;
-					//alert(parity);
-					//var d0, d1, d2, d3, d4, d5;
-					if(dir == 0) {
-						//fields = this.getNeighbor(neighbor_odd_r[parity], q, r);
-						fields = this.getNeighborRecursive(neighbor_odd_r[parity], q, r, d);
-						/*
-						d0 = neighbor_odd_r[parity][0]
-						d1 = neighbor_odd_r[parity][1]
-						d2 = neighbor_odd_r[parity][2]
-						d3 = neighbor_odd_r[parity][3]
-						d4 = neighbor_odd_r[parity][4]
-						d5 = neighbor_odd_r[parity][5]
-						*/
-					}
-					else {
-						//fields = this.getNeighbor(neighbor_even_r[parity], q, r);
-						fields = this.getNeighborRecursive(neighbor_even_r[parity], q, r, d);
-						/*
-						d0 = neighbor_even_r[parity][0]
-						d1 = neighbor_even_r[parity][1]
-						d2 = neighbor_even_r[parity][2]
-						d3 = neighbor_even_r[parity][3]
-						d4 = neighbor_even_r[parity][4]
-						d5 = neighbor_even_r[parity][5]
-						*/
-					}
-				}
-				else if(type == 0) {
-					//flat top
-					parity = q &amp; 1;
-					//alert(parity);
-					if(dir == 0) {
-						//fields = this.getNeighbor(neighbor_odd_q[parity], q, r);
-						fields = this.getNeighborRecursive(neighbor_odd_q[parity], q, r, d);
-						/*
-						d0 = neighbor_odd_q[parity][0]
-						d1 = neighbor_odd_q[parity][1]
-						d2 = neighbor_odd_q[parity][2]
-						d3 = neighbor_odd_q[parity][3]
-						d4 = neighbor_odd_q[parity][4]
-						d5 = neighbor_odd_q[parity][5]
-						*/
-					}
-					else {
-						//fields = this.getNeighbor(neighbor_even_q[parity], q, r);
-						fields = this.getNeighborRecursive(neighbor_even_q[parity], q, r, d);
-						/*
-						d0 = neighbor_even_q[parity][0]
-						d1 = neighbor_even_q[parity][1]
-						d2 = neighbor_even_q[parity][2]
-						d3 = neighbor_even_q[parity][3]
-						d4 = neighbor_even_q[parity][4]
-						d5 = neighbor_even_q[parity][5]
-						*/
-					}
-				}
-				else {
-					// error
-				}
 				
-				/*
-				if(type == 1) {
-					//pointy top
-					 parity = r &amp; 1;
-					 if(parity == dir) {
-						//odd
-						fields[0] = tiledMap[q-1][r-1];
-						fields[1] = tiledMap[q][r-1];
-						fields[2] = tiledMap[q+1][r];
-						fields[3] = tiledMap[q][r+1];
-						fields[4] = tiledMap[q-1][r+1];
-						fields[5] = tiledMap[q-1][r];
-					}
-					else {
-					 	//even
-						fields[0] = tiledMap[q][r-1];
-						fields[1] = tiledMap[q+1][r-1];
-						fields[2] = tiledMap[q+1][r];
-						fields[3] = tiledMap[q+1][r+1];
-						fields[4] = tiledMap[q][r+1];
-						fields[5] = tiledMap[q-1][r];
-					}				
-				}
-				else if(type == 0) {
-					//flat top
-					 parity = q &amp; 1;
-					 if(parity == dir) {
-							//odd
-						fields[0] = tiledMap[q-1][r-1];
-						fields[1] = tiledMap[q][r-1];
-						fields[2] = tiledMap[q+1][r-1];
-						fields[3] = tiledMap[q+1][r];
-						fields[4] = tiledMap[q][r+1];
-						fields[5] = tiledMap[q-1][r];
-					}
-					else {
-					 	//even
-						fields[2] = tiledMap[q+1][r];
-						fields[0] = tiledMap[q][r-1];
-						fields[3] = tiledMap[q+1][r+1];
-						fields[4] = tiledMap[q][r+1];
-						fields[5] = tiledMap[q-1][r];
-						fields[1] = tiledMap[q-1][r+1];
-					}
-				}
-				else {
-					// error
-				}
-				*/
-				//alert(parity);
-				
-				/*
-				for (var i = 0; i &lt; 6; i++) {
-					var d = neighbors[parity][i];
-					var qN = q + d[0];
-					var rN = r + d[1];
-					if((qN > 0 &amp;&amp; qN &lt;= width) &amp;&amp; (rN > 0 &amp;&amp; rN &lt;= height)) {
-						fields[j] = tiledMap[qN][rN];
-						j++;
-					}			
-				}
-				return fields;
-				*/
+				this.getNeighborRecursive(fields, q, r, d);
 
 				return fields;
 				
@@ -462,12 +365,18 @@
 					}
 				}
 				context.closePath();
-				
 				context.strokeStyle = "#000";
+				context.fillStyle = "white";
+				context.fill();
+				context.stroke();
+
+				context.save();
 				if(selected) {
 					context.beginPath();
 					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-2, 0, 2 * Math.PI, false);
 					context.strokeStyle = "#0f0";
+				    context.fillStyle = 'rgba(0, 255, 0 , 0.5)';
+					context.fill();
 					context.lineWidth = 2;
 					context.stroke();	
 				}
@@ -475,13 +384,13 @@
 					context.beginPath();
 					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-2, 0, 2 * Math.PI, false);
 					context.strokeStyle = "#f00";
+				    context.fillStyle = 'rgba(255, 0, 0 , 0.5)';
+					context.fill();
 					context.lineWidth = 2;
 					context.stroke();
 				}
-				context.fillStyle = "white";
-				context.fill();
-				context.stroke();
-
+				context.restore();
+				/*
 				context.save();
 				context.font = '16pt Calibri';
 				context.lineWidth = 2;
@@ -495,13 +404,12 @@
 				//context.strokeText(x+"|"+y+"|"+z, center_x-60, center_z+30);
 				context.strokeText(x+"|"+z, center_x-60, center_z+50);
 				context.restore();
+				*/
 			}
 
 			this.mark = function(context) {
 				if(!marked &amp;&amp; !selected) {
 					context.save();
-					context.strokeStyle = '#f00';
-					context.lineWidth = 3;
 					marked = true;
 					this.draw(context);
 					context.restore();
@@ -518,8 +426,6 @@
 			this.select = function(context) {
 				if(!selected) {
 					context.save();
-					context.strokeStyle = '#0f0';
-					context.lineWidth = 3;
 					selected = true;
 					this.draw(context);
 					context.restore();
@@ -643,8 +549,8 @@
 				</div>
 			</div>
 			<div id="content" align="center">
-				<H1>MAP_TEST_4</H1>
-				<h:form id="map_test_4">
+				<H1>MAP_TEST_5</H1>
+				<h:form id="map_test_5">
 					<h:messages id="msgs" errorStyle="color:red;" />
 		
 					<div style="overflow-x: scroll;overflow-y: scroll;">
