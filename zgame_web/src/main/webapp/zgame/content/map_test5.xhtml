@@ -199,11 +199,11 @@
 			this.findField = function(x, y) {
 				var result = null;
 
-				var pI = Math.floor(x/fieldSize);
-				var pJ = Math.floor(y/fieldSize);
+				var pI = Math.floor(x/(hDistance*2));
+				var pJ = Math.floor(y/(vDistance*2));
 
-				//pI = pI>0?(pI-1):pI;
-				//pJ = pJ>0?(pJ-1):pJ;
+				pI = pI>0?(pI-1):pI;
+				pJ = pJ>0?(pJ-1):pJ;
 				//ry = (rx+rz)*(-1);
 				
 				//alert(pI+", "+pJ);
@@ -375,7 +375,7 @@
 					context.beginPath();
 					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-2, 0, 2 * Math.PI, false);
 					context.strokeStyle = "#0f0";
-				    context.fillStyle = 'rgba(0, 255, 0 , 0.5)';
+				    context.fillStyle = 'rgba(0, 255, 0 , 0.25)';
 					context.fill();
 					context.lineWidth = 2;
 					context.stroke();	
@@ -384,27 +384,26 @@
 					context.beginPath();
 					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-2, 0, 2 * Math.PI, false);
 					context.strokeStyle = "#f00";
-				    context.fillStyle = 'rgba(255, 0, 0 , 0.5)';
+				    context.fillStyle = 'rgba(255, 0, 0 , 0.25)';
 					context.fill();
 					context.lineWidth = 2;
 					context.stroke();
 				}
 				context.restore();
-				/*
+
 				context.save();
 				context.font = '16pt Calibri';
 				context.lineWidth = 2;
 				context.strokeStyle = 'black';
 				var rx, ry, rz;
-				//rx = Math.floor(center_x/size);
-				//rz = Math.floor(center_z/size);
-				//ry = (rx+rz)*(-1);
-				//context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
+				rx = Math.floor(center_x/size);
+				rz = Math.floor(center_z/size);
+				ry = (rx+rz)*(-1);
+				context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
 				//context.strokeText(Math.floor(center_x)+"|"+Math.floor(center_y)+"|"+Math.floor(center_z), center_x-60, center_z+10);
 				//context.strokeText(x+"|"+y+"|"+z, center_x-60, center_z+30);
 				context.strokeText(x+"|"+z, center_x-60, center_z+50);
 				context.restore();
-				*/
 			}
 
 			this.mark = function(context) {
