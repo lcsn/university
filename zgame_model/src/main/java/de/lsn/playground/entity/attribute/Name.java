@@ -1,8 +1,6 @@
-package de.lsn.playground.entity;
+package de.lsn.playground.entity.attribute;
 
 import javax.persistence.Embeddable;
-
-import de.lsn.playground.entity.attribute.Attribute;
 
 @SuppressWarnings("serial")
 @Embeddable

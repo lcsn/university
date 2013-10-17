@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import de.lsn.playground.entity.attribute.Name;
 import de.lsn.playground.entity.player.Player;
 
 

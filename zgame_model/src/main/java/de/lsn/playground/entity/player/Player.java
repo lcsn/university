@@ -22,7 +22,6 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import de.lsn.playground.entity.PlayerImage;
 import de.lsn.playground.entity.Role;
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.framwork.Gender;

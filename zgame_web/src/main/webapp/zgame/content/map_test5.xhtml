@@ -230,12 +230,13 @@
 					for (var i = 0; i &lt; 6; i++) {
 						var qI = q+n[i][0];
 						var rI = r+n[i][1];
+						// exclude invalid coordinates, e.g. non-existent fields
 						if((-1 &lt; qI &amp;&amp; qI &lt; height) &amp;&amp; (-1 &lt; rI &amp;&amp; rI &lt; width)) {
 							this.getNeighborRecursive(resultMap, qI, rI, d-1);
 						}
 					}
-					console.log(q+", "+r+", "+d);
 				}
+				console.log(q+", "+r+", "+d);
 				var field = tiledMap[q][r];
 				field.distance = d;
 				resultMap[field.getKey()] = field;
@@ -395,14 +396,14 @@
 				context.font = '16pt Calibri';
 				context.lineWidth = 2;
 				context.strokeStyle = 'black';
-				var rx, ry, rz;
-				rx = Math.floor(center_x/size);
-				rz = Math.floor(center_z/size);
-				ry = (rx+rz)*(-1);
-				context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
+				//var rx, ry, rz;
+				//rx = Math.floor(center_x/size);
+				//rz = Math.floor(center_z/size);
+				//ry = (rx+rz)*(-1);
+				//context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
 				//context.strokeText(Math.floor(center_x)+"|"+Math.floor(center_y)+"|"+Math.floor(center_z), center_x-60, center_z+10);
 				//context.strokeText(x+"|"+y+"|"+z, center_x-60, center_z+30);
-				context.strokeText(x+"|"+z, center_x-60, center_z+50);
+				//context.strokeText(x+"|"+z, center_x-60, center_z+50);
 				context.restore();
 			}
 

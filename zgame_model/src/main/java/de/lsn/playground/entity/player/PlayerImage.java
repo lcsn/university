@@ -1,4 +1,4 @@
-package de.lsn.playground.entity;
+package de.lsn.playground.entity.player;
 
 import java.util.UUID;
 
@@ -10,7 +10,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import de.lsn.playground.entity.player.Player;
+import de.lsn.playground.entity.ZgameEntity;
 
 
 @SuppressWarnings("serial")
