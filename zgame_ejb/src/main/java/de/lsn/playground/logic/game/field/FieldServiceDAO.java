@@ -1,0 +1,55 @@
+package de.lsn.playground.logic.game.field;
+
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+
+import de.lsn.playground.entity.map.FieldDefinition;
+import de.lsn.playground.entity.map.Terrain;
+import de.lsn.playground.framwork.exception.ZgameException;
+import de.lsn.playground.logic.AbstractDAO;
+
+@Stateless
+@Remote(FieldServiceDAORemote.class)
+public class FieldServiceDAO extends AbstractDAO implements FieldServiceDAOLocal {
+
+//	######## CREATIONAL METHODS ########
+	public void createTerrain(Terrain terrain) throws ZgameException {
+		if(null != terrain.getId()) {
+			throw new ZgameException("Can not persist detached entity");
+		}
+		em.persist(terrain);
+	}
+	
+	public void createFieldDefinition(FieldDefinition fieldDefinition) throws ZgameException {
+		if(null != fieldDefinition.getId()) {
+			throw new ZgameException("Can not persist detached entity");
+		}
+		em.persist(fieldDefinition);
+	}
+
+	public void createFieldByFieldDefinition(FieldDefinition fieldDefinition) throws ZgameException {
+		em.persist(fieldDefinition.newFieldInstance());
+	}
+
+	public void createFieldByFieldDefinitionId(Long fieldDefinitionId) throws ZgameException {
+		createFieldByFieldDefinition(findFieldDefinitionById(fieldDefinitionId));
+	}
+	
+//	######## FINDER METHODS ########
+	public FieldDefinition findFieldDefinitionById(Long fieldDefinitionId) throws ZgameException {
+		TypedQuery<FieldDefinition> query = em.createNamedQuery(FieldDefinition.FIND_BY_ID, FieldDefinition.class);
+		query.setParameter("id", fieldDefinitionId);
+		FieldDefinition fieldDefinition = null;
+		try {
+			fieldDefinition = query.getSingleResult();
+		} catch (NoResultException | EntityNotFoundException e) {
+			throw new ZgameException("Could not find " + FieldDefinition.class.getSimpleName() + " with id: " + fieldDefinitionId, e);
+		}
+		
+		return fieldDefinition;
+	}
+	
+}

@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import de.lsn.playground.entity.unit.UnitDefinition;
 import de.lsn.playground.logic.AbstractDAO;
@@ -13,18 +13,18 @@ import de.lsn.playground.logic.AbstractDAO;
 @Remote(UnitDefinitionDAORemote.class)
 public class UnitDefinitionDAO extends AbstractDAO implements UnitDefinitionDAOLocal {
 
-	@SuppressWarnings("unchecked")
-	@Override
+//	######## CREATIONAL METHODS ########
+
+//	######## FINDER METHODS ########
 	public List<UnitDefinition> findUnitDefinitions() {
-		Query query = em.createNamedQuery(UnitDefinition.FIND_ALL);
+		TypedQuery<UnitDefinition> query = em.createNamedQuery(UnitDefinition.FIND_ALL, UnitDefinition.class);
 		return query.getResultList();
 	}
 
-	@Override
 	public UnitDefinition findUnitDefintionById(Long id) {
-		Query query = em.createNamedQuery(UnitDefinition.FIND_BY_ID);
+		TypedQuery<UnitDefinition> query = em.createNamedQuery(UnitDefinition.FIND_BY_ID, UnitDefinition.class);
 		query.setParameter("id", id);
-		return (UnitDefinition) query.getSingleResult();
+		return query.getSingleResult();
 	}
 
 }

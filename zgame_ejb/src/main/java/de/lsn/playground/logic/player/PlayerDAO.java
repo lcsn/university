@@ -3,10 +3,10 @@ package de.lsn.playground.logic.player;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import de.lsn.playground.entity.player.Player;
-import de.lsn.playground.framwork.ZgameException;
+import de.lsn.playground.framwork.exception.ZgameException;
 import de.lsn.playground.logic.AbstractDAO;
 
 @Stateless
@@ -21,7 +21,7 @@ public class PlayerDAO extends AbstractDAO implements PlayerDAOLocal {
 	@Override
 	public Player findPlayerByUsernameAndPassword(String username, String password) throws ZgameException {
 		Player player = null;
-		Query query = em.createNamedQuery(Player.FIND_BY_USERNAME_AND_PASSWORD);
+		TypedQuery<Player> query = em.createNamedQuery(Player.FIND_BY_USERNAME_AND_PASSWORD, Player.class);
 		query.setParameter("username", username);
 		query.setParameter("password", password);
 		try {

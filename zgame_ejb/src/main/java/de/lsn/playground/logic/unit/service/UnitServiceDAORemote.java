@@ -8,8 +8,11 @@ import de.lsn.playground.entity.unit.UnitDefinition;
 @Remote
 public interface UnitServiceDAORemote {
 
-	public Unit createUnit(Long unitDefinitionId);
+//	######## CREATIONAL METHODS ########
+	public Unit createUnitByUnitDefinitionId(Long unitDefinitionId);
 	
-	public Unit createUnit(UnitDefinition unitDefinition);
+	public Unit createByUnitDefinition(UnitDefinition unitDefinition);
 	
+//	######## FINDER METHODS ########
+
 }

@@ -5,14 +5,13 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
 import de.lsn.playground.entity.player.Player;
 import de.lsn.playground.framwork.ZgameConstants;
-import de.lsn.playground.framwork.ZgameException;
+import de.lsn.playground.framwork.exception.ZgameException;
 import de.lsn.playground.logic.player.PlayerDAOLocal;
 import de.lsn.playground.zgame.security.HashService;
 

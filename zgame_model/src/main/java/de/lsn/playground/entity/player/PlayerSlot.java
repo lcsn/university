@@ -18,6 +18,14 @@ public class PlayerSlot extends ZgameEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "playerId")
 	private Player player;
+
+	public PlayerSlot() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public PlayerSlot(int turn) {
+		this.turn = turn;
+	}
 	
 	public int getTurn() {
 		return turn;

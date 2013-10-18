@@ -5,12 +5,14 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Coord;
+import de.lsn.playground.entity.unit.Unit;
 
 
 @SuppressWarnings("serial")
@@ -33,7 +35,11 @@ public class Field extends ZgameEntity {
 	
 	private boolean poison = false;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "unitId")
+	private Unit unit;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fieldDefinitionId")
 	private FieldDefinition fieldDefinition;
 	
@@ -67,6 +73,14 @@ public class Field extends ZgameEntity {
 	
 	protected void setPoison(boolean poison) {
 		this.poison = poison;
+	}
+	
+	public Unit getUnit() {
+		return unit;
+	}
+	
+	protected void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 
 	public FieldDefinition getFieldDefinition() {

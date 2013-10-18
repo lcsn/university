@@ -17,6 +17,7 @@ import de.lsn.playground.entity.attribute.MovingRange;
 import de.lsn.playground.entity.attribute.Offense;
 import de.lsn.playground.framwork.Fraction;
 import de.lsn.playground.framwork.Skill;
+import de.lsn.playground.framwork.exception.ZgameException;
 
 @SuppressWarnings("serial")
 @NamedQueries({
@@ -151,4 +152,29 @@ public class UnitDefinition extends ZgameEntity {
 		this.vulnerableToRadiation = vulnerableToRadiation;
 	}
 
+	public Unit newUnitInstance() throws ZgameException {
+		Unit newUnit;
+		switch (this.fraction) {
+		case CAMP:
+			newUnit = new CampUnit();
+			break;
+		case HIVE:
+			newUnit = new HiveUnit();
+			break;
+		default:
+			throw new ZgameException("Unkown fraction: " + this.fraction);
+		}
+		newUnit.setUnitName(this.unitName);
+		newUnit.setTier(this.tier);
+		newUnit.setSkill(this.skill);
+		newUnit.setOffense(this.offense);
+		newUnit.setDefense(this.defense);
+		newUnit.setHealth(this.health);
+		newUnit.setFiringRange(this.firingRange);
+		newUnit.setMovingRange(this.movingRange);
+		newUnit.setVulnerableToPoison(this.vulnerableToPoison);
+		newUnit.setVulnerableToRadiation(this.vulnerableToRadiation);
+		return newUnit;
+	}
+	
 }

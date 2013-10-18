@@ -18,17 +18,16 @@ public class UnitServiceDAO extends AbstractDAO implements UnitServiceDAOLocal {
 	@EJB
 	private UnitDefinitionDAOLocal unitDefinitionDAO;
 	
-	@Override
-	public Unit createUnit(Long unitDefinitionId) {
+//	######## CREATIONAL METHODS ########
+	public Unit createUnitByUnitDefinitionId(Long unitDefinitionId) {
 		if (null == unitDefinitionId) {
 			return null;
 		}
 		UnitDefinition unitDefinition = unitDefinitionDAO.findUnitDefintionById(unitDefinitionId);
-		return createUnit(unitDefinition);
+		return createByUnitDefinition(unitDefinition);
 	}
 
-	@Override
-	public Unit createUnit(UnitDefinition unitDefinition) {
+	public Unit createByUnitDefinition(UnitDefinition unitDefinition) {
 		Unit newUnit = null;
 		switch (unitDefinition.getFraction()) {
 		case CAMP:
@@ -57,4 +56,6 @@ public class UnitServiceDAO extends AbstractDAO implements UnitServiceDAOLocal {
 		return newUnit;
 	}
 
+//	######## FINDER METHODS ########
+	
 }

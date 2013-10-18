@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -16,7 +17,6 @@ import javax.persistence.Table;
 
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Name;
-import de.lsn.playground.entity.player.Player;
 import de.lsn.playground.entity.player.PlayerSlot;
 
 @SuppressWarnings("serial")
@@ -26,7 +26,7 @@ public class Map extends ZgameEntity {
 
 	private Long mapInstanceId = UUID.randomUUID().getMostSignificantBits();
 	
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "mapId")
 	private List<PlayerSlot> playerSlots = new ArrayList<PlayerSlot>();
 	
@@ -34,7 +34,7 @@ public class Map extends ZgameEntity {
 	@AttributeOverride(name="nameValue", column=@Column(name="mapName"))
 	private Name mapName;
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "mapId")
 	private List<Field> fields;
 	
@@ -72,6 +72,14 @@ public class Map extends ZgameEntity {
 	
 	protected void setFields(List<Field> fields) {
 		this.fields = fields;
+	}
+	
+	public MapDefinition getMapDefinition() {
+		return mapDefinition;
+	}
+	
+	protected void setMapDefinition(MapDefinition mapDefinition) {
+		this.mapDefinition = mapDefinition;
 	}
 	
 }

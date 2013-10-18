@@ -1,5 +1,6 @@
 package de.lsn.playground.entity.map;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -15,59 +16,91 @@ import javax.validation.constraints.Size;
 
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Name;
+import de.lsn.playground.entity.player.PlayerSlot;
+import de.lsn.playground.framwork.exception.ZgameException;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name="MapDefinition")
 public class MapDefinition extends ZgameEntity {
 
+	@NotNull
 	@Size(min=2)
-	private int numPlayers;
+	private Integer numPlayers;
 
 	@NotNull
-	private int mapHeight;
+	private Integer mapHeight;
 	
 	@NotNull
-	private int mapWidth;
+	private Integer mapWidth;
 	
 	@Embedded
 	@AttributeOverride(name="nameValue", column=@Column(name="mapName"))
 	private Name mapName;
 	
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "fieldDefinition")
-	private List<Field> fields;
+	@JoinColumn(name = "mapDefinitionId")
+	private List<FieldDefinition> fieldDefinitions;
 	
-	public int getNumPlayers() {
+	public MapDefinition() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public MapDefinition(int numPlayers, int mapHeight, int mapWidth, Name mapName, List<FieldDefinition> fieldDefinitions) {
+		super();
+		this.numPlayers = numPlayers;
+		this.mapHeight = mapHeight;
+		this.mapWidth = mapWidth;
+		this.mapName = mapName;
+		this.fieldDefinitions = fieldDefinitions;
+	}
+
+	public Integer getNumPlayers() {
 		return numPlayers;
 	}
 	
-	protected void setNumPlayers(int numPlayers) {
+	protected void setNumPlayers(Integer numPlayers) {
 		this.numPlayers = numPlayers;
 	}
 	
-	public int getMapHeight() {
+	public Integer getMapHeight() {
 		return mapHeight;
 	}
 	
-	protected void setMapHeight(int mapHeight) {
+	protected void setMapHeight(Integer mapHeight) {
 		this.mapHeight = mapHeight;
 	}
 	
-	public int getMapWidth() {
+	public Integer getMapWidth() {
 		return mapWidth;
 	}
 	
-	protected void setMapWidth(int mapWidth) {
+	protected void setMapWidth(Integer mapWidth) {
 		this.mapWidth = mapWidth;
 	}
 	
-	public List<Field> getFields() {
-		return fields;
+	public List<FieldDefinition> getFieldDefinitions() {
+		return fieldDefinitions;
 	}
 	
-	protected void setFields(List<Field> fields) {
-		this.fields = fields;
+	protected void setFieldDefinitions(List<FieldDefinition> fieldDefinitions) {
+		this.fieldDefinitions = fieldDefinitions;
+	}
+
+	public Map newMapInstance() throws ZgameException {
+		Map newMap = new Map();
+		newMap.setMapName(this.mapName);
+		List<Field> fields = new ArrayList<Field>();
+		for (FieldDefinition fieldDefinition : this.fieldDefinitions) {
+			fields.add(fieldDefinition.newFieldInstance());
+		}
+		newMap.setFields(fields);
+		newMap.setMapDefinition(this);
+		newMap.setPlayerSlots(new ArrayList<PlayerSlot>());
+		for (int i = 0; i < this.numPlayers; i++) {
+			newMap.getPlayerSlots().add(new PlayerSlot(i));
+		}
+		return null;
 	}
 	
 }
