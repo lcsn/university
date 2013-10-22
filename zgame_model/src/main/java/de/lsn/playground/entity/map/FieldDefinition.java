@@ -11,7 +11,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Coord;
@@ -31,7 +30,7 @@ public class FieldDefinition extends ZgameEntity {
 
 	private String fieldDescription;
 		
-	@NotNull
+//	@NotNull
 	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name="xCoord", column=@Column(name="xcoord")),
@@ -39,13 +38,13 @@ public class FieldDefinition extends ZgameEntity {
 	})
 	private Coord coord = new Coord(0, 0);
 	
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
+//	@NotNull
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "terrainId")
 	private Terrain terrain;
 	
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
+//	@NotNull
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "unitDefinitionId")
 	private UnitDefinition unitDefinition;
 	
@@ -113,7 +112,7 @@ public class FieldDefinition extends ZgameEntity {
 		newField.setTerrain(this.terrain);
 		newField.setRadiation(this.radiation);
 		newField.setPoison(this.poison);
-		newField.setUnit(this.unitDefinition.newUnitInstance());
+		newField.setUnit(this.unitDefinition!=null?this.unitDefinition.newUnitInstance():null);
 		newField.setFieldDefinition(this);
 		return newField;
 	}

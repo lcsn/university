@@ -24,4 +24,8 @@ public class Health extends Attribute {
 		this.healthPoints = healthPoints;
 	}
 	
+	public String toString() {
+		return String.valueOf(this.healthPoints);
+	}
+	
 }

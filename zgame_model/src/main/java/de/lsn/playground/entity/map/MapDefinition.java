@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Name;
@@ -20,25 +21,27 @@ import de.lsn.playground.entity.player.PlayerSlot;
 import de.lsn.playground.framwork.exception.ZgameException;
 
 @SuppressWarnings("serial")
+@NamedQueries({
+	@NamedQuery(name=MapDefinition.FIND_BY_ID, query="SELECT o FROM MapDefinition AS o WHERE o.id = :id")
+})
 @Entity
 @Table(name="MapDefinition")
 public class MapDefinition extends ZgameEntity {
 
-	@NotNull
-	@Size(min=2)
+public static final String FIND_BY_ID = "MapDefinition.FIND_BY_ID";
+
+	//	@Size(min=2)
 	private Integer numPlayers;
 
-	@NotNull
 	private Integer mapHeight;
 	
-	@NotNull
 	private Integer mapWidth;
 	
 	@Embedded
 	@AttributeOverride(name="nameValue", column=@Column(name="mapName"))
 	private Name mapName;
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	@JoinColumn(name = "mapDefinitionId")
 	private List<FieldDefinition> fieldDefinitions;
 	
@@ -100,7 +103,7 @@ public class MapDefinition extends ZgameEntity {
 		for (int i = 0; i < this.numPlayers; i++) {
 			newMap.getPlayerSlots().add(new PlayerSlot(i));
 		}
-		return null;
+		return newMap;
 	}
 	
 }

@@ -11,8 +11,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.lsn.playground.entity.ZgameEntity;
-
 public class JsonHelper {
 
 	private static JsonHelper jh;

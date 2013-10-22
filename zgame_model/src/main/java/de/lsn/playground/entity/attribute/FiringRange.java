@@ -28,9 +28,12 @@ public class FiringRange extends Range {
 		this.firingRangeValue = firingRangeValue;
 	}
 
-	@Override
 	public Integer getRangeValue() {
 		return this.firingRangeValue;
+	}
+
+	public String toString() {
+		return TYPE.toString() + ": " + String.valueOf(this.firingRangeValue); 
 	}
 	
 }

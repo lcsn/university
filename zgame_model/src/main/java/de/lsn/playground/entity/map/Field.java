@@ -2,6 +2,7 @@ package de.lsn.playground.entity.map;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -35,7 +36,7 @@ public class Field extends ZgameEntity {
 	
 	private boolean poison = false;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.PERSIST)
 	@JoinColumn(name = "unitId")
 	private Unit unit;
 	

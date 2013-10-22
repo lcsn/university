@@ -24,4 +24,8 @@ public class Defense extends Attribute {
 		this.defenseValue = defenseValue;
 	}
 	
+	public String toString() {
+		return String.valueOf(this.defenseValue);
+	}
+	
 }

@@ -8,6 +8,10 @@ public enum TerrainType {
 	HILL,
 	SWAMP,
 	DESERT,
-	NONE
+	NONE;
+
+	public String toString() {
+		return this.name().toUpperCase();
+	}
 	
 }

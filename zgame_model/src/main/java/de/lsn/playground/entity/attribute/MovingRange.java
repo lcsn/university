@@ -33,4 +33,8 @@ public class MovingRange extends Range {
 		return this.movingRangeValue;
 	}
 	
+	public String toString() {
+		return TYPE.toString() + ": " + String.valueOf(this.movingRangeValue); 
+	}
+	
 }

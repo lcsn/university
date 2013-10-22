@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.naming.Context;
 
@@ -12,10 +13,17 @@ import org.apache.commons.io.FileUtils;
 
 import de.lsn.playground.entity.attribute.Coord;
 import de.lsn.playground.entity.attribute.Name;
+import de.lsn.playground.entity.map.Desert;
 import de.lsn.playground.entity.map.FieldDefinition;
+import de.lsn.playground.entity.map.Hill;
+import de.lsn.playground.entity.map.Map;
 import de.lsn.playground.entity.map.MapDefinition;
+import de.lsn.playground.entity.map.None;
+import de.lsn.playground.entity.map.Plain;
+import de.lsn.playground.entity.map.Sea;
+import de.lsn.playground.entity.map.Swamp;
 import de.lsn.playground.entity.map.Terrain;
-import de.lsn.playground.entity.map.TerrainType;
+import de.lsn.playground.entity.map.Wood;
 import de.lsn.playground.entity.unit.Unit;
 import de.lsn.playground.entity.unit.UnitDefinition;
 import de.lsn.playground.framwork.exception.ZgameException;
@@ -89,22 +97,24 @@ public class EJBClient {
 		loadUnitConvertToJsonAndWriteToFile(new File("src/main/resources/unit_5.json"));
 		*/
 		
-		Terrain simplePlain = new Terrain(new Name("Simple Plain"), TerrainType.PLAIN);
-		createSampleTerrain(simplePlain);
-		Terrain simpleWood = new Terrain(new Name("Simple Wood"), TerrainType.WOOD);
-		createSampleTerrain(simpleWood);
-		Terrain simpleSea = new Terrain(new Name("Simple Sea"), TerrainType.SEA);
-		createSampleTerrain(simpleSea);
-		Terrain simpleHill = new Terrain(new Name("Simple Hill"), TerrainType.HILL);
-		createSampleTerrain(simpleHill);
-		Terrain simpleSwamp = new Terrain(new Name("Simple Swamp"), TerrainType.SWAMP);
-		createSampleTerrain(simpleSwamp);
-		Terrain simpleDesert = new Terrain(new Name("Simple Desert"), TerrainType.DESERT);
-		createSampleTerrain(simpleDesert);
-		Terrain emptyTerrain = new Terrain(new Name("Empty Terrain"), TerrainType.NONE);
-		createSampleTerrain(emptyTerrain);
+//		Plain simplePlain = new Plain("simple_plain");
+//		simplePlain = (Plain) createSampleTerrain(simplePlain);
+//		Wood simpleWood = new Wood("simple_wood");
+//		simpleWood = (Wood) createSampleTerrain(simpleWood);
+//		Sea simpleSea = new Sea("simple_sea");
+//		simpleSea = (Sea) createSampleTerrain(simpleSea);
+//		Hill simpleHill = new Hill("simple_hill");
+//		simpleHill = (Hill) createSampleTerrain(simpleHill);
+//		Swamp simpleSwamp = new Swamp("simple_swamp");
+//		simpleSwamp = (Swamp) createSampleTerrain(simpleSwamp);
+//		Desert simpleDesert = new Desert("simple_desert");
+//		simpleDesert = (Desert) createSampleTerrain(simpleDesert);
+//		None emptyTerrain = new None("empty_terrain");
+//		emptyTerrain = (None) createSampleTerrain(emptyTerrain);
 		
-		createSampleMapDefinition(3, 3, simplePlain);
+//		createSampleMapDefinition(3, 3);
+		
+		Map newMap = createSampleMapFromMapDefinition(98l);
 		
 	}
 	
@@ -138,22 +148,88 @@ public class EJBClient {
 		testEJBRemote.testPersistence(10);
 	}
 
-	public static void createSampleTerrain(Terrain terrain) {
+	public static Terrain createSampleTerrain(Terrain terrain) {
+		Terrain t = null;
 		try {
-			fieldServiceDAORemote.createTerrain(terrain);
+			t = fieldServiceDAORemote.createTerrain(terrain);
 		} catch (ZgameException e) {
 			e.printStackTrace();
 		}
+		return t;
 	}
 
-	public static void createSampleMapDefinition(int height, int width, Terrain terrain) {
+	public static Terrain[][] getRandomTerrainMatrix(int height, int width) {
+		Terrain[][] m = new Terrain[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				int rInt = new Random().nextInt(10);
+				try {
+					m[i][j] = getRandomTerrain(rInt);
+				} catch (ZgameException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return m;
+	}
+	
+	private static UnitDefinition getRandomUnitDefinition(int rInt) throws ZgameException {
+		switch (rInt) {
+		case 0:
+			return unitDefinitionDAORemote.findUnitDefintionById(1l); 
+		case 1:
+			return unitDefinitionDAORemote.findUnitDefintionById(2l);
+		case 2:
+			return unitDefinitionDAORemote.findUnitDefintionById(3l);
+		case 3:
+			return unitDefinitionDAORemote.findUnitDefintionById(4l);
+		case 4:
+			return unitDefinitionDAORemote.findUnitDefintionById(5l);
+		case 5:
+			return unitDefinitionDAORemote.findUnitDefintionById(6l);
+		case 6:
+			return null;
+		default:
+			return null;
+		}
+	}
+	
+	private static Terrain getRandomTerrain(int rInt) throws ZgameException {
+		switch (rInt) {
+		case 0:
+			return fieldServiceDAORemote.findTerrainByName("simple_plain"); 
+		case 1:
+			return fieldServiceDAORemote.findTerrainByName("simple_wood");
+		case 2:
+			return fieldServiceDAORemote.findTerrainByName("simple_sea");
+		case 3:
+			return fieldServiceDAORemote.findTerrainByName("simple_hill");
+		case 4:
+			return fieldServiceDAORemote.findTerrainByName("simple_swamp");
+		case 5:
+			return fieldServiceDAORemote.findTerrainByName("simple_desert");
+		case 6:
+			return fieldServiceDAORemote.findTerrainByName("empty_terrain");
+		default:
+			return fieldServiceDAORemote.findTerrainByName("empty_terrain");
+		}
+	}
+
+	public static void createSampleMapDefinition(int height, int width) {
+		Terrain[][] terrain = getRandomTerrainMatrix(height, width);
 		List<FieldDefinition> fieldDefintions = new ArrayList<FieldDefinition>();
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				fieldDefintions.add(new FieldDefinition("field_plain_"+i+"_"+j, new Coord(i, j), terrain, null, false, false));
+				UnitDefinition unitDefinition = null;
+				try {
+					unitDefinition = getRandomUnitDefinition(new Random().nextInt(7));
+				} catch (ZgameException e) {
+					e.printStackTrace();
+				}
+				fieldDefintions.add(new FieldDefinition(terrain[i][j].getTerrainName().toString()+"_"+i+"_"+j, new Coord(i, j), terrain[i][j], unitDefinition, false, false));
 			}
 		}
-		MapDefinition newMapDefinition = new MapDefinition(2, 3, 3, new Name("first_map_3x3"), fieldDefintions);
+		MapDefinition newMapDefinition = new MapDefinition(2, height, width, new Name("first_map_"+height+"x"+width), fieldDefintions);
 		try {
 			mapServiceDAORemote.createMapDefinition(newMapDefinition);
 		} catch (ZgameException e) {
@@ -161,5 +237,14 @@ public class EJBClient {
 		}
 	}
 	
+	public static Map createSampleMapFromMapDefinition(Long mapDefinitionId) {
+		Map m = null;
+		try {
+			m = mapServiceDAORemote.createMapByMapDefinitionId(mapDefinitionId);
+		} catch (ZgameException e) {
+			e.printStackTrace();
+		}
+		return m;
+	}
+	
 }
-

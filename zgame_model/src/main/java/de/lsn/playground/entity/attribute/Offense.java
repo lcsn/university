@@ -24,4 +24,8 @@ public class Offense extends Attribute  {
 		this.offenseValue = offenseValue;
 	}
 	
+	public String toString() {
+		return String.valueOf(this.offenseValue);
+	}
+	
 }

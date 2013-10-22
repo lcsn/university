@@ -24,4 +24,8 @@ public class Name extends Attribute {
 		this.nameValue = nameValue;
 	}
 	
+	public String toString() {
+		return this.nameValue;
+	}
+	
 }

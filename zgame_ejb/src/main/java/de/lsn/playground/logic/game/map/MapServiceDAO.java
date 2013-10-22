@@ -6,7 +6,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
-import de.lsn.playground.entity.map.FieldDefinition;
+import de.lsn.playground.entity.map.Map;
 import de.lsn.playground.entity.map.MapDefinition;
 import de.lsn.playground.framwork.exception.ZgameException;
 import de.lsn.playground.logic.AbstractDAO;
@@ -16,24 +16,27 @@ import de.lsn.playground.logic.AbstractDAO;
 public class MapServiceDAO extends AbstractDAO implements MapServiceDAOLocal {
 
 //	######## CREATIONAL METHODS ########
-	public void createMapDefinition(MapDefinition mapDefinition) throws ZgameException {
+	public MapDefinition createMapDefinition(MapDefinition mapDefinition) throws ZgameException {
 		if(null != mapDefinition.getId()) {
 			throw new ZgameException("Can not persist detached entity");
 		}
 		em.persist(mapDefinition);
+		return em.find(MapDefinition.class, mapDefinition.getId());
 	}
 
-	public void createMapByMapDefinition(MapDefinition mapDefinition) throws ZgameException {
-		em.persist(mapDefinition.newMapInstance());
+	public Map createMapByMapDefinition(MapDefinition mapDefinition) throws ZgameException {
+		Map newMapInstance = mapDefinition.newMapInstance();
+		em.persist(newMapInstance);
+		return em.find(Map.class, newMapInstance.getId());
 	}
 
-	public void createMapByMapDefinitionId(Long mapDefinitionId) throws ZgameException {
-		createMapByMapDefinition(findMapDefinitionById(mapDefinitionId));
+	public Map createMapByMapDefinitionId(Long mapDefinitionId) throws ZgameException {
+		return createMapByMapDefinition(findMapDefinitionById(mapDefinitionId));
 	}
 
 //	######## FINDER METHODS ########
 	public MapDefinition findMapDefinitionById(Long mapDefinitionId) throws ZgameException {
-		TypedQuery<MapDefinition> query = em.createNamedQuery(FieldDefinition.FIND_BY_ID, MapDefinition.class);
+		TypedQuery<MapDefinition> query = em.createNamedQuery(MapDefinition.FIND_BY_ID, MapDefinition.class);
 		query.setParameter("id", mapDefinitionId);
 		MapDefinition mapDefinition = null;
 		try {

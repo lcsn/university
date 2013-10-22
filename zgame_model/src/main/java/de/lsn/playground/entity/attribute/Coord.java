@@ -36,4 +36,8 @@ public class Coord extends Attribute {
 		this.yCoord = yCoord;
 	}
 	
+	public String toString() {
+		return this.xCoord + ", " + this.yCoord;
+	}
+	
 }

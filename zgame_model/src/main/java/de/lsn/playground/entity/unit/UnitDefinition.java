@@ -174,6 +174,7 @@ public class UnitDefinition extends ZgameEntity {
 		newUnit.setMovingRange(this.movingRange);
 		newUnit.setVulnerableToPoison(this.vulnerableToPoison);
 		newUnit.setVulnerableToRadiation(this.vulnerableToRadiation);
+		newUnit.setUnitDefinition(this);
 		return newUnit;
 	}
 	
