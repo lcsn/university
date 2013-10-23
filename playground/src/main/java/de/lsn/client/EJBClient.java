@@ -11,19 +11,13 @@ import javax.naming.Context;
 
 import org.apache.commons.io.FileUtils;
 
+import de.lsn.http.HttpConnector;
 import de.lsn.playground.entity.attribute.Coord;
 import de.lsn.playground.entity.attribute.Name;
-import de.lsn.playground.entity.map.Desert;
 import de.lsn.playground.entity.map.FieldDefinition;
-import de.lsn.playground.entity.map.Hill;
 import de.lsn.playground.entity.map.Map;
 import de.lsn.playground.entity.map.MapDefinition;
-import de.lsn.playground.entity.map.None;
-import de.lsn.playground.entity.map.Plain;
-import de.lsn.playground.entity.map.Sea;
-import de.lsn.playground.entity.map.Swamp;
 import de.lsn.playground.entity.map.Terrain;
-import de.lsn.playground.entity.map.Wood;
 import de.lsn.playground.entity.unit.Unit;
 import de.lsn.playground.entity.unit.UnitDefinition;
 import de.lsn.playground.framwork.exception.ZgameException;
@@ -43,7 +37,21 @@ public class EJBClient {
 	private static UnitServiceDAORemote unitServiceDAORemote;
 	private static UnitDAORemote unitDAORemote;
 	private static TestEJBRemote testEJBRemote; 
-	
+
+	private static Properties getInitialContextProps() {
+//		System.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
+		Properties properties = new Properties(); 
+		properties.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.enterprise.naming.SerialInitContextFactory"); 
+		properties.put(Context.URL_PKG_PREFIXES, "com.sun.enterprise.naming"); 
+		properties.put(Context.STATE_FACTORIES, "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl"); 
+		properties.put("org.omg.CORBA.ORBInitialHost", "localhost"); 
+		properties.put("org.omg.CORBA.ORBInitialPort", "3700"); 
+//		ctx.addToEnvironment("org.omg.CORBA.ORBInitialHost", "localhost"); 
+//		ctx.addToEnvironment("org.omg.CORBA.ORBInitialPort", "3700");
+//		TestEJBRemote remote = (TestEJBRemote) ctx.lookup("java:global/zgame_ear/zgame_ejb/TestEJB!de.lsn.playground.logic.TestEJBRemote");
+		return properties;
+	}
+
 	private static void getRemoteInterfaces() {
 		mapServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(MapServiceDAORemote.class);
 		fieldServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(FieldServiceDAORemote.class);
@@ -51,25 +59,20 @@ public class EJBClient {
 		unitServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitServiceDAORemote.class);
 		unitDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitDAORemote.class);
 		testEJBRemote = RemoteInterfaceFactory.getInstance().getCachedRemote(TestEJBRemote.class);
-
 	}
 	
 	public static void main(String[] args) {
 		
-		System.setProperty("org.omg.CORBA.ORBInitialHost", "localhost"); 
-		Properties properties = new Properties(); 
-		properties.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.enterprise.naming.SerialInitContextFactory"); 
-		properties.put(Context.URL_PKG_PREFIXES, "com.sun.enterprise.naming"); 
-		properties.put(Context.STATE_FACTORIES, "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl"); 
-		properties.put("org.omg.CORBA.ORBInitialHost", "localhost"); 
-		properties.put("org.omg.CORBA.ORBInitialPort", "3700"); 
-//			ctx.addToEnvironment("org.omg.CORBA.ORBInitialHost", "localhost"); 
-//			ctx.addToEnvironment("org.omg.CORBA.ORBInitialPort", "3700");
-
-//			TestEJBRemote remote = (TestEJBRemote) ctx.lookup("java:global/zgame_ear/zgame_ejb/TestEJB!de.lsn.playground.logic.TestEJBRemote");
-		RemoteInterfaceFactory.recreateInitialContext(properties);
-		
+		RemoteInterfaceFactory.recreateInitialContext(getInitialContextProps());
 		getRemoteInterfaces();
+		
+//		InitialContext ctx = null;
+//		try {
+//			ctx = new InitialContext(getInitialContextProps());
+//			MapServiceDAORemote mapServiceDAORemote = (MapServiceDAORemote) ctx.lookup("java:global/"+ZgameConstants.EAR+"/"+ZgameConstants.MODUL_I+"/"+(StringUtils.replace(MapServiceDAORemote.class.getSimpleName(), "Remote", ""))+"!"+MapServiceDAORemote.class.getCanonicalName());
+//		} catch (NamingException e) {
+//			e.printStackTrace();
+//		}
 		
 		/*
 		testPersistence();
@@ -114,7 +117,24 @@ public class EJBClient {
 		
 //		createSampleMapDefinition(3, 3);
 		
-		Map newMap = createSampleMapFromMapDefinition(98l);
+//		Map newMap = createSampleMapFromMapDefinition(98l);
+		
+//		try {
+//			Map map = mapServiceDAORemote.findMapById(108l);
+//			String mapAsJson = map.toJson();
+//			System.out.println(mapAsJson);
+//			HttpConnector.getInstance().put("https://boiii.firebaseio.com/maps/"+map.getMapInstanceId()+"/.json", map);
+//		} catch (ZgameException e) {
+//			e.printStackTrace();
+//		}
+		
+//		ArrayList<FieldDefinition> fields = new ArrayList<FieldDefinition>();
+//		fields.add(new FieldDefinition("", null, null, null, true, false));
+//		MapDefinition mapDefinition = new MapDefinition(2, 3, 4, null, fields);
+//		System.out.println(mapDefinition.toJson());
+//		HttpConnector.getInstance().put("https://boiii.firebaseio.com/maps/mapdefinition2/.json", mapDefinition);
+		
+		Test.testWriteObjectToFireBase();
 		
 	}
 	

@@ -7,9 +7,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.math.NumberUtils;
 
 import de.lsn.http.HttpConnector;
-import de.lsn.jackson.JsonHelper;
-import de.lsn.model.AbstractEntity;
-import de.lsn.model.JsonObject;
+import de.lsn.playground.entity.ZgameEntity;
+import de.lsn.playground.json.JsonHelper;
+import de.lsn.playground.json.JsonObject;
 import de.lsn.resource.Constants;
 import de.lsn.resource.Request;
 import de.lsn.resource.UIPhase;
@@ -101,8 +101,8 @@ public class UI {
 			System.out.print("Path to put to\n: ");
 			String path = scan.next();
 			JsonObject jo = JsonHelper.getInstance().getObjectFromJson(objectAsString.trim().getBytes());
-			HttpConnector.getInstance().put(url+path+"/"+((AbstractEntity)jo).getId()+"/.json", jo);
-			System.out.println("NEW ID: " + ((AbstractEntity)jo).getId());
+			HttpConnector.getInstance().put(url+path+"/"+((ZgameEntity)jo).getId()+"/.json", jo);
+			System.out.println("NEW ID: " + ((ZgameEntity)jo).getId());
 		default:
 			break;
 		}

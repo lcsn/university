@@ -1,3 +1,4 @@
+/*
 package de.lsn.model;
 
 public interface JsonObject {
@@ -7,3 +8,4 @@ public interface JsonObject {
 	public String toJson();
 	
 }
+*/

@@ -35,6 +35,19 @@ public class MapServiceDAO extends AbstractDAO implements MapServiceDAOLocal {
 	}
 
 //	######## FINDER METHODS ########
+	public Map findMapById(Long mapId) throws ZgameException {
+		TypedQuery<Map> query = em.createNamedQuery(Map.FIND_BY_ID, Map.class);
+		query.setParameter("id", mapId);
+		Map map = null;
+		try {
+			map = query.getSingleResult();
+		} catch (NoResultException | EntityNotFoundException e) {
+			throw new ZgameException("Could not find " + Map.class.getSimpleName() + " with id: " + mapId, e);
+		}
+		
+		return map;
+	}
+	
 	public MapDefinition findMapDefinitionById(Long mapDefinitionId) throws ZgameException {
 		TypedQuery<MapDefinition> query = em.createNamedQuery(MapDefinition.FIND_BY_ID, MapDefinition.class);
 		query.setParameter("id", mapDefinitionId);

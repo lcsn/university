@@ -41,7 +41,7 @@ public static final String FIND_BY_ID = "MapDefinition.FIND_BY_ID";
 	@AttributeOverride(name="nameValue", column=@Column(name="mapName"))
 	private Name mapName;
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+	@OneToMany(fetch = FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	@JoinColumn(name = "mapDefinitionId")
 	private List<FieldDefinition> fieldDefinitions;
 	

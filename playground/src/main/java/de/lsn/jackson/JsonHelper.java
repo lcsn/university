@@ -1,3 +1,4 @@
+/*
 package de.lsn.jackson;
 
 import java.io.File;
@@ -11,8 +12,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.lsn.model.JsonObject;
 import de.lsn.model.Person;
+import de.lsn.playground.json.JsonObject;
 
 public class JsonHelper {
 
@@ -69,3 +70,4 @@ public class JsonHelper {
 	}
 
 }
+*/

@@ -28,7 +28,6 @@ public class MovingRange extends Range {
 		this.movingRangeValue = movingRangeValue;
 	}
 	
-	@Override
 	public Integer getRangeValue() {
 		return this.movingRangeValue;
 	}

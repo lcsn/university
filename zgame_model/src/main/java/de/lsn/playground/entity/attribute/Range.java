@@ -2,6 +2,8 @@ package de.lsn.playground.entity.attribute;
 
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @SuppressWarnings("serial")
 public abstract class Range extends Attribute {
@@ -21,6 +23,7 @@ public abstract class Range extends Attribute {
 		return this.rangeType;
 	}
 
+	@JsonIgnore
 	public abstract Integer getRangeValue();
 	
 }

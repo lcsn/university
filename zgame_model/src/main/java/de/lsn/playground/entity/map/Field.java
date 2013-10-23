@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Coord;
 import de.lsn.playground.entity.unit.Unit;
@@ -28,7 +30,7 @@ public class Field extends ZgameEntity {
 	})
 	private Coord coord = new Coord(0, 0);
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "terrainId")
 	private Terrain terrain;
 	
@@ -36,10 +38,11 @@ public class Field extends ZgameEntity {
 	
 	private boolean poison = false;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.PERSIST)
+	@ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.PERSIST)
 	@JoinColumn(name = "unitId")
 	private Unit unit;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "fieldDefinitionId")
 	private FieldDefinition fieldDefinition;

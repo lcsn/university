@@ -17,6 +17,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Defense;
 import de.lsn.playground.entity.attribute.FiringRange;
@@ -79,7 +81,8 @@ public class Unit extends ZgameEntity {
 	
 	private boolean vulnerableToRadiation;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitDefinitionId")
 	private UnitDefinition unitDefinition;
 	

@@ -17,6 +17,8 @@ public interface MapServiceDAORemote {
 	public Map createMapByMapDefinitionId(Long mapDefinitionId) throws ZgameException;
 
 //	######## FINDER METHODS ########
+	public Map findMapById(Long mapId) throws ZgameException;
+	
 	public MapDefinition findMapDefinitionById(Long mapDefinitionId) throws ZgameException;
 
 }

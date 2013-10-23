@@ -23,7 +23,10 @@ public class JsonHelper {
 		}
 		return jh;
 	}
-
+	public <T> JsonObject getObjectFromJson() {
+		return getObjectFromJson(JsonObject.class);
+	}
+		
 	public <T> T getObjectFromJson(Class<T> clazz) {
 		byte[] byteArray;
 		T t = null;
@@ -36,6 +39,9 @@ public class JsonHelper {
 		return t;
 	}
 	
+	public JsonObject getObjectFromJson(byte[] byteArray) {
+		return getObjectFromJson(byteArray, JsonObject.class);
+	}
 
 	public <T> T getObjectFromJson(byte[] byteArray, Class<T> clazz) {
 		T t = null;

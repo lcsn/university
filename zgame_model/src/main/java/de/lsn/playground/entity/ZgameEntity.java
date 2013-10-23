@@ -13,6 +13,7 @@ import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.lsn.playground.json.JsonHelper;
 import de.lsn.playground.json.JsonObject;
 
 @SuppressWarnings("serial")
@@ -51,7 +52,7 @@ public class ZgameEntity implements Serializable, JsonObject {
 
 	@Override
 	public String toJson() {
-		return de.lsn.playground.json.JsonHelper.getInstance().getJsonFromObject(this);
+		return JsonHelper.getInstance().getJsonFromObject(this);
 	}
 	
 }

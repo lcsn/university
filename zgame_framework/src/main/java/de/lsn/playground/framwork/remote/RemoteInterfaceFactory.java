@@ -36,10 +36,6 @@ public class RemoteInterfaceFactory {
 		}
 	}
 	
-	public static void setInitialContext(InitialContext ctx) {
-		getInstance().setCtx(ctx);
-	}
-	
 	public void setCtx(InitialContext ctx) {
 		this.ctx = ctx;
 	}

@@ -2,7 +2,8 @@ package de.lsn.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.lsn.jackson.JsonHelper;
+import de.lsn.playground.json.JsonHelper;
+import de.lsn.playground.json.JsonObject;
 
 public class Person extends AbstractEntity implements JsonObject {
 

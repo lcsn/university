@@ -16,8 +16,8 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 
-import de.lsn.jackson.JsonHelper;
-import de.lsn.model.JsonObject;
+import de.lsn.playground.json.JsonHelper;
+import de.lsn.playground.json.JsonObject;
 
 public class HttpConnector {
 	
@@ -28,6 +28,7 @@ public class HttpConnector {
 	public HttpConnector() {
 		this.httpClient = new HttpClient();
 		Protocol.registerProtocol("https", new Protocol("https", (ProtocolSocketFactory) new SSLProtocolSocketFactory(), 443));
+//		Protocol.registerProtocol("http", new Protocol("http", new DefaultProtocolSocketFactory(), 80));
 	}
 	
 	public static HttpConnector getInstance() {
@@ -82,8 +83,12 @@ public class HttpConnector {
 	}
 	
 	public JsonObject get(URI uri) {
+		return get(uri, JsonObject.class);
+	}
+	
+	public <T> T get(URI uri, Class<T> clazz) {
 		GetMethod get = null;
-		JsonObject o = null;
+		T t = null;
 		try {
 			get = new GetMethod(uri.toString());
 			int returnCode = httpClient.executeMethod(get);
@@ -94,7 +99,7 @@ public class HttpConnector {
 				System.out.println("["+returnCode+"] Error!");
 			}
 			String res = get.getResponseBodyAsString().trim();
-			o = JsonHelper.getInstance().getObjectFromJson(res.getBytes());
+			t = JsonHelper.getInstance().getObjectFromJson(res.getBytes(), clazz);
 		} catch (HttpException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -104,7 +109,7 @@ public class HttpConnector {
 				get.releaseConnection();
 			}
 		}
-		return o;
+		return t;
 	}
 	
 	public void post(String path) {

@@ -12,17 +12,28 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.junit.Ignore;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Name;
 import de.lsn.playground.entity.player.PlayerSlot;
 
 @SuppressWarnings("serial")
+@NamedQueries({
+	@NamedQuery(name=Map.FIND_BY_ID, query="SELECT o FROM Map AS o WHERE o.id = :id")
+})
 @Entity
 @Table(name="Map")
 public class Map extends ZgameEntity {
+
+	public static final String FIND_BY_ID = "Map.FIND_BY_ID";
 
 	private Long mapInstanceId = UUID.randomUUID().getMostSignificantBits();
 	
@@ -34,10 +45,11 @@ public class Map extends ZgameEntity {
 	@AttributeOverride(name="nameValue", column=@Column(name="mapName"))
 	private Name mapName;
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "mapId")
 	private List<Field> fields;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "mapDefinitionId")
 	private MapDefinition mapDefinition;
