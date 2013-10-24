@@ -13,7 +13,7 @@ public class HashService {
 
 	static {
 		try {
-			digest = MessageDigest.getInstance("SHA");
+			digest = MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException e) {
 			System.err.println(e);
 		}

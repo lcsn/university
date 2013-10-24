@@ -10,15 +10,28 @@ import de.lsn.playground.framwork.exception.ZgameException;
 import de.lsn.playground.logic.AbstractDAO;
 
 @Stateless
-@Remote(PlayerDAORemote.class)
-public class PlayerDAO extends AbstractDAO implements PlayerDAOLocal {
+@Remote(PlayerServiceDAORemote.class)
+public class PlayerServiceDAO extends AbstractDAO implements PlayerServiceDAOLocal {
 
-	@Override
+
+//	######## MISC METHODS ########
+	public boolean authenticate(String username, String password) throws ZgameException {
+		boolean result = false;
+		Player player = findPlayerByUsernameAndPassword(username, password);
+		if(null!=player) {
+			result = true;
+		}
+		return result;
+	}
+	
+//	######## CREATIONAL METHODS ########
+
 	public void createPlayer(Player p) {
 		em.persist(p);
 	}
 
-	@Override
+//	######## FINDER METHODS ########	
+	
 	public Player findPlayerByUsernameAndPassword(String username, String password) throws ZgameException {
 		Player player = null;
 		TypedQuery<Player> query = em.createNamedQuery(Player.FIND_BY_USERNAME_AND_PASSWORD, Player.class);
@@ -31,5 +44,5 @@ public class PlayerDAO extends AbstractDAO implements PlayerDAOLocal {
 		}
 		return player;
 	}
-
+	
 }

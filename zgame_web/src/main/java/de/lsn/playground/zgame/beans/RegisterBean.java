@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import de.lsn.playground.entity.player.Player;
 import de.lsn.playground.framwork.ZgameConstants;
-import de.lsn.playground.logic.player.PlayerDAOLocal;
+import de.lsn.playground.logic.player.PlayerServiceDAOLocal;
 import de.lsn.playground.zgame.security.HashService;
 
 @Named
@@ -18,7 +18,7 @@ import de.lsn.playground.zgame.security.HashService;
 public class RegisterBean extends AbstractBackingBean {
 
 	@EJB
-	private PlayerDAOLocal playerDAO;
+	private PlayerServiceDAOLocal playerServiceDAO;
 	
 	private Player newPlayer;
 
@@ -28,13 +28,13 @@ public class RegisterBean extends AbstractBackingBean {
 	}
 	
 	public String register() {
-		if(!newPlayer.doesPassMatch()) {
+		if(!newPlayer.checkPass()) {
 			addMessage(FacesMessage.SEVERITY_ERROR, "Passwörter stimmen nicht überein", "");
 			return "";
 		}
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		newPlayer.setPassword(HashService.getDigest(newPlayer.getUsername(), newPlayer.getPassword()));
-		playerDAO.createPlayer(this.newPlayer);
+		playerServiceDAO.createPlayer(this.newPlayer);
 		session.setAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE, newPlayer);
 		return "main.xhtml";
 	}

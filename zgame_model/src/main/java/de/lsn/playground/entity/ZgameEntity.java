@@ -28,6 +28,9 @@ public class ZgameEntity implements Serializable, JsonObject {
 	@Temporal(TemporalType.DATE)
 	private Calendar creationDate = Calendar.getInstance();
 	
+	@Temporal(TemporalType.DATE)
+	private Calendar mergeDate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -44,6 +47,18 @@ public class ZgameEntity implements Serializable, JsonObject {
 		this.creationDate = creationDate;
 	}
 
+	public Calendar getMergeDate() {
+		return mergeDate;
+	}
+	
+	protected void setMergeDate(Calendar mergeDate) {
+		this.mergeDate = mergeDate;
+	}
+	
+	public void merged() {
+		this.setMergeDate(Calendar.getInstance());
+	}
+	
 	@JsonIgnore
 	@Override
 	public Class<? extends JsonObject> getTargetClass() {

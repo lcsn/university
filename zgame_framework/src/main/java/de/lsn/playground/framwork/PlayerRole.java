@@ -1,7 +1,8 @@
 package de.lsn.playground.framwork;
 
 public enum PlayerRole {
-
+	
+	GUEST("guest"),
 	DEFAULT("default"),
 	ADMIN("admin");
 

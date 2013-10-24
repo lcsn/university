@@ -29,7 +29,7 @@ import de.lsn.playground.framwork.PlayerRole;
 
 @SuppressWarnings("serial")
 @NamedQueries({
-	@NamedQuery(name=Player.FIND_BY_USERNAME_AND_PASSWORD, query="SELECT o FROM Player AS o WHERE o.username = :username AND o.password = :password")
+	@NamedQuery(name=Player.FIND_BY_USERNAME_AND_PASSWORD, query="SELECT o FROM Player AS o WHERE o.username = :username AND o.password = :password"),
 })
 @Entity
 @Table(name="Player", uniqueConstraints={
@@ -167,7 +167,7 @@ public class Player extends ZgameEntity {
 		this.roles = roles;
 	}
 	
-	public boolean doesPassMatch() {
+	public boolean checkPass() {
 		boolean res = false;
 		if(null != this.password && null != this._password) {
 			if (this.password.equals(_password)) {

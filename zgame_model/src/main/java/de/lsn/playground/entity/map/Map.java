@@ -17,27 +17,30 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.junit.Ignore;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.entity.attribute.Name;
+import de.lsn.playground.entity.player.Player;
 import de.lsn.playground.entity.player.PlayerSlot;
+import de.lsn.playground.framwork.exception.ZgameException;
 
 @SuppressWarnings("serial")
 @NamedQueries({
-	@NamedQuery(name=Map.FIND_BY_ID, query="SELECT o FROM Map AS o WHERE o.id = :id")
+	@NamedQuery(name=Map.FIND_BY_ID, query="SELECT o FROM Map AS o WHERE o.id = :id"),
+	@NamedQuery(name=Map.FIND_BY_PLAYER_ID, query="SELECT o FROM Map AS o INNER JOIN o.playerSlots AS p WHERE p.playerId = :playerId")
+	
 })
 @Entity
 @Table(name="Map")
 public class Map extends ZgameEntity {
 
 	public static final String FIND_BY_ID = "Map.FIND_BY_ID";
+	public static final String FIND_BY_PLAYER_ID = "Map.FIND_BY_PLAYER_ID";
 
 	private Long mapInstanceId = UUID.randomUUID().getMostSignificantBits();
 	
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "mapId")
 	private List<PlayerSlot> playerSlots = new ArrayList<PlayerSlot>();
 	
@@ -93,5 +96,52 @@ public class Map extends ZgameEntity {
 	protected void setMapDefinition(MapDefinition mapDefinition) {
 		this.mapDefinition = mapDefinition;
 	}
+
+	/**
+	 * Adds the given player to the first vacant slot found for this map.
+	 * 
+	 * @param player of type {@link Player}
+	 * @throws ZgameException 
+	 */
+	public void addPlayerToPlayerSlot(Player player) throws ZgameException {
+		if(hasVacantPlayerSlot()) {
+			for (PlayerSlot playerSlot : this.playerSlots) {
+				if(playerSlot.isVacant()) {
+					playerSlot.addPlayer(player);
+				}
+			}
+		}
+		else {
+			throw new ZgameException("There are no vacant playerslots left for this map: " + this.toRepresentationString());
+		}
+	}
 	
+	public void removePlayerFromPlayerSlot(Player player) throws ZgameException {
+		for (PlayerSlot playerSlot : this.playerSlots) {
+			if(playerSlot.getPlayer().equals(player)) {
+				playerSlot.removePlayer();
+			}
+		}
+	}
+	
+	/**
+	 * Determines if the inherited List playerSlot has further vacant slots.
+	 * 
+	 * @return result of type {@link Boolean}
+	 */
+	public boolean hasVacantPlayerSlot() {
+		boolean result = false;
+		for (PlayerSlot playerSlot : this.playerSlots) {
+			result = playerSlot.isVacant();
+			if(result) {
+				break;
+			}
+		}
+		return result;
+	}
+
+	public String toRepresentationString() {
+		return this.mapName.toString() + " " + this.mapInstanceId;
+	}
+
 }

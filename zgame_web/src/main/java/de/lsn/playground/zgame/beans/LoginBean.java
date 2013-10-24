@@ -6,13 +6,17 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import de.lsn.playground.entity.player.Player;
 import de.lsn.playground.framwork.ZgameConstants;
 import de.lsn.playground.framwork.exception.ZgameException;
-import de.lsn.playground.logic.player.PlayerDAOLocal;
+import de.lsn.playground.logic.player.PlayerServiceDAOLocal;
+import de.lsn.playground.util.qualifier.Request;
 import de.lsn.playground.zgame.security.HashService;
 
 @Named
@@ -20,7 +24,11 @@ import de.lsn.playground.zgame.security.HashService;
 public class LoginBean extends AbstractBackingBean {
 
 	@EJB
-	private PlayerDAOLocal playerDAO;
+	private PlayerServiceDAOLocal playerDAO;
+	
+	@Request
+	@Inject
+	protected HttpServletRequest request;
 	
 	private String username;
 	
@@ -31,11 +39,15 @@ public class LoginBean extends AbstractBackingBean {
 		System.out.println("Login: "+username+":"+password);
 		Player player = null;
 		try {
+			request.login(username, HashService.getDigest(username, password));
 			player = playerDAO.findPlayerByUsernameAndPassword(username, HashService.getDigest(username, password));
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 			session.setAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE, player);
 			page = "main.xhtml";
 		} catch (ZgameException e) {
+			e.printStackTrace();
+			addMessage(FacesMessage.SEVERITY_WARN, "Login fehlgeschlagen", "Benutzername und/oder Passwort falsch");
+		} catch (ServletException e) {
 			e.printStackTrace();
 			addMessage(FacesMessage.SEVERITY_WARN, "Login fehlgeschlagen", "Benutzername und/oder Passwort falsch");
 		}

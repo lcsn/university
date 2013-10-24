@@ -6,8 +6,11 @@ import de.lsn.playground.entity.player.Player;
 import de.lsn.playground.framwork.exception.ZgameException;
 
 @Remote
-public interface PlayerDAORemote {
+public interface PlayerServiceDAORemote {
 
+//	######## MISC METHODS ########
+	public boolean authenticate(String username, String password) throws ZgameException;
+	
 //	######## CREATIONAL METHODS ########
 	public void createPlayer(Player p);
 	

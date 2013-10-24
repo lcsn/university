@@ -7,7 +7,7 @@
 	<ui:define name="content">
 		<div align="center">
 			<H1>LOGIN - UNDER CONSTRUCTION</H1>
-			<h:form id="login">
+			<form method="POST" action="j_security_check">
 				<h:messages id="msgs" errorStyle="color:red;" />
 				<h:panelGrid style="border: 2px solid #014b7d;" cellpadding="10px">
 					<h:inputText id="username" style="text-align:center"
@@ -15,18 +15,19 @@
 						requiredMessage="Enter username" autocomplete="off">
 						<f:passThroughAttribute name="placeholder" value="Username" />
 						<f:passThroughAttribute name="autofocus" value="" />
+						<f:passThroughAttribute name="name" value="j_username" />
 					</h:inputText>
 					<h:inputSecret id="password" style="text-align:center"
 						value="#{loginBean.password}" required="true"
 						requiredMessage="Enter password">
 						<f:passThroughAttribute name="placeholder" value="Password" />
+						<f:passThroughAttribute name="name" value="j_password" />
 					</h:inputSecret>
 				</h:panelGrid>
 				<p style="margin-top: 20px">
-					<h:commandButton id="loginBtn" type="submit" value="Login"
-						action="#{loginBean.enter}" />
+					<h:commandButton id="loginBtn" type="submit" value="Login" action="#{loginBean.enter}" />
 				</p>
-			</h:form>
+			</form>
 		</div>
 	</ui:define>
 </ui:composition>
