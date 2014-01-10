@@ -19,6 +19,17 @@ public class HashService {
 		}
 	}
 
+	public static String getDigest(String clearPassword) {
+		String digest = "";
+		try {
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+			digest = Base64.encodeBase64String(messageDigest.digest((clearPassword).getBytes()));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return digest;
+	}
+	
 	public static String getDigest(String user, String clearPassword) {
 		if (user != null && user.length() > 0 && clearPassword != null) {
 			digest.reset();

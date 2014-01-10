@@ -8,14 +8,15 @@
 		<div align="center">
 			<H1>REGISTER - UNDER CONSTRUCTION</H1>
 			<h:form id="register">
-				<h:messages id="msgs" errorStyle="color:red;" />
+				<h:messages id="msgs" showSummary="false" showDetail="true" infoStyle="color:green;" errorStyle="color:red;" />
 				<h:panelGrid columns="2">
 					<h:panelGrid columns="2" cellpadding="20px">
 						<h:outputLabel for="username" value="Benutzername" />
 						<h:inputText id="username" style="text-align:center"
 							value="#{registerBean.newPlayer.username}" required="true"
-							requiredMessage="Enter username" autocomplete="off">
+							requiredMessage="Enter username" autocomplete="off"  >
 							<f:passThroughAttribute name="placeholder" value="Username" />
+							<f:ajax event="blur" listener="#{registerBean.validateUsername}" execute="registerBtn msgs" render="registerBtn msgs" />
 						</h:inputText>
 						<h:outputLabel for="firstname" value="Vorname" />
 						<h:inputText id="firstname" style="text-align:center"
@@ -70,8 +71,7 @@
 					</h:panelGrid>
 				</h:panelGrid>
 				<p style="margin-top: 20px">
-					<h:commandButton id="registerBtn" type="submit" value="Fight!"
-						action="#{registerBean.register}" onclick="" />
+					<h:commandButton id="registerBtn" type="submit" value="Fight!" action="#{registerBean.register}" disabled="#{!(registerBean.valid)}" />
 				</p>
 			</h:form>
 		</div>

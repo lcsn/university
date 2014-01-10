@@ -33,15 +33,15 @@ public class LoginBean extends AbstractBackingBean {
 	private String username;
 	
 	private String password;
-	
+
 	public String enter() {
 		String page = "login.xhtml";
 		System.out.println("Login: "+username+":"+password);
 		Player player = null;
 		try {
-			request.login(username, HashService.getDigest(username, password));
-			player = playerDAO.findPlayerByUsernameAndPassword(username, HashService.getDigest(username, password));
-			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+			String passwordHash = HashService.getDigest(/*username, */password);
+			request.login(username, password);
+			player = playerDAO.findPlayerByUsernameAndPassword(username, passwordHash);
 			session.setAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE, player);
 			page = "main.xhtml";
 		} catch (ZgameException e) {
@@ -57,6 +57,12 @@ public class LoginBean extends AbstractBackingBean {
 	public String exit() {
 		Map<String, Object> sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
 		sessionMap.clear();
+		session.setAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE, null);
+		try {
+			request.logout();
+		} catch (ServletException e) {
+			e.printStackTrace();
+		}
 		return "welcome.xhtml";
 	}
 	

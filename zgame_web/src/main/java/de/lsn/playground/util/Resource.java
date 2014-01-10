@@ -5,9 +5,11 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import de.lsn.playground.util.qualifier.Request;
 import de.lsn.playground.util.qualifier.Response;
+import de.lsn.playground.util.qualifier.Session;
 
 public class Resource {
 
@@ -31,6 +33,12 @@ public class Resource {
 	@Produces
 	public HttpServletResponse produceServletResponse() {
 		return (HttpServletResponse) produceExternalContext().getResponse();
+	}
+	
+	@Session
+	@Produces
+	public HttpSession produceHttpSession() {
+		return (HttpSession) produceExternalContext().getSession(false);
 	}
 	
 }

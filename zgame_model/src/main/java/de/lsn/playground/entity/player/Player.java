@@ -30,6 +30,7 @@ import de.lsn.playground.framwork.PlayerRole;
 @SuppressWarnings("serial")
 @NamedQueries({
 	@NamedQuery(name=Player.FIND_BY_USERNAME_AND_PASSWORD, query="SELECT o FROM Player AS o WHERE o.username = :username AND o.password = :password"),
+	@NamedQuery(name=Player.VALIDATE_USERNAME, query="SELECT COUNT(o) FROM Player AS o WHERE o.username = :username")
 })
 @Entity
 @Table(name="Player", uniqueConstraints={
@@ -39,6 +40,7 @@ import de.lsn.playground.framwork.PlayerRole;
 public class Player extends ZgameEntity {
 
 	public static final String FIND_BY_USERNAME_AND_PASSWORD = "Player.FIND_BY_USERNAME_AND_PASSWORD";
+	public static final String VALIDATE_USERNAME = "Player.VALIDATE_USERNAME";
 
 	@NotNull
 	@Size(min=3)

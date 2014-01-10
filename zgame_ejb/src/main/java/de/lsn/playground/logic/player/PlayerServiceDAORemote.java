@@ -12,9 +12,12 @@ public interface PlayerServiceDAORemote {
 	public boolean authenticate(String username, String password) throws ZgameException;
 	
 //	######## CREATIONAL METHODS ########
-	public void createPlayer(Player p);
+	public void createPlayer(Player p) throws ZgameException;
 	
 //	######## FINDER METHODS ########
+	
+	public Long validateUsername(String username);
+	
 	public Player findPlayerByUsernameAndPassword(String username, String password) throws ZgameException;
 	
 }

@@ -26,11 +26,29 @@ public class PlayerServiceDAO extends AbstractDAO implements PlayerServiceDAOLoc
 	
 //	######## CREATIONAL METHODS ########
 
-	public void createPlayer(Player p) {
+	public void createPlayer(Player p) throws ZgameException {
+		if(null == p) {
+			return;
+		}
+		if(p.getId() == null) {
+			throw new ZgameException("Entity kann nicht persistiert werden");
+		}
 		em.persist(p);
 	}
 
 //	######## FINDER METHODS ########	
+	
+	public Long validateUsername(String username) {
+		Long result = 0l;
+		TypedQuery<Long> query = em.createNamedQuery(Player.VALIDATE_USERNAME, Long.class);
+		query.setParameter("username", username);
+		try {
+			result = query.getSingleResult();
+		} catch (NoResultException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 	public Player findPlayerByUsernameAndPassword(String username, String password) throws ZgameException {
 		Player player = null;
