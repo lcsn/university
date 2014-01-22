@@ -14,6 +14,7 @@ import de.lsn.playground.entity.attribute.Defense;
 import de.lsn.playground.entity.attribute.FiringRange;
 import de.lsn.playground.entity.attribute.Health;
 import de.lsn.playground.entity.attribute.MovingRange;
+import de.lsn.playground.entity.attribute.Name;
 import de.lsn.playground.entity.attribute.Offense;
 import de.lsn.playground.framwork.Fraction;
 import de.lsn.playground.framwork.Skill;
@@ -30,7 +31,9 @@ public class UnitDefinition extends ZgameEntity {
 	public static final String FIND_ALL = "UnitDefinition.FIND_ALL";
 	public static final String FIND_BY_ID = "UnitDefinition.FIND_BY_ID";
 
-	private String unitName = "";
+	@Embedded
+	@AttributeOverride(name="nameValue", column=@Column(name="unitName"))
+	private Name unitName = new Name("no value");
 	
 	private Integer tier;
 
@@ -64,11 +67,11 @@ public class UnitDefinition extends ZgameEntity {
 
 	private boolean vulnerableToRadiation;
 
-	public String getUnitName() {
+	public Name getUnitName() {
 		return unitName;
 	}
 	
-	public void setUnitName(String unitName) {
+	public void setUnitName(Name unitName) {
 		this.unitName = unitName;
 	}
 	

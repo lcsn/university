@@ -14,6 +14,7 @@ import de.lsn.playground.framwork.Fraction;
 @DiscriminatorValue(value="CAMP")
 public class CampUnit extends Unit {
 
+	/*
 	@Column(name="FRACTION")
 	@Enumerated(EnumType.STRING)
 	private Fraction fraction = Fraction.CAMP;
@@ -25,5 +26,6 @@ public class CampUnit extends Unit {
 	protected void setFraction(Fraction fraction) {
 		this.fraction = fraction;
 	}
+	*/
 	
 }

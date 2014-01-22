@@ -24,8 +24,10 @@ import de.lsn.playground.entity.attribute.Defense;
 import de.lsn.playground.entity.attribute.FiringRange;
 import de.lsn.playground.entity.attribute.Health;
 import de.lsn.playground.entity.attribute.MovingRange;
+import de.lsn.playground.entity.attribute.Name;
 import de.lsn.playground.entity.attribute.Offense;
 import de.lsn.playground.framwork.Experience;
+import de.lsn.playground.framwork.Fraction;
 import de.lsn.playground.framwork.Skill;
 
 @SuppressWarnings("serial")
@@ -42,7 +44,9 @@ public class Unit extends ZgameEntity {
 	public static final String FIND_ALL = "Unit.FIND_ALL";
 	public static final String FIND_BY_ID = "Unit.FIND_BY_ID";
 
-	private String unitName = "";
+	@Embedded
+	@AttributeOverride(name="nameValue", column=@Column(name="unitName"))
+	private Name unitName = new Name("no value");
 	
 	private Integer tier;
 	
@@ -51,6 +55,10 @@ public class Unit extends ZgameEntity {
 
 	@Enumerated(EnumType.STRING)
 	private Skill skill;
+	
+	@Column(name="FRACTION")
+	@Enumerated(EnumType.STRING)
+	private Fraction fraction = Fraction.CAMP;
 	
 //	private Long offense_gun;
 //	private Long offense_melee;
@@ -86,11 +94,18 @@ public class Unit extends ZgameEntity {
 	@JoinColumn(name = "unitDefinitionId")
 	private UnitDefinition unitDefinition;
 	
-	public String getUnitName() {
+	public Unit() {
+	}
+	
+	public Unit(Fraction fraction) {
+		this.fraction = fraction;
+	}
+	
+	public Name getUnitName() {
 		return unitName;
 	}
 	
-	public void setUnitName(String unitName) {
+	public void setUnitName(Name unitName) {
 		this.unitName = unitName;
 	}
 	
@@ -116,6 +131,14 @@ public class Unit extends ZgameEntity {
 	
 	public void setSkill(Skill skill) {
 		this.skill = skill;
+	}
+	
+	public Fraction getFraction() {
+		return fraction;
+	}
+	
+	protected void setFraction(Fraction fraction) {
+		this.fraction = fraction;
 	}
 	
 	public Offense getOffense() {

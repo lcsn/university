@@ -14,6 +14,7 @@ import de.lsn.playground.framwork.Fraction;
 @DiscriminatorValue(value="HIVE")
 public class HiveUnit extends Unit {
 
+	/*
 	@Column(name="FRACTION")
 	@Enumerated(EnumType.STRING)
 	private Fraction fraction = Fraction.HIVE;
@@ -25,5 +26,6 @@ public class HiveUnit extends Unit {
 	protected void setFraction(Fraction fraction) {
 		this.fraction = fraction;
 	}
+	*/
 	
 }

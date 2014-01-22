@@ -3,7 +3,7 @@ package de.lsn.model;
 import java.util.Calendar;
 
 import de.lsn.resource.Constants;
-import de.lsn.resource.helper.DateConvenvience;
+import de.lsn.resource.helper.DateConvenience;
 
 public class Age {
 
@@ -16,11 +16,11 @@ public class Age {
 	}
 	
 	public Age(String birthday) {
-		this(DateConvenvience.dateStringToCalendar(birthday), DateConvenvience.yearsSinceGivenDate(birthday));
+		this(DateConvenience.dateStringToCalendar(birthday), DateConvenience.yearsSinceGivenDate(birthday));
 	}
 	
 	public Age(String birthday, int age) {
-		this(DateConvenvience.dateStringToCalendar(birthday), age);
+		this(DateConvenience.dateStringToCalendar(birthday), age);
 	}
 	
 	public Age(Calendar birthday, int age) {

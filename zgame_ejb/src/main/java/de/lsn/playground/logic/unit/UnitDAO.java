@@ -7,12 +7,24 @@ import javax.ejb.Stateless;
 import javax.persistence.Query;
 
 import de.lsn.playground.entity.unit.Unit;
+import de.lsn.playground.framwork.exception.ZgameException;
 import de.lsn.playground.logic.AbstractDAO;
 
 @Stateless
 @Remote(UnitDAORemote.class)
 public class UnitDAO extends AbstractDAO implements UnitDAOLocal {
 
+	
+//	######## CREATIONAL METHODS ########
+	public Unit createUnit(Unit unit) throws ZgameException {
+		if(null != unit.getId()) {
+			throw new ZgameException("Can not persist detached entity");
+		}
+		em.persist(unit);
+		return em.find(Unit.class, unit.getId());
+	}	
+	
+//	######## FINDER METHODS ########
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Unit> findUnits() {

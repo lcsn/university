@@ -22,6 +22,7 @@ import de.lsn.playground.entity.unit.Unit;
 import de.lsn.playground.entity.unit.UnitDefinition;
 import de.lsn.playground.framwork.exception.ZgameException;
 import de.lsn.playground.framwork.remote.RemoteInterfaceFactory;
+import de.lsn.playground.json.JsonHelper;
 import de.lsn.playground.logic.game.field.FieldServiceDAORemote;
 import de.lsn.playground.logic.game.map.MapServiceDAORemote;
 import de.lsn.playground.logic.test.TestEJBRemote;
@@ -30,6 +31,8 @@ import de.lsn.playground.logic.unit.definition.UnitDefinitionDAORemote;
 import de.lsn.playground.logic.unit.service.UnitServiceDAORemote;
 
 public class EJBClient {
+	
+	private static final int NUMBER_OF_UNITDEFINITIONS = 2;
 	
 	private static MapServiceDAORemote mapServiceDAORemote;
 	private static FieldServiceDAORemote fieldServiceDAORemote;
@@ -98,8 +101,20 @@ public class EJBClient {
 		loadUnitConvertToJsonAndWriteToFile(new File("src/main/resources/unit_3.json"));
 		loadUnitConvertToJsonAndWriteToFile(new File("src/main/resources/unit_4.json"));
 		loadUnitConvertToJsonAndWriteToFile(new File("src/main/resources/unit_5.json"));
-		*/
 		
+		loadUnitDefintitionConvertToJsonAndWriteToFile(1000l, new File("src/main/resources/unitdefinition_light_walker.json"));
+		loadUnitDefintitionConvertToJsonAndWriteToFile(1010l, new File("src/main/resources/unitdefinition_light_survivor.json"));
+		*/
+
+		
+////	LOAD AND PERSIST TEST UNITS
+//		loadAndPersistTestUnits();
+		
+////	LOAD AND PERSIST UNITDEFINITION
+//		loadUnitDefinitionAndSaveToDB(new File("src/main/resources/unitdefinition_light_walker.json"));
+//		loadUnitDefinitionAndSaveToDB(new File("src/main/resources/unitdefinition_light_survivor.json"));
+		
+////	CREATING INITIAL TERRIAN TYPES
 //		Plain simplePlain = new Plain("simple_plain");
 //		simplePlain = (Plain) createSampleTerrain(simplePlain);
 //		Wood simpleWood = new Wood("simple_wood");
@@ -115,15 +130,17 @@ public class EJBClient {
 //		None emptyTerrain = new None("empty_terrain");
 //		emptyTerrain = (None) createSampleTerrain(emptyTerrain);
 		
-//		createSampleMapDefinition(3, 3);
-		
-//		Map newMap = createSampleMapFromMapDefinition(98l);
+////	CREATE A SAMPLE MAPDEFINITION
+//		createSampleMapDefinition(5, 6);
+	
+//		CREATE A SAMPLE MAP FROM MAPDEFINTION
+		Map newMap = createSampleMapFromMapDefinition(191l);
 		
 //		try {
 //			Map map = mapServiceDAORemote.findMapById(108l);
-//			String mapAsJson = map.toJson();
-//			System.out.println(mapAsJson);
-//			HttpConnector.getInstance().put("https://boiii.firebaseio.com/maps/"+map.getMapInstanceId()+"/.json", map);
+			String mapAsJson = newMap.toJson();
+			System.out.println(mapAsJson);
+			HttpConnector.getInstance().put("https://boiii.firebaseio.com/maps/"+newMap.getMapInstanceId()+"/.json", newMap);
 //		} catch (ZgameException e) {
 //			e.printStackTrace();
 //		}
@@ -134,13 +151,51 @@ public class EJBClient {
 //		System.out.println(mapDefinition.toJson());
 //		HttpConnector.getInstance().put("https://boiii.firebaseio.com/maps/mapdefinition2/.json", mapDefinition);
 		
-		Test.testWriteObjectToFireBase();
+//		Test.testWriteObjectToFireBase();
 		
+	}
+	
+	private static void loadAndPersistTestUnits() {
+		loadUnitAndSaveToDB(new File("src/main/resources/unit_0.json"));
+		loadUnitAndSaveToDB(new File("src/main/resources/unit_1.json"));
+		loadUnitAndSaveToDB(new File("src/main/resources/unit_2.json"));
+		loadUnitAndSaveToDB(new File("src/main/resources/unit_3.json"));
+		loadUnitAndSaveToDB(new File("src/main/resources/unit_4.json"));
+		loadUnitAndSaveToDB(new File("src/main/resources/unit_5.json"));
+	}
+	
+	private static void loadUnitAndSaveToDB(File file) {
+		try {
+			unitDAORemote.createUnit(JsonHelper.getInstance().getObjectFromJson(FileUtils.readFileToByteArray(file), Unit.class));
+		} catch (IOException | ZgameException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void loadAndPersistTestUnitDefinitions() {
+		loadUnitDefinitionAndSaveToDB(new File("src/main/resources/unitdefinition_0.json"));
+		loadUnitDefinitionAndSaveToDB(new File("src/main/resources/unitdefinition_1.json"));
+	}
+	
+	private static void loadUnitDefinitionAndSaveToDB(File file) {
+		try {
+			unitDefinitionDAORemote.createUnitDefinition(JsonHelper.getInstance().getObjectFromJson(FileUtils.readFileToByteArray(file), UnitDefinition.class));
+		} catch (IOException | ZgameException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private static void loadUnitConvertToJsonAndWriteToFile(File file) {
 		try {
 			FileUtils.writeByteArrayToFile(file, unitDAORemote.findUnitById(81l).toJson().getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	private static void loadUnitDefintitionConvertToJsonAndWriteToFile(Long unitDefinitionId, File file) {
+		try {
+			FileUtils.writeByteArrayToFile(file, unitDefinitionDAORemote.findUnitDefintionById(unitDefinitionId).toJson().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -195,19 +250,19 @@ public class EJBClient {
 	
 	private static UnitDefinition getRandomUnitDefinition(int rInt) throws ZgameException {
 		switch (rInt) {
-		case 0:
-			return unitDefinitionDAORemote.findUnitDefintionById(1l); 
 		case 1:
-			return unitDefinitionDAORemote.findUnitDefintionById(2l);
+			return unitDefinitionDAORemote.findUnitDefintionById(139l); 
 		case 2:
-			return unitDefinitionDAORemote.findUnitDefintionById(3l);
-		case 3:
-			return unitDefinitionDAORemote.findUnitDefintionById(4l);
-		case 4:
-			return unitDefinitionDAORemote.findUnitDefintionById(5l);
-		case 5:
-			return unitDefinitionDAORemote.findUnitDefintionById(6l);
-		case 6:
+			return unitDefinitionDAORemote.findUnitDefintionById(140l);
+//		case 3:
+//			return unitDefinitionDAORemote.findUnitDefintionById(3l);
+//		case 4:
+//			return unitDefinitionDAORemote.findUnitDefintionById(4l);
+//		case 5:
+//			return unitDefinitionDAORemote.findUnitDefintionById(5l);
+//		case 6:
+//			return unitDefinitionDAORemote.findUnitDefintionById(6l);
+		case 7:
 			return null;
 		default:
 			return null;
@@ -242,7 +297,7 @@ public class EJBClient {
 			for (int j = 0; j < width; j++) {
 				UnitDefinition unitDefinition = null;
 				try {
-					unitDefinition = getRandomUnitDefinition(new Random().nextInt(7));
+					unitDefinition = getRandomUnitDefinition(new Random().nextInt(NUMBER_OF_UNITDEFINITIONS+1));
 				} catch (ZgameException e) {
 					e.printStackTrace();
 				}

@@ -4,8 +4,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
@@ -32,19 +30,22 @@ public class RegisterBean extends AbstractBackingBean {
 	}
 	
 	public String register() {
+		String page = facesContext.getViewRoot().getViewId();
 		if(!newPlayer.checkPass()) {
 			addMessage(FacesMessage.SEVERITY_ERROR, "Passwörter stimmen nicht überein", "");
 			return "";
 		}
-		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+		HttpSession session = (HttpSession) externalContext.getSession(false);
 		newPlayer.setPassword(HashService.getDigest(/*newPlayer.getUsername(), */newPlayer.getPassword()));
 		try {
 			playerServiceDAO.createPlayer(this.newPlayer);
+			session.setAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE, newPlayer);
+			page = "main.xhtml";
 		} catch (ZgameException e) {
 			e.printStackTrace();
+			addMessage(FacesMessage.SEVERITY_WARN, "Registrierung fehlgeschlagen", "Benutzer kann nicht registriert");
 		}
-		session.setAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE, newPlayer);
-		return "main.xhtml";
+		return page;
 	}
 	
 	private void init() {

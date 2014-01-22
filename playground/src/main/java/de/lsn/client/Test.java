@@ -22,12 +22,12 @@ public class Test {
 	private static void testHttpConnector() {
 //		HttpConnector.getInstance().get("https://boiii.firebaseio.com/.json");
 		
-//		Person p1 = new Person();
-//		p1.setName(new Name("Ano", "Nymous"));
-//		p1.setAge(new Age("01.04.1992"));
-//		p1.setGender(Gender.MALE);
-//		System.out.println(p1.toJson());
-//		HttpConnector.getInstance().put("https://boiii.firebaseio.com/person/"+p1.getId()+"/.json", p1);
+		Person p1 = new Person();
+		p1.setName(new Name("Ano", "Nymous"));
+		p1.setAge(new Age("01.04.1992"));
+		p1.setGender(Gender.MALE);
+		System.out.println(p1.toJson());
+		HttpConnector.getInstance().put("https://boiii.firebaseio.com/person/"+p1.getId()+"/.json", p1);
 		
 		ArrayList<FieldDefinition> fields = new ArrayList<FieldDefinition>();
 		fields.add(new FieldDefinition("", null, null, null, true, false));

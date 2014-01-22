@@ -30,7 +30,7 @@ public class PlayerServiceDAO extends AbstractDAO implements PlayerServiceDAOLoc
 		if(null == p) {
 			return;
 		}
-		if(p.getId() == null) {
+		if(p.getId() != null) {
 			throw new ZgameException("Entity kann nicht persistiert werden");
 		}
 		em.persist(p);

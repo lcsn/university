@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import de.lsn.playground.entity.player.Player;
 import de.lsn.playground.framwork.ZgameConstants;
@@ -35,7 +34,7 @@ public class LoginBean extends AbstractBackingBean {
 	private String password;
 
 	public String enter() {
-		String page = "login.xhtml";
+		String page = facesContext.getViewRoot().getViewId();
 		System.out.println("Login: "+username+":"+password);
 		Player player = null;
 		try {

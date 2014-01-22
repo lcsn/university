@@ -6,7 +6,7 @@ import java.util.Date;
 
 import de.lsn.resource.Constants;
 
-public class DateConvenvience {
+public class DateConvenience {
 
 	public static Calendar dateStringToCalendar(String dateAsString) {
 		Date birthdayAsDate = null;
