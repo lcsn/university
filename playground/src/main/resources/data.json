@@ -1,5 +1,1 @@
-{
-"name":{"firstname":"Freddie","lastname":"Mercury"},
-"age":{"birthday":638920800000,"age":23},
-"gender":"MALE"
-}
+{"name":{"firstname":"Freddie","lastname":"Mercury"},"age":{"birthday":638920800000,"age":23},"gender":"MALE"}

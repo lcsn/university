@@ -1,4 +1,4 @@
-package de.lsn.http;
+package de.lsn.connector;
 
 import java.io.IOException;
 import java.net.URI;

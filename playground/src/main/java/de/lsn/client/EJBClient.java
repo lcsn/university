@@ -11,7 +11,9 @@ import javax.naming.Context;
 
 import org.apache.commons.io.FileUtils;
 
-import de.lsn.http.HttpConnector;
+import com.firebase.client.Logger;
+
+import de.lsn.connector.FirebaseConnector;
 import de.lsn.playground.entity.attribute.Coord;
 import de.lsn.playground.entity.attribute.Name;
 import de.lsn.playground.entity.map.FieldDefinition;
@@ -34,13 +36,19 @@ public class EJBClient {
 	
 	private static final int NUMBER_OF_UNITDEFINITIONS = 2;
 	
-	private static MapServiceDAORemote mapServiceDAORemote;
-	private static FieldServiceDAORemote fieldServiceDAORemote;
-	private static UnitDefinitionDAORemote unitDefinitionDAORemote;
-	private static UnitServiceDAORemote unitServiceDAORemote;
-	private static UnitDAORemote unitDAORemote;
-	private static TestEJBRemote testEJBRemote; 
+	private MapServiceDAORemote mapServiceDAORemote;
+	private FieldServiceDAORemote fieldServiceDAORemote;
+	private UnitDefinitionDAORemote unitDefinitionDAORemote;
+	private UnitServiceDAORemote unitServiceDAORemote;
+	private UnitDAORemote unitDAORemote;
+	private TestEJBRemote testEJBRemote; 
 
+	private static EJBClient client;
+	
+	public EJBClient() {
+		getRemoteInterfaces();
+	}
+	
 	private static Properties getInitialContextProps() {
 //		System.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
 		Properties properties = new Properties(); 
@@ -55,7 +63,14 @@ public class EJBClient {
 		return properties;
 	}
 
-	private static void getRemoteInterfaces() {
+	public static EJBClient getInstance() {
+		if(null == client) {
+			client = new EJBClient();
+		}
+		return client;
+	}
+	
+	private void getRemoteInterfaces() {
 		mapServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(MapServiceDAORemote.class);
 		fieldServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(FieldServiceDAORemote.class);
 		unitDefinitionDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitDefinitionDAORemote.class);
@@ -67,7 +82,8 @@ public class EJBClient {
 	public static void main(String[] args) {
 		
 		RemoteInterfaceFactory.recreateInitialContext(getInitialContextProps());
-		getRemoteInterfaces();
+		
+//		EJBClient.getInstance();
 		
 //		InitialContext ctx = null;
 //		try {
@@ -134,13 +150,24 @@ public class EJBClient {
 //		createSampleMapDefinition(5, 6);
 	
 //		CREATE A SAMPLE MAP FROM MAPDEFINTION
-		Map newMap = createSampleMapFromMapDefinition(191l);
+//		Map newMap = createSampleMapFromMapDefinition(141l);
 		
 //		try {
-//			Map map = mapServiceDAORemote.findMapById(108l);
-			String mapAsJson = newMap.toJson();
-			System.out.println(mapAsJson);
-			HttpConnector.getInstance().put("https://boiii.firebaseio.com/maps/"+newMap.getMapInstanceId()+"/.json", newMap);
+//			Map map = mapServiceDAORemote.findMapById(222l);
+//			FileUtils.writeByteArrayToFile(new File("src/main/resources/map_instance.json"), mapAsJson.getBytes(Charset.forName("UTF-8")));
+
+//			String mapAsJson = FileUtils.readFileToString(new File("src/main/resources/map_instance.json"), Charset.forName("UTF-8"));
+//			Map map = JsonHelper.getInstance().getObjectFromJson(mapAsJson.getBytes(Charset.forName("UTF-8")), Map.class);
+			
+			FirebaseConnector.powerUp(Logger.Level.DEBUG, "https://boiii.firebaseio.com");
+//			FirebaseConnector.getInstance().child("maps").child(map.getMapInstanceId()+"").push(map.toMap());
+//			FirebaseConnector.getInstance().shutdown();
+			
+//			String mapAsJson = newMap.toJson();
+//			System.out.println(mapAsJson);
+//			HttpConnector.getInstance().put("https://boiii.firebaseio.com/maps/"+newMap.getMapInstanceId()+"/.json", newMap);
+//		} catch (IOException e) {
+//		} catch (ZgameException | IOException e) {
 //		} catch (ZgameException e) {
 //			e.printStackTrace();
 //		}
@@ -166,7 +193,7 @@ public class EJBClient {
 	
 	private static void loadUnitAndSaveToDB(File file) {
 		try {
-			unitDAORemote.createUnit(JsonHelper.getInstance().getObjectFromJson(FileUtils.readFileToByteArray(file), Unit.class));
+			EJBClient.getInstance().unitDAORemote.createUnit(JsonHelper.getInstance().getObjectFromJson(FileUtils.readFileToByteArray(file), Unit.class));
 		} catch (IOException | ZgameException e) {
 			e.printStackTrace();
 		}
@@ -179,7 +206,7 @@ public class EJBClient {
 	
 	private static void loadUnitDefinitionAndSaveToDB(File file) {
 		try {
-			unitDefinitionDAORemote.createUnitDefinition(JsonHelper.getInstance().getObjectFromJson(FileUtils.readFileToByteArray(file), UnitDefinition.class));
+			EJBClient.getInstance().unitDefinitionDAORemote.createUnitDefinition(JsonHelper.getInstance().getObjectFromJson(FileUtils.readFileToByteArray(file), UnitDefinition.class));
 		} catch (IOException | ZgameException e) {
 			e.printStackTrace();
 		}
@@ -187,7 +214,7 @@ public class EJBClient {
 	
 	private static void loadUnitConvertToJsonAndWriteToFile(File file) {
 		try {
-			FileUtils.writeByteArrayToFile(file, unitDAORemote.findUnitById(81l).toJson().getBytes());
+			FileUtils.writeByteArrayToFile(file, EJBClient.getInstance().unitDAORemote.findUnitById(81l).toJson().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -195,38 +222,38 @@ public class EJBClient {
 	
 	private static void loadUnitDefintitionConvertToJsonAndWriteToFile(Long unitDefinitionId, File file) {
 		try {
-			FileUtils.writeByteArrayToFile(file, unitDefinitionDAORemote.findUnitDefintionById(unitDefinitionId).toJson().getBytes());
+			FileUtils.writeByteArrayToFile(file, EJBClient.getInstance().unitDefinitionDAORemote.findUnitDefintionById(unitDefinitionId).toJson().getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
 	}
 
 	private static void testLoadUnitById(Long unitId) {
-		System.out.println(unitDAORemote.findUnitById(unitId));
+		System.out.println(EJBClient.getInstance().unitDAORemote.findUnitById(unitId));
 	}
 
 	private static Unit testCreateUnitById(Long unitDefinitionId) {
-		return unitServiceDAORemote.createUnitByUnitDefinitionId(unitDefinitionId);
+		return EJBClient.getInstance().unitServiceDAORemote.createUnitByUnitDefinitionId(unitDefinitionId);
 	}
 
 	private static void testLoadUnitDefinition() {
-		UnitDefinition unitDefinition = unitDefinitionDAORemote.findUnitDefintionById(1l);
+		UnitDefinition unitDefinition = EJBClient.getInstance().unitDefinitionDAORemote.findUnitDefintionById(1l);
 		System.out.println(unitDefinition.getId());		
 	}
 
 	private static void testPersistence() {
-		testEJBRemote.moo();
-		testEJBRemote.testPersistence(10);
-		testEJBRemote = null;
-		testEJBRemote = RemoteInterfaceFactory.getInstance().getCachedRemote(TestEJBRemote.class);
-		testEJBRemote.moo();
-		testEJBRemote.testPersistence(10);
+		EJBClient.getInstance().testEJBRemote.moo();
+		EJBClient.getInstance().testEJBRemote.testPersistence(10);
+		EJBClient.getInstance().testEJBRemote = null;
+		EJBClient.getInstance().testEJBRemote = RemoteInterfaceFactory.getInstance().getCachedRemote(TestEJBRemote.class);
+		EJBClient.getInstance().testEJBRemote.moo();
+		EJBClient.getInstance().testEJBRemote.testPersistence(10);
 	}
 
 	public static Terrain createSampleTerrain(Terrain terrain) {
 		Terrain t = null;
 		try {
-			t = fieldServiceDAORemote.createTerrain(terrain);
+			t = EJBClient.getInstance().fieldServiceDAORemote.createTerrain(terrain);
 		} catch (ZgameException e) {
 			e.printStackTrace();
 		}
@@ -251,9 +278,9 @@ public class EJBClient {
 	private static UnitDefinition getRandomUnitDefinition(int rInt) throws ZgameException {
 		switch (rInt) {
 		case 1:
-			return unitDefinitionDAORemote.findUnitDefintionById(139l); 
+			return EJBClient.getInstance().unitDefinitionDAORemote.findUnitDefintionById(139l); 
 		case 2:
-			return unitDefinitionDAORemote.findUnitDefintionById(140l);
+			return EJBClient.getInstance().unitDefinitionDAORemote.findUnitDefintionById(140l);
 //		case 3:
 //			return unitDefinitionDAORemote.findUnitDefintionById(3l);
 //		case 4:
@@ -272,21 +299,21 @@ public class EJBClient {
 	private static Terrain getRandomTerrain(int rInt) throws ZgameException {
 		switch (rInt) {
 		case 0:
-			return fieldServiceDAORemote.findTerrainByName("simple_plain"); 
+			return EJBClient.getInstance().fieldServiceDAORemote.findTerrainByName("simple_plain"); 
 		case 1:
-			return fieldServiceDAORemote.findTerrainByName("simple_wood");
+			return EJBClient.getInstance().fieldServiceDAORemote.findTerrainByName("simple_wood");
 		case 2:
-			return fieldServiceDAORemote.findTerrainByName("simple_sea");
+			return EJBClient.getInstance().fieldServiceDAORemote.findTerrainByName("simple_sea");
 		case 3:
-			return fieldServiceDAORemote.findTerrainByName("simple_hill");
+			return EJBClient.getInstance().fieldServiceDAORemote.findTerrainByName("simple_hill");
 		case 4:
-			return fieldServiceDAORemote.findTerrainByName("simple_swamp");
+			return EJBClient.getInstance().fieldServiceDAORemote.findTerrainByName("simple_swamp");
 		case 5:
-			return fieldServiceDAORemote.findTerrainByName("simple_desert");
+			return EJBClient.getInstance().fieldServiceDAORemote.findTerrainByName("simple_desert");
 		case 6:
-			return fieldServiceDAORemote.findTerrainByName("empty_terrain");
+			return EJBClient.getInstance().fieldServiceDAORemote.findTerrainByName("empty_terrain");
 		default:
-			return fieldServiceDAORemote.findTerrainByName("empty_terrain");
+			return EJBClient.getInstance().fieldServiceDAORemote.findTerrainByName("empty_terrain");
 		}
 	}
 
@@ -306,7 +333,7 @@ public class EJBClient {
 		}
 		MapDefinition newMapDefinition = new MapDefinition(2, height, width, new Name("first_map_"+height+"x"+width), fieldDefintions);
 		try {
-			mapServiceDAORemote.createMapDefinition(newMapDefinition);
+			EJBClient.getInstance().mapServiceDAORemote.createMapDefinition(newMapDefinition);
 		} catch (ZgameException e) {
 			e.printStackTrace();
 		}
@@ -315,7 +342,7 @@ public class EJBClient {
 	public static Map createSampleMapFromMapDefinition(Long mapDefinitionId) {
 		Map m = null;
 		try {
-			m = mapServiceDAORemote.createMapByMapDefinitionId(mapDefinitionId);
+			m = EJBClient.getInstance().mapServiceDAORemote.createMapByMapDefinitionId(mapDefinitionId);
 		} catch (ZgameException e) {
 			e.printStackTrace();
 		}
