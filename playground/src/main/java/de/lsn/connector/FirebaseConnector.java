@@ -2,17 +2,21 @@ package de.lsn.connector;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.derby.tools.sysinfo;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Logger;
-import com.firebase.client.ValueEventListener;
 import com.firebase.client.Logger.Level;
+import com.firebase.client.ValueEventListener;
 
 import de.lsn.jackson.JsonHelper;
 import de.lsn.model.Person;
+import de.lsn.playground.entity.ZgameEntity;
+import de.lsn.playground.framwork.FirebaseObject;
 
 public class FirebaseConnector {
 
@@ -77,10 +81,43 @@ public class FirebaseConnector {
 		return this;
 	}
 	
-	public FirebaseConnector parent(String parentName) {
+	public FirebaseConnector parent(/*String parentName*/) {
 //		this.navigationStack.push(this.firebase.child(parentName));
 		this.firebasePointer = this.firebasePointer.getParent();
 		return this;
+	}
+	
+	public Firebase put(final Map<String, Object> valueMap) throws CustomFirebaseException  {
+		final String id = String.valueOf(valueMap.get("id"));
+		if (StringUtils.isNotBlank(id)) {
+			Firebase _firebase = this.firebasePointer.child(id);
+			_firebase.addValueEventListener(new ValueEventListener() {
+				@Override
+				public void onDataChange(DataSnapshot snapshot) {
+					Long _id = (Long) snapshot.getValue();
+			         if (_id == null) {
+						child(id);
+						update(valueMap);
+			         }
+			         else {
+			        	 throw new CustomFirebaseException("Instanz existiert bereits");
+			         }
+				}
+				
+				@Override
+				public void onCancelled(FirebaseError arg0) {
+				}
+			});
+		}
+		else {
+			throw new CustomFirebaseException("Id nicht gefunden - Upload nicht möglich");
+		}
+		return this.firebasePointer;
+	}
+	
+	public Firebase update(Map<String, Object> valueMap) {
+		this.firebasePointer.updateChildren(valueMap);
+		return this.firebasePointer;
 	}
 	
 	public Firebase push(Object value) {
@@ -101,6 +138,11 @@ public class FirebaseConnector {
 				System.out.println("Pushing data completed");
 			}
 		});
+		Map<String, Object> updates = new HashMap<String, Object>();
+		if (value instanceof FirebaseObject) {
+			updates.put(pushRef.getParent().getName(), ((FirebaseObject)value).getFirebaseId());
+		}
+		pushRef.updateChildren(updates);
 		
 		return pushRef;
 	}
@@ -117,8 +159,22 @@ public class FirebaseConnector {
 		return push(p.toMap()); 
 	}
 	
+	public Firebase testPush2() {
+		Map<String, Object> toSet = new HashMap<String, Object>();
+		toSet.put("first", "Fred");
+		toSet.put("last", "Swanson");
+		return push(toSet); 
+	}
+	
+	public Firebase testPush3() {
+		Map<String, Object> toSet = new HashMap<String, Object>();
+		toSet.put("first", "Fred1");
+		toSet.put("last", "Swanson1");
+		return update(toSet); 
+	}
+	
 	public static void powerUp(Level level, String url) {
-		getInstance().setLogLevel(Logger.Level.DEBUG).newFirebase("https://boiii.firebaseio.com").testFirebase();
+		getInstance().setLogLevel(Logger.Level.DEBUG).newFirebase(url).testFirebase();
 	}
 	
 	public FirebaseConnector shutdown() {
@@ -131,8 +187,8 @@ public class FirebaseConnector {
 //		FirebaseConnector.getInstance().setLogLevel(Logger.Level.DEBUG).newFirebase("https://boiii.firebaseio.com").testFirebase();
 //		FirebaseConnector.getInstance().testFirebase();
 		
-		System.out.println(FirebaseConnector.getInstance().child("maps").child("map").testPush1().getName());
-//		System.out.println(FirebaseConnector.getInstance().child("TestTest").testPush().getName());
+//		System.out.println(FirebaseConnector.getInstance().child("maps").child("map").testPush1().getName());
+		System.out.println(FirebaseConnector.getInstance().child("TestTest").testPush2().getName());
 //		System.out.println(FirebaseConnector.getInstance().child("Test1").push("{user_id: 'wilma1', text: 'Hello1'}").getName());
 //		System.out.println(FirebaseConnector.getInstance().child("Moos").push("moo4").getName());
 		
@@ -141,5 +197,4 @@ public class FirebaseConnector {
 		FirebaseConnector.getInstance().shutdown();
 	}
 
-	
 }

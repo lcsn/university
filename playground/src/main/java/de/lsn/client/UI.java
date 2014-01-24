@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.math.NumberUtils;
 
-import de.lsn.http.HttpConnector;
+import de.lsn.connector.HttpConnector;
 import de.lsn.playground.entity.ZgameEntity;
 import de.lsn.playground.json.JsonHelper;
 import de.lsn.playground.json.JsonObject;

@@ -1,9 +1,10 @@
 package de.lsn.model;
 
+import java.util.HashMap;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.lsn.playground.json.JsonHelper;
-import de.lsn.playground.json.JsonObject;
+import de.lsn.jackson.JsonHelper;
 
 public class Person extends AbstractEntity implements JsonObject {
 
@@ -47,8 +48,14 @@ public class Person extends AbstractEntity implements JsonObject {
 		return this.getClass();
 	}
 	
+	@Override
 	public String toJson() {
 		return JsonHelper.getInstance().getJsonFromObject(this);
+	}
+
+	@Override
+	public HashMap<String,Object> toMap() {
+		return JsonHelper.getInstance().getMapFromObject(this);
 	}
 	
 }

@@ -1,22 +1,23 @@
 package de.lsn.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import de.lsn.http.HttpConnector;
+import de.lsn.connector.HttpConnector;
+import de.lsn.jackson.JsonHelper;
 import de.lsn.model.Age;
 import de.lsn.model.Gender;
 import de.lsn.model.Name;
 import de.lsn.model.Person;
 import de.lsn.playground.entity.map.FieldDefinition;
 import de.lsn.playground.entity.map.MapDefinition;
-import de.lsn.playground.json.JsonHelper;
 
 public class Test {
 
 	public static void main(String[] args) {
-//		testJsonHelper();
+		testJsonHelper();
 		
-		testHttpConnector();
+//		testHttpConnector();
 	}
 	
 	private static void testHttpConnector() {
@@ -46,7 +47,7 @@ public class Test {
 	
 	private static void testJsonHelper() {
 		System.out.println("Json to Object");
-		Person p = (Person) JsonHelper.getInstance().getObjectFromJson();
+		Person p = (Person) JsonHelper.getInstance().getObjectFromJson(Person.class);
 		System.out.println(p.toString());
 		
 		System.out.println("Object to Json #1");		
@@ -57,6 +58,7 @@ public class Test {
 		p1.setAge(new Age("01.04.1990"));
 		p1.setGender(Gender.MALE);
 		System.out.println(p1.toJson());
+		
 	}
 	
 }

@@ -71,19 +71,27 @@ public class EJBClient {
 	}
 	
 	private void getRemoteInterfaces() {
-		mapServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(MapServiceDAORemote.class);
-		fieldServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(FieldServiceDAORemote.class);
-		unitDefinitionDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitDefinitionDAORemote.class);
-		unitServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitServiceDAORemote.class);
-		unitDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitDAORemote.class);
-		testEJBRemote = RemoteInterfaceFactory.getInstance().getCachedRemote(TestEJBRemote.class);
+		this.mapServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(MapServiceDAORemote.class);
+		this.fieldServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(FieldServiceDAORemote.class);
+		this.unitDefinitionDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitDefinitionDAORemote.class);
+		this.unitServiceDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitServiceDAORemote.class);
+		this.unitDAORemote = RemoteInterfaceFactory.getInstance().getCachedRemote(UnitDAORemote.class);
+		this.testEJBRemote = RemoteInterfaceFactory.getInstance().getCachedRemote(TestEJBRemote.class);
 	}
 	
 	public static void main(String[] args) {
 		
+		FirebaseConnector.powerUp(Logger.Level.DEBUG, "https://boiii.firebaseio.com");
+		
+		try {
+			Thread.sleep(1500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		RemoteInterfaceFactory.recreateInitialContext(getInitialContextProps());
 		
-//		EJBClient.getInstance();
+		EJBClient.getInstance();
 		
 //		InitialContext ctx = null;
 //		try {
@@ -152,25 +160,29 @@ public class EJBClient {
 //		CREATE A SAMPLE MAP FROM MAPDEFINTION
 //		Map newMap = createSampleMapFromMapDefinition(141l);
 		
-//		try {
-//			Map map = mapServiceDAORemote.findMapById(222l);
+		try {
+			Map map = EJBClient.getInstance().mapServiceDAORemote.findMapById(222l);
 //			FileUtils.writeByteArrayToFile(new File("src/main/resources/map_instance.json"), mapAsJson.getBytes(Charset.forName("UTF-8")));
 
 //			String mapAsJson = FileUtils.readFileToString(new File("src/main/resources/map_instance.json"), Charset.forName("UTF-8"));
 //			Map map = JsonHelper.getInstance().getObjectFromJson(mapAsJson.getBytes(Charset.forName("UTF-8")), Map.class);
 			
-			FirebaseConnector.powerUp(Logger.Level.DEBUG, "https://boiii.firebaseio.com");
 //			FirebaseConnector.getInstance().child("maps").child(map.getMapInstanceId()+"").push(map.toMap());
-//			FirebaseConnector.getInstance().shutdown();
+//			FirebaseConnector.getInstance().child("maps").push(map.toMap());
+//			FirebaseConnector.getInstance().child("maps").push(map);
+//			FirebaseConnector.getInstance().child("test/1").testPush2();
+//			FirebaseConnector.getInstance().child("test/1").testPush3();
+			FirebaseConnector.getInstance().child("maps").put(map.toMap());
+			FirebaseConnector.getInstance().shutdown();
 			
 //			String mapAsJson = newMap.toJson();
 //			System.out.println(mapAsJson);
 //			HttpConnector.getInstance().put("https://boiii.firebaseio.com/maps/"+newMap.getMapInstanceId()+"/.json", newMap);
 //		} catch (IOException e) {
 //		} catch (ZgameException | IOException e) {
-//		} catch (ZgameException e) {
-//			e.printStackTrace();
-//		}
+		} catch (ZgameException e) {
+			e.printStackTrace();
+		}
 		
 //		ArrayList<FieldDefinition> fields = new ArrayList<FieldDefinition>();
 //		fields.add(new FieldDefinition("", null, null, null, true, false));

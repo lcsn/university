@@ -38,6 +38,7 @@ public class Map extends ZgameEntity {
 	public static final String FIND_BY_ID = "Map.FIND_BY_ID";
 	public static final String FIND_BY_PLAYER_ID = "Map.FIND_BY_PLAYER_ID";
 
+	@JsonIgnore
 	private Long mapInstanceId = UUID.randomUUID().getMostSignificantBits();
 	
 	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

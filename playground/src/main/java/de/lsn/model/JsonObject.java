@@ -1,5 +1,6 @@
-/*
 package de.lsn.model;
+
+import java.util.HashMap;
 
 public interface JsonObject {
 
@@ -7,5 +8,6 @@ public interface JsonObject {
 	
 	public String toJson();
 	
+	public HashMap<String, Object> toMap();
+	
 }
-*/

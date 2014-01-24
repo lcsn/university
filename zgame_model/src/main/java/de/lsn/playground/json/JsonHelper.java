@@ -3,11 +3,15 @@ package de.lsn.playground.json;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,7 +19,11 @@ public class JsonHelper {
 
 	private static JsonHelper jh;
 	
-	private ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper;
+	
+	public JsonHelper() {
+		this.mapper = new ObjectMapper(new JsonFactory());
+	}
 	
 	public static JsonHelper getInstance() {
 		if(null == jh) {
@@ -28,11 +36,10 @@ public class JsonHelper {
 	}
 		
 	public <T> T getObjectFromJson(Class<T> clazz) {
-		byte[] byteArray;
 		T t = null;
 		try {
-			byteArray = FileUtils.readFileToByteArray(new File("src/main/resources/data.json"));
-			t = getObjectFromJson(byteArray, clazz);
+			String data = FileUtils.readFileToString(new File("src/main/resources/data.json"), Charset.forName("UTF-8"));
+			t = getObjectFromJson(data.getBytes(), clazz);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -41,6 +48,17 @@ public class JsonHelper {
 	
 	public JsonObject getObjectFromJson(byte[] byteArray) {
 		return getObjectFromJson(byteArray, JsonObject.class);
+	}
+	
+	public HashMap<String, Object> getMapFromObject(JsonObject o) {
+		TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>(){};
+		HashMap<String,Object> propertyMap = null;
+        try {
+			propertyMap = mapper.readValue(getJsonFromObject(o), typeRef);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        return propertyMap;
 	}
 
 	public <T> T getObjectFromJson(byte[] byteArray, Class<T> clazz) {
