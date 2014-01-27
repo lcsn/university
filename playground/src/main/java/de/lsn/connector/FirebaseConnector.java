@@ -51,7 +51,7 @@ public class FirebaseConnector {
 		}
 		else {
 			Firebase _firebase = this.firebase;
-			_firebase.child("stat").addValueEventListener(new ValueEventListener() {
+			_firebase.child("conf/connection_success").addValueEventListener(new ValueEventListener() {
 				
 				@Override
 				public void onDataChange(DataSnapshot ds) {
@@ -87,27 +87,35 @@ public class FirebaseConnector {
 		return this;
 	}
 	
-	public Firebase put(final Map<String, Object> valueMap) throws CustomFirebaseException  {
+	public Firebase put(final Map<String, Object> valueMap) throws CustomFirebaseException {
 		final String id = String.valueOf(valueMap.get("id"));
 		if (StringUtils.isNotBlank(id)) {
-			Firebase _firebase = this.firebasePointer.child(id);
-			_firebase.addValueEventListener(new ValueEventListener() {
-				@Override
-				public void onDataChange(DataSnapshot snapshot) {
-					Long _id = (Long) snapshot.getValue();
-			         if (_id == null) {
-						child(id);
-						update(valueMap);
-			         }
-			         else {
-			        	 throw new CustomFirebaseException("Instanz existiert bereits");
-			         }
-				}
-				
-				@Override
-				public void onCancelled(FirebaseError arg0) {
-				}
-			});
+			child(id);
+			update(valueMap);
+//			Firebase _firebase = this.firebasePointer.child(id);
+//			_firebase.addValueEventListener(new ValueEventListener() {
+//				@Override
+//				public void onDataChange(DataSnapshot snapshot) {
+//					if (null == snapshot || (null != snapshot && null == snapshot.getValue())) {
+//						child(id);
+//						update(valueMap);
+//					}
+//					else if(null != snapshot && null == snapshot.getValue()) {
+//						Object object = ((HashMap<String, Object>) snapshot.getValue()).get("id");
+//						if (null == object) {
+//							child(id);
+//							update(valueMap);
+//						}
+//					}
+//					else {
+//						throw new CustomFirebaseException("Instanz existiert bereits");
+//					}
+//				}
+//				
+//				@Override
+//				public void onCancelled(FirebaseError arg0) {
+//				}
+//			});
 		}
 		else {
 			throw new CustomFirebaseException("Id nicht gefunden - Upload nicht möglich");
