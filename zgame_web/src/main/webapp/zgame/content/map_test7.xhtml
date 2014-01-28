@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<h:outputStylesheet name="css/map.css" />
+	<h:outputScript library="js" name="zgame.js" />
+	<h:outputScript library="js" name="vendor/zgame.js" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+	<!--
+	<script src="js/vendor/jquery-1.10.2.min.js" />
+	<script src="/zgame_web/zgame/js/zgame.js" />
+	 -->
+	<script type="text/javascript">
+		$(document).ready(function(){
+			initZgame();
+		})
+	</script>
+</h:head>
+<h:body>
+	<div id="container">
+		<div id="header">
+			<h1>Zgame - Menschen. Zombies. Ende.</h1>
+			<div style="float: right;">Join it. Play it. Love it.</div>
+			<br />
+			<div style="float: right;">- Lars</div>
+		</div>
+		<div id="content-container">
+			<div id="content" align="center">
+				<span id="x" /> X
+				<span id="y" /> Y
+				<h:form id="map_test_7">
+
+					<h:messages id="msgs" errorStyle="color:red;" />
+
+					<p>
+						<h:commandButton type="button" value="Start" onclick="start_game_loop()" />
+						<h:commandButton type="button" value="Stop" onclick="stop_game_loop()" />
+						<h:commandButton type="button" value="Reset" onclick="reset_game();" />
+						<h:commandButton type="button" value="Clear" onclick="clear_foreground();" />
+					</p>
+					
+					<div style="width: 1400px; height: 600px; overflow-x: scroll; overflow-y: scroll; position: relative">
+						<canvas id="backgroundCanvas" width="1400px" height="800px" style="background: gray; position: absolute; top: 0px; left: 0px">Upgrade your browser!</canvas>
+						<canvas id="foregroundCanvas" width="1400px" height="800px" style="background: gray; position: absolute; top: 0px; left: 0px"></canvas>
+					</div>
+					
+				</h:form>
+			</div>
+		</div>
+		<div id="footer">
+			<footer>
+				<p>
+					<br />SPREAD OR SURVIVE.<br />
+				</p>
+				<div>Copyright © Site Lars-Christian Simon, 2013</div>
+			</footer>
+		</div>
+	</div>
+</h:body>
+</html>

@@ -89,6 +89,7 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<webappDirectory>src/main/webapp</webappDirectory>
 					<warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
+					<!--
 					<webResources>
 						<resource>
 							<directory>${basedir}/src/main/webapp/js/vendor</directory>
@@ -99,6 +100,7 @@
 							<targetPath>js</targetPath>
 						</resource>
 					</webResources>
+					-->
 				</configuration>
 			</plugin>
 		</plugins>

@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<h:outputStylesheet name="css/map.css" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+	<!--
+	<script type="text/javascript" src="js/vendor/jquery-1.10.2.min.js" />
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src="modernizr.min.js"></script>
+	-->
+	<script type="text/javascript">
+				
+		$(document).ready(function(){
+
+			initZgame();
+			
+		})
+
+		var mapCanvas;
+		var mapContext;
+
+		var rows;
+		var cols;
+		var type;
+		var fSize;
+		var dir;
+
+		var markedZgameField;
+		var selectedZgameField;
+		var selectedNeighbors;
+		
+		function update() {
+			mapContext.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+			
+			rows = $("#rowsIn").val();
+			cols = $("#colsIn").val();
+			type = $("select[name='type'] option:selected").val();
+			fSize = $("#fSize").val();
+			dir = $("select[name='direction'] option:selected").val();
+			markedZgameField = null;
+			selectedZgameField = null;
+			selectedNeighbors = null;
+			//alert(rows+" x "+cols+", "+(type==0?'flat':'pointy') + ", " + fSize);
+
+			initZgame();
+		}
+		
+		function initZgame() {
+			mapCanvas = $("#mapCanvas")[0];
+			mapContext = mapCanvas.getContext("2d");
+
+			mapCanvas.addEventListener("mousemove", onMouseMove, false);
+			mapCanvas.addEventListener("click", onMouseClick, false);
+
+			mapContext.fillStyle   = '#fff';
+			mapContext.strokeStyle = '#000';
+			mapContext.lineWidth   = 1;
+
+			zgameMap = new ZgameMap((fSize==null?50:fSize), (rows==null?5:rows), (cols==null?5:cols), 0, 0, (type==null?0:type), (dir==null?0:dir));
+			zgameMap.draw(mapContext);
+			
+		}
+
+		function onMouseClick(e) {
+			var rect = mapCanvas.getBoundingClientRect();
+			var x = e.clientX - rect.left;
+			var y = e.clientY - rect.top;
+			//var result = zgameMap.findField(x, y);
+			var zgameField = zgameMap.findField(x, y);
+			if (zgameField != null) {
+				if(selectedZgameField == null) {
+					selectedZgameField = zgameField;
+					selectedNeighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY, 2);
+				}
+				if(zgameField.gridX != selectedZgameField.gridX || zgameField.gridY != selectedZgameField.gridY) {
+					selectedZgameField.unselect(mapContext);
+					for (var key in selectedNeighbors) {
+						if (selectedNeighbors.hasOwnProperty(key)) {
+							selectedNeighbors[key].unselect(mapContext);
+						}
+					}
+					selectedZgameField = zgameField;
+				}
+				selectedZgameField.select(mapContext);
+				
+				selectedNeighbors = zgameMap.getNeighbors(zgameField.gridX, zgameField.gridY, 2);
+				for (var key in selectedNeighbors) {
+					if (selectedNeighbors.hasOwnProperty(key)) {
+						selectedNeighbors[key].select(mapContext);
+					}
+				}
+			}
+		}
+		
+		function onMouseMove(e) {
+			var rect = mapCanvas.getBoundingClientRect();
+			var x = e.clientX - rect.left;
+			var y = e.clientY - rect.top;
+			var message0 = '<b>Mouse position:</b> ' + Math.floor(x) + ', ' + Math.floor(y);
+	        writeCoords(message0);
+			var zgameField = zgameMap.findField(x, y);
+			if (zgameField != null) {
+				if(markedZgameField == null) {
+					markedZgameField = zgameField;
+				}
+				if(zgameField.gridX != markedZgameField.gridX || zgameField.gridY != markedZgameField.gridY) {
+					markedZgameField.unmark(mapContext);
+					markedZgameField = zgameField;
+				}
+				zgameField.mark(mapContext);
+				var message1 = '<b>Hex position:</b> ' + zgameField.gridX + ', ' + zgameField.gridY;// + ', ' + result.z;
+				writeHexCoords(message1);
+			}
+		}
+
+		function ZgameMap(aFieldSize, aWidth, aHeight, aLeft, aTop, aType, aDir) {
+
+			var tiledMap = new Array();
+
+			var type = aType;
+			var dir = aDir;
+			var fieldSize = aFieldSize;
+			var height = aHeight;
+			var width = aWidth;
+
+			var left = aLeft;
+			var top = aTop;
+			
+			var a = fieldSize/4;
+			var h = fieldSize/4*2;
+			
+			var hexHeight;
+			var hexWidth;
+			var	hDistance;
+			var	vDistance;
+
+			//pointy top
+			var neighbor_odd_r = [ [ [-1, -1], [0, -1], [1, 0], [0, 1], [-1, 1], [-1, 0] ], [ [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 0] ] ];
+			var neighbor_even_r = [ [ [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 0] ], [ [-1, -1], [0, -1], [1, 0], [0, 1], [-1, 1], [-1, 0] ] ];
+			//flat top
+			var neighbor_odd_q = [ [ [-1, -1], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 0] ], [ [-1, 0], [0, -1], [1, 0], [1, 1], [0, 1], [-1, 1] ] ];
+			var neighbor_even_q = [ [ [-1, 0], [0, -1], [1, 0], [1, 1], [0, 1], [-1, 1] ], [ [-1, -1], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 0] ] ];
+			
+			if(type == 1) {
+				//pointy top
+				hexHeight = a*2;
+				hexWidth = Math.sqrt(3)/2*hexHeight;
+				hDistance = hexWidth;
+				vDistance = 0.75*hexHeight;
+			}
+			else if(type == 0) {
+				//flat top
+				hexWidth = a * 2;
+				hexHeight = Math.sqrt(3)/2*hexWidth;
+				vDistance = hexHeight;
+				hDistance = 0.75*hexWidth;
+			}
+			else {
+				// error
+			}
+
+			for(var i = 0; i &lt; height; i++) {
+				tiledMap[i] = new Array();
+				for(var j = 0; j &lt; width; j++) {
+					if(type == 1) {
+						//pointy top
+						if (j%2 == dir) { // Offset every other row to give tessallation
+							tiledMap[i][j] = new ZgameField(fieldSize, i, j, i*hDistance*2, j*vDistance*2, 1);
+						} else {
+							tiledMap[i][j] = new ZgameField(fieldSize, i, j, i*hDistance*2+hDistance, j*vDistance*2, 1);
+						}
+					}
+					else if(type == 0) {
+						//flat top
+						if (i%2 == dir) { // Offset every other row to give tessallation
+							tiledMap[i][j] = new ZgameField(fieldSize, i, j, i*hDistance*2, j*vDistance*2, 0);
+						} else {
+							tiledMap[i][j] = new ZgameField(fieldSize, i, j, i*hDistance*2, j*vDistance*2+vDistance, 0);
+						}
+					}
+					else {
+						// error
+					}
+				}
+			}
+
+			this.draw = function(context) {
+				for(var i = 0; i &lt; height; i++) {
+					for(var j = 0; j &lt; width; j++) {
+						tiledMap[i][j].draw(context);
+					}
+				}
+			}
+
+			this.findField = function(x, y) {
+				var result = null;
+
+				var pI = Math.floor(x/(hDistance*2));
+				var pJ = Math.floor(y/(vDistance*2));
+
+				pI = pI>0?(pI-1):pI;
+				pJ = pJ>0?(pJ-1):pJ;
+				//ry = (rx+rz)*(-1);
+				
+				//alert(pI+", "+pJ);
+				
+				var message = '<b>Selection offset:</b> ' + pI + ', ' + pJ;
+				writeSelectionOffset(message);
+				
+				for(var i = pI; i &lt; height; i++) {
+					for(var j = pJ; j &lt; width; j++) {
+						if (tiledMap[i][j].contains(x, y))  {
+							result = tiledMap[i][j];
+							result.gridX = i;
+							result.gridY = j;
+							return result;
+						}
+					}
+				}
+				return result;
+			}
+			
+			this.getNeighborRecursive = function(resultMap, q, r, d) {
+				if(d > 0) {// &amp;&amp; !resultMap.hasOwnProperty(q+""+r)) {
+					var n = this.neighborhood(q, r);
+					for (var i = 0; i &lt; 6; i++) {
+						var qI = q+n[i][0];
+						var rI = r+n[i][1];
+						// exclude invalid coordinates, e.g. non-existent fields
+						if((-1 &lt; qI &amp;&amp; qI &lt; height) &amp;&amp; (-1 &lt; rI &amp;&amp; rI &lt; width)) {
+							this.getNeighborRecursive(resultMap, qI, rI, d-1);
+						}
+					}
+				}
+				console.log(q+", "+r+", "+d);
+				var field = tiledMap[q][r];
+				field.distance = d;
+				resultMap[field.getKey()] = field;
+				return resultMap;
+			}
+
+			this.getNeighbor = function(f, q, r) {
+				var n_fields = new Array();
+				var j = 0;
+				for (var i = 0; i &lt; 6; i++) {
+					var fI = f[i];
+					var qI = q+fI[0];
+					var rI = r+fI[1];
+					if((-1 &lt; qI &amp;&amp; qI &lt; height) &amp;&amp; (-1 &lt; rI &amp;&amp; rI &lt; width)) {
+						n_fields[j] = tiledMap[qI][rI];
+						j++
+					}
+				}
+				return n_fields;
+			}
+
+			this.neighborhood = function(q, r) {
+				var _neighborhood;
+				var parity;
+				if(type == 1) {
+					parity = r &amp; 1;
+					if(dir == 0) {
+						_neighborhood = neighbor_odd_r[parity];
+					}
+					else {
+						_neighborhood = neighbor_even_r[parity];
+					}
+				}
+				else if(type == 0) {
+					parity = q &amp; 1;
+					if(dir == 0) {
+						_neighborhood = neighbor_odd_q[parity];
+					}
+					else {
+						_neighborhood = neighbor_even_q[parity];
+					}
+				}
+				else {
+					// error
+				}
+				return _neighborhood;
+			}
+			
+			this.getNeighbors = function(q, r, d) {
+
+				var j = 0;
+				var fields = {};
+				
+				this.getNeighborRecursive(fields, q, r, d);
+
+				return fields;
+				
+			}
+
+		}
+			
+		function ZgameField(aSize, aQ, aR, aXOffset, aYOffset, aType) {
+
+			var marked = false;
+			var selected = false;
+			
+			var type = aType;
+			var size = aSize;
+
+			var a = size/4;
+
+			var xOffset = aXOffset;
+			var yOffset = aYOffset;
+
+			var q = aQ;
+			var r = aR;
+			
+			var x = aQ;
+			var z = aR;
+			var y = (x+z)*(-1);
+			
+			var center_x;
+			var center_y;
+			var center_z;
+
+			this.getKey = function() {
+				return q+""+r;
+			}
+			
+			this.draw = function(context) {
+				context.beginPath();
+
+				for (var i = 0; i &lt; 6; i++) {
+					var angle;
+					if(type == 1) {
+						//pointy
+						angle = 2 * Math.PI / 6 * (i + 0.5);
+					}
+					else if(type == 0) {
+						//flat
+						angle = 2 * Math.PI / 6 * (i);
+					}
+					else {
+						// error
+					}
+					var x_i = xOffset + 2*a * Math.cos(angle) + 2*a;
+	    			var y_i = yOffset + 2*a * Math.sin(angle) + 2*a;
+					if (i==0){
+						context.moveTo(x_i, y_i);
+						if(type == 1) {
+							//pointy
+							center_x = x_i - (a*Math.sqrt(3));
+							center_z = y_i - a;
+						}
+						else if(type == 0) {
+							//flat
+							center_x = x_i - 2*a;
+							center_z = y_i;
+						}
+						else {
+							// error
+						}
+						center_y = (center_x+center_z)*(-1);
+					}
+					else {
+						context.lineTo(x_i, y_i);
+					}
+				}
+				context.closePath();
+				context.strokeStyle = "#000";
+				context.fillStyle = "white";
+				context.fill();
+				context.stroke();
+
+				context.save();
+				if(selected) {
+					context.beginPath();
+					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-2, 0, 2 * Math.PI, false);
+					context.strokeStyle = "#0f0";
+				    context.fillStyle = 'rgba(0, 255, 0 , 0.25)';
+					context.fill();
+					context.lineWidth = 2;
+					context.stroke();	
+				}
+				else if(marked) {
+					context.beginPath();
+					context.arc(center_x, center_z, (size/2*Math.sqrt(3)/2)-2, 0, 2 * Math.PI, false);
+					context.strokeStyle = "#f00";
+				    context.fillStyle = 'rgba(255, 0, 0 , 0.25)';
+					context.fill();
+					context.lineWidth = 2;
+					context.stroke();
+				}
+				context.restore();
+
+				context.save();
+				context.font = '16pt Calibri';
+				context.lineWidth = 2;
+				context.strokeStyle = 'black';
+				//var rx, ry, rz;
+				//rx = Math.floor(center_x/size);
+				//rz = Math.floor(center_z/size);
+				//ry = (rx+rz)*(-1);
+				//context.strokeText(rx+"|"+ry+"|"+rz, center_x-60, center_z-10);
+				//context.strokeText(Math.floor(center_x)+"|"+Math.floor(center_y)+"|"+Math.floor(center_z), center_x-60, center_z+10);
+				//context.strokeText(x+"|"+y+"|"+z, center_x-60, center_z+30);
+				//context.strokeText(x+"|"+z, center_x-60, center_z+50);
+				context.restore();
+			}
+
+			this.mark = function(context) {
+				if(!marked &amp;&amp; !selected) {
+					context.save();
+					marked = true;
+					this.draw(context);
+					context.restore();
+				}
+			}
+			
+			this.unmark = function(context) {
+				if(marked &amp;&amp; !selected) {
+					marked = false;
+					this.draw(context);
+				}
+			}
+
+			this.select = function(context) {
+				if(!selected) {
+					context.save();
+					selected = true;
+					this.draw(context);
+					context.restore();
+				}
+			}
+
+			this.unselect = function(context) {
+				if(selected) {
+					selected = false;
+					marked = false;
+					this.draw(context);
+				}
+			}
+			
+			this.contains = function(x, y) {
+				var result = false;
+
+				var dx = Math.abs(x)-Math.abs(center_x);
+				var dy = Math.abs(y)-Math.abs(center_z);
+
+				var dist = Math.sqrt(dx*dx+dy*dy);
+				var ir = size/2*Math.sqrt(3)/2; 
+				//alert(q+"|"+((q+r)*(-1))+"|"+r+", dx: " + dx + ", dy:" + dy + ", dist: " + dist + ", radius: " + ir);
+
+				if(ir>dist) {
+					result = true;
+				}
+
+				return result;			
+			}
+			
+		}
+
+		function writeSelectionOffset(message) {
+			var selectionOffset = $("#selectionOffset")[0];
+			selectionOffset.innerHTML = message;
+		}
+		
+		function writeCoords(message) {
+			var coords = $("#coords")[0];
+			coords.innerHTML = message;
+		}
+		
+		function writeHexCoords(message) {
+			var hexCoords = $("#hexCoords")[0];
+			hexCoords.innerHTML = message;
+		}
+		
+		function writeUnitInfo(message) {
+			var unitInfo = $("#unitInfo")[0];
+			unitInfo.innerHTML = message;
+		}
+		
+		</script>
+</h:head>
+<h:body>
+	<div id="container">
+		<div id="header">
+			<h1>Zgame - Menschen. Zombies. Ende.</h1>
+			<div style="float: right;">Join it. Play it. Love it.</div>
+			<br />
+			<div style="float: right;">- Lars</div>
+		</div>
+		<div id="content-container">
+			<div id="aside0" class="sidebar">
+				<div>
+					<h3>Settings</h3>
+					<h:panelGrid>
+						<p>
+							<h:panelGroup>
+								<input id="rowsIn" style="text-align: center" type="text"
+									placeholder="rows" maxlength="5" size="5" />
+								<b>x</b>
+								<input id="colsIn" style="text-align: center" type="text"
+									placeholder="columns" maxlength="5" size="5" />
+							</h:panelGroup>
+						</p>
+						<h:panelGrid columns="3">
+							<input id="fSize" style="text-align: center" type="text"
+								placeholder="size" maxlength="3" size="4" />
+							<h:selectOneMenu id="type">
+								<f:passThroughAttribute name="name" value="type" />
+								<f:selectItem itemLabel="Flat" itemValue="0" />
+								<f:selectItem itemLabel="Pointy" itemValue="1" />
+							</h:selectOneMenu>
+							<h:selectOneMenu id="direction">
+								<f:passThroughAttribute name="name" value="direction" />
+								<f:selectItem itemLabel="even" itemValue="0" />
+								<f:selectItem itemLabel="odd" itemValue="1" />
+							</h:selectOneMenu>
+						</h:panelGrid>
+						<p>
+							<h:commandButton type="button" value="Render" onclick="update();" />
+						</p>
+					</h:panelGrid>
+				</div>
+				<div>
+					<h3>Info</h3>
+					<h:panelGrid>
+						<p>
+							<output id="coords" style="float: left;">
+								<b>Mouse position:</b> n.a, n.a
+							</output>
+						</p>
+						<p>
+							<output id="selectionOffset" style="float: left;">
+								<b>Selection offset:</b> n.a, n.a
+							</output>
+						</p>
+						<p>
+							<output id="hexCoords" style="float: left;">
+								<b>Hex position:</b> n.a, n.a
+							</output>
+						</p>
+						<p>
+							<output id="unitInfo" style="float: left;">
+								<b>Einheit:</b> n.a
+							</output>
+						</p>
+					</h:panelGrid>
+				</div>
+			</div>
+			<div id="content" align="center">
+				<H1>MAP_TEST_6</H1>
+				<h:form id="map_test_6">
+					<h:messages id="msgs" errorStyle="color:red;" />
+		
+					<div style="overflow-x: scroll;overflow-y: scroll;">
+						<canvas id="mapCanvas" height="1000" width="2100">Upgrade your browser!</canvas>
+						<canvas id="mapCanvasBG" height="1000" width="2100">Upgrade your browser!</canvas>
+					</div>
+
+				</h:form>
+			</div>
+		</div>
+		<div id="footer">
+			<footer>
+				<p>
+					<br />SPREAD OR SURVIVE.<br />
+				</p>
+				<div>Copyright © Site Lars-Christian Simon, 2013</div>
+			</footer>
+		</div>
+	</div>
+</h:body>
+</html>

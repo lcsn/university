@@ -1,5 +1,6 @@
 package de.lsn.playground.zgame.beans;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -63,6 +64,22 @@ public class LoginBean extends AbstractBackingBean {
 			e.printStackTrace();
 		}
 		return "welcome.xhtml";
+	}
+	
+	public String checkSession() {
+		String appCtx = externalContext.getRequestContextPath();
+		String page = facesContext.getViewRoot().getViewId();
+		Player p = (Player) session.getAttribute(ZgameConstants.PLAYER_SESSION_ATTRIBUTE);
+		if ((null != session && !(session.isNew())) && null != p) {
+			try {
+				page = appCtx+"/zgame/main.xhtml";
+				externalContext.redirect(page);
+				return page;
+			} catch (IOException x) {
+				x.printStackTrace();
+			}
+		}
+		return "";
 	}
 	
 	public String getUsername() {

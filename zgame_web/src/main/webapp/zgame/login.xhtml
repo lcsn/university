@@ -5,6 +5,9 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	template="/WEB-INF/templates/template.xhtml">
 	<ui:define name="content">
+	<f:metadata>
+			<f:event type="preRenderView" listener="#{loginBean.checkSession}" />
+		</f:metadata>
 		<div align="center">
 			<H1>LOGIN - UNDER CONSTRUCTION</H1>
 			<h:form id="login_form">
