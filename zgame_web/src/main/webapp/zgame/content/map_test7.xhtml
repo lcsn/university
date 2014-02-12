@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<html lang="de" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<h:outputStylesheet name="css/map.css" />
 	<h:outputScript library="js" name="zgame.js" />
-	<h:outputScript library="js" name="vendor/zgame.js" />
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+	<h:outputScript library="js" name="vendor/jquery-1.10.2.min.js" />
 	<!--
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
 	<script src="js/vendor/jquery-1.10.2.min.js" />
 	<script src="/zgame_web/zgame/js/zgame.js" />
 	 -->
 	<script type="text/javascript">
 		$(document).ready(function(){
-			initZgame();
+			//initZgame();
+			var zGame = new Zgame();
+			zGame.start();
 		})
 	</script>
 </h:head>
@@ -29,24 +28,88 @@
 		</div>
 		<div id="content-container">
 			<div id="content" align="center">
-				<span id="x" /> X
-				<span id="y" /> Y
+				<span id="x" /> X <span id="y" /> Y
 				<h:form id="map_test_7">
 
-					<h:messages id="msgs" errorStyle="color:red;" />
+					<h:messages id="msgs" showDetail="true" errorStyle="color:red;" />
 
+					<!-- 
+					<f:ajax render="text">
+						<h:commandLink value="Click A" action="#{gameBean.setShow('A')}" />
+						<br />
+						<h:commandLink value="Click B" action="#{gameBean.setShow('B')}" />
+						<br />
+						<h:commandLink value="Click C" action="#{gameBean.setShow('C')}" />
+						<br />
+					</f:ajax>
+					<h:panelGroup id="text">
+						<h:outputText value="Clicked A" rendered="#{gameBean.show == 'A'}" />
+						<h:outputText value="Clicked B" rendered="#{gameBean.show == 'B'}" />
+						<h:outputText value="Clicked C" rendered="#{gameBean.show == 'C'}" />
+					</h:panelGroup>
+ 					-->
 					<p>
-						<h:commandButton type="button" value="Start" onclick="start_game_loop()" />
-						<h:commandButton type="button" value="Stop" onclick="stop_game_loop()" />
+						<h:panelGroup id="lblPauseGroup">
+							<h:outputText id="lblPause" value="Pause" style="padding:5px;background:#C4D6E0" rendered="#{gameBean.pause}" />
+						</h:panelGroup>
+						<f:ajax render="lblPauseGroup">
+							<h:commandButton type="button" value="Start" action="#{gameBean.continueGame}" onclick="start_game_loop()" />
+						</f:ajax>
+						<f:ajax render="lblPauseGroup">
+							<h:commandButton type="button" value="Stop" action="#{gameBean.pauseGame}" onclick="stop_game_loop()" />
+						</f:ajax>
 						<h:commandButton type="button" value="Reset" onclick="reset_game();" />
 						<h:commandButton type="button" value="Clear" onclick="clear_foreground();" />
 					</p>
-					
+
+					<p>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<span>Speed</span>
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:inputText value="0" readonly="true" size="3" maxlength="10" autocomplete="off" />
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:commandButton id="btnIncreaseSpeed" type="button" value="+" onclick="increaseSpeed();" />
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:commandButton id="btnDecreaseSpeed" type="button" value="-" onclick="decreaseSpeed();" />
+						</label>
+					</p>
+					<p>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<span>Attack</span>
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:inputText value="0" readonly="true" size="3" maxlength="10" autocomplete="off" />
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:commandButton id="btnIncreaseAttack" type="button" value="+" onclick="increaseSpeed();" />
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:commandButton id="btnDecreaseAttack" type="button" value="-" onclick="decreaseSpeed();" />
+						</label>
+					</p>
+					<p>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<span>Defense</span>
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:inputText value="0" readonly="true" size="3" maxlength="10" autocomplete="off" />
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:commandButton id="btnIncreaseDefense" type="button" value="+" onclick="increaseSpeed();" />
+						</label>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<h:commandButton id="btnDecreaseDefense" type="button" value="-" onclick="decreaseSpeed();" />
+						</label>
+					</p>
+
 					<div style="width: 1400px; height: 600px; overflow-x: scroll; overflow-y: scroll; position: relative">
 						<canvas id="backgroundCanvas" width="1400px" height="800px" style="background: gray; position: absolute; top: 0px; left: 0px">Upgrade your browser!</canvas>
 						<canvas id="foregroundCanvas" width="1400px" height="800px" style="background: gray; position: absolute; top: 0px; left: 0px"></canvas>
 					</div>
-					
+
 				</h:form>
 			</div>
 		</div>

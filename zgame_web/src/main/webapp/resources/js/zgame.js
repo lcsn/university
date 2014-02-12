@@ -1,4 +1,6 @@
-var version = '0.0.1';
+
+var MAX_SPEED = 10;
+var MIN_SPEED = 1;
 
 var isPlaying = false;
 var foreground;
@@ -6,11 +8,15 @@ var foregroundCtx;
 var background;
 var backgroundCtx;
 
-var player;
+var player = new Player();
 
-function initZgame() {
+function Zgame() {
+	this.version = '0.0.2';
+}
 
-	alert('start up zgame');
+Zgame.prototype.start = function() {
+	
+	alert('start up zgame '+this.version);
 	
 	bgCanvas 	= $("#backgroundCanvas")[0];
 	bgContext 	= bgCanvas.getContext("2d");
@@ -20,20 +26,21 @@ function initZgame() {
 	fgCanvas.addEventListener("click", onMouseClick, false);
 	fgCanvas.addEventListener("mousemove", onMouseMove, false);
 	document.addEventListener("keydown", key_down, false);
+	document.addEventListener("keyup", key_up, false);
 
 	/*
 	fgCanvas.fillStyle   = '#fff';
 	fgCanvas.strokeStyle = '#000';
 	fgCanvas.lineWidth   = 1;
-	 */
 	
 	fgContext.beginPath();
-	fgContext.rect(r_x, r_y, 50, 50);
+	fgContext.rect(player.drawX, player.drawY, 50, 50);
 	fgContext.fillStyle = 'yellow';
 	fgContext.fill();
 	fgContext.lineWidth = 2;
 	fgContext.strokeStyle = 'black';
 	fgContext.stroke();
+	 */
 	
 	requestaframe = (function() {
 		return window.requestAnimationFrame	||
@@ -46,25 +53,7 @@ function initZgame() {
 		};
 	})();
 	
-	player = new Player();
-}
-
-function onMouseClick(e) {
-	//$("#x")[0].innerHTML = e.pageX;
-	//$("#y")[0].innerHTML = e.pageY;
-}
-
-function onMouseMove(e) {
-	var rect = fgCanvas.getBoundingClientRect();
-	var x = e.clientX - rect.left;
-	var y = e.clientY - rect.top;
-	$("#x")[0].innerHTML = x;
-	$("#y")[0].innerHTML = y;
-}
-
-function clear_foreground() {
-	fgContext.clearRect(0, 0, fgCanvas.width, fgCanvas.height);
-}
+};
 
 function Player() {
 	this.drawX = 0;
@@ -84,7 +73,92 @@ Player.prototype.draw = function() {
 	fgContext.lineWidth = 2;
 	fgContext.strokeStyle = 'black';
 	fgContext.stroke();
+	this.keyCheck();
 };
+
+Player.prototype.keyCheck = function() {
+	if (this.is_keyup) {
+		this.drawY-=this.speed;
+	}
+	if (this.is_keydown) {
+		this.drawY+=this.speed;
+	}
+	if (this.is_keyleft) {
+		this.drawX-=this.speed;
+	} 
+	if (this.is_keyright) {
+		this.drawX+=this.speed;
+	} 
+};
+
+Player.prototype.increaseSpeed = function () {
+	if(this.speed < MAX_SPEED) {
+		this.speed++;
+	}
+};
+
+Player.prototype.decreaseSpeed = function () {
+	if(this.speed > MIN_SPEED) {
+		this.speed--;
+	}
+};
+
+
+function onMouseClick(e) {
+	//$("#x")[0].innerHTML = e.pageX;
+	//$("#y")[0].innerHTML = e.pageY;
+}
+
+function onMouseMove(e) {
+	var rect = fgCanvas.getBoundingClientRect();
+	var x = e.clientX - rect.left;
+	var y = e.clientY - rect.top;
+	$("#x")[0].innerHTML = x;
+	$("#y")[0].innerHTML = y;
+}
+
+function key_down(e) {
+	var key_id = e.keyCode || e.which;
+	if(key_id == 38) { // up
+		player.is_keyup = true;
+	}
+	if(key_id == 40) { // down
+		player.is_keydown = true;
+	}
+	if(key_id == 37) { // left
+		player.is_keyleft = true;
+	}
+	if(key_id == 39) { // right
+		player.is_keyright = true;
+	}
+	e.preventDefault();
+}
+
+function key_up(e) {
+	var key_id = e.keyCode || e.which;
+	if(key_id == 38) { // up
+		player.is_keyup = false;
+	}
+	if(key_id == 40) { // down
+		player.is_keydown = false;
+	}
+	if(key_id == 37) { // left
+		player.is_keyleft = false;
+	}
+	if(key_id == 39) { // right
+		player.is_keyright = false;
+	}
+	e.preventDefault();
+}
+
+function reset_game() {
+	player.drawX = 0;
+	player.drawY = 0;
+}
+
+function clear_foreground() {
+	fgContext.clearRect(0, 0, fgCanvas.width, fgCanvas.height);
+}
 
 function game_loop() {
 	clear_foreground();
@@ -107,19 +181,10 @@ function stop_game_loop() {
 	}
 }
 
-function key_down(e) {
-	var key_id = e.keyCode || e.which;
-	if(key_id == 38) { // up
-		r_y-=5;
-	}
-	if(key_id == 40) { // down
-		r_y+=5;
-	}
-	if(key_id == 37) { // left
-		r_x-=5;
-	}
-	if(key_id == 39) { // right
-		r_x+=5;
-	}
-	e.preventDefault();
+function increaseSpeed() {
+	player.increaseSpeed();
+}
+
+function decreaseSpeed() {
+	player.decreaseSpeed();
 }
