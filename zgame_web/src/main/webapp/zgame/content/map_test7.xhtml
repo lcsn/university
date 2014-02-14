@@ -12,9 +12,9 @@
 	 -->
 	<script type="text/javascript">
 		$(document).ready(function(){
-			//initZgame();
+			var playerName = $("#tfPlayername").val();
 			var zGame = new Zgame();
-			zGame.start();
+			zGame.start(playerName);
 		})
 	</script>
 </h:head>
@@ -48,18 +48,30 @@
 						<h:outputText value="Clicked C" rendered="#{gameBean.show == 'C'}" />
 					</h:panelGroup>
  					-->
+ 					
+ 					<output id="location" style="float: left;">
+						n.a.
+					</output>
+ 					
+					<h:panelGroup id="lblPauseGroup">
+						<h:outputText id="lblPause" value="Pause" style="padding-left: 20px;padding-right: 20px;padding-top: 10px;padding-bottom: 10px;background:#C4D6E0" rendered="#{gameBean.pause}" />
+					</h:panelGroup>
 					<p>
-						<h:panelGroup id="lblPauseGroup">
-							<h:outputText id="lblPause" value="Pause" style="padding:5px;background:#C4D6E0" rendered="#{gameBean.pause}" />
-						</h:panelGroup>
 						<f:ajax render="lblPauseGroup">
 							<h:commandButton type="button" value="Start" action="#{gameBean.continueGame}" onclick="start_game_loop()" />
 						</f:ajax>
 						<f:ajax render="lblPauseGroup">
-							<h:commandButton type="button" value="Stop" action="#{gameBean.pauseGame}" onclick="stop_game_loop()" />
+							<h:commandButton type="button" value="Pause" action="#{gameBean.pauseGame}" onclick="stop_game_loop()" />
 						</f:ajax>
 						<h:commandButton type="button" value="Reset" onclick="reset_game();" />
 						<h:commandButton type="button" value="Clear" onclick="clear_foreground();" />
+					</p>
+					
+					<p>
+						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
+							<span>Spielername</span>
+						</label>
+						<h:outputText id="tfPlayername" value="#{playerBean.player.username}" readonly="true" autocomplete="off" style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0" />
 					</p>
 
 					<p>
@@ -67,7 +79,7 @@
 							<span>Speed</span>
 						</label>
 						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
-							<h:inputText value="0" readonly="true" size="3" maxlength="10" autocomplete="off" />
+							<h:inputText id="tfSpeed" value="0" readonly="true" size="3" maxlength="10" autocomplete="off" />
 						</label>
 						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
 							<h:commandButton id="btnIncreaseSpeed" type="button" value="+" onclick="increaseSpeed();" />
@@ -76,6 +88,7 @@
 							<h:commandButton id="btnDecreaseSpeed" type="button" value="-" onclick="decreaseSpeed();" />
 						</label>
 					</p>
+					<!--
 					<p>
 						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
 							<span>Attack</span>
@@ -104,7 +117,7 @@
 							<h:commandButton id="btnDecreaseDefense" type="button" value="-" onclick="decreaseSpeed();" />
 						</label>
 					</p>
-
+					-->
 					<div style="width: 1400px; height: 600px; overflow-x: scroll; overflow-y: scroll; position: relative">
 						<canvas id="backgroundCanvas" width="1400px" height="800px" style="background: gray; position: absolute; top: 0px; left: 0px">Upgrade your browser!</canvas>
 						<canvas id="foregroundCanvas" width="1400px" height="800px" style="background: gray; position: absolute; top: 0px; left: 0px"></canvas>

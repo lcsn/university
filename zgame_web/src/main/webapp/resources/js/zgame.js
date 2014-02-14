@@ -1,4 +1,5 @@
 
+
 var MAX_SPEED = 10;
 var MIN_SPEED = 1;
 
@@ -8,16 +9,40 @@ var foregroundCtx;
 var background;
 var backgroundCtx;
 
-var player = new Player();
+var player;
+
+var wsUri = "ws://localhost:8080/zgame_web/ws/player";
+var webSocket = new WebSocket(wsUri);
 
 function Zgame() {
-	this.version = '0.0.2';
+	this.version = '0.0.4';
 }
 
-Zgame.prototype.start = function() {
+function onOpen(event) {
+	alert("Connection established to: " + wsUri);
+}
+
+function onMessage(event) {
+	$("#location")[0].innerHTML = event.data;
+}
+
+Zgame.prototype.start = function(name) {
+	alert("Zgame("+this.version+") started!");
+
+	player = new Player(name);
 	
-	alert('start up zgame '+this.version);
-	
+	webSocket.onerror = function(event) {
+      onError(event);
+    };
+ 
+    webSocket.onopen = function(event) {
+      onOpen(event);
+    };
+ 
+    webSocket.onmessage = function(event) {
+      onMessage(event);
+    };
+ 
 	bgCanvas 	= $("#backgroundCanvas")[0];
 	bgContext 	= bgCanvas.getContext("2d");
 	fgCanvas 	= $("#foregroundCanvas")[0];
@@ -28,20 +53,6 @@ Zgame.prototype.start = function() {
 	document.addEventListener("keydown", key_down, false);
 	document.addEventListener("keyup", key_up, false);
 
-	/*
-	fgCanvas.fillStyle   = '#fff';
-	fgCanvas.strokeStyle = '#000';
-	fgCanvas.lineWidth   = 1;
-	
-	fgContext.beginPath();
-	fgContext.rect(player.drawX, player.drawY, 50, 50);
-	fgContext.fillStyle = 'yellow';
-	fgContext.fill();
-	fgContext.lineWidth = 2;
-	fgContext.strokeStyle = 'black';
-	fgContext.stroke();
-	 */
-	
 	requestaframe = (function() {
 		return window.requestAnimationFrame	||
 		window.webkitRequestAnimationFrame 	||
@@ -53,16 +64,19 @@ Zgame.prototype.start = function() {
 		};
 	})();
 	
+	start_game_loop();
+	
 };
 
-function Player() {
-	this.drawX = 0;
-	this.drawY = 0;
-	this.speed = 1;
-	this.is_keyup = false;
-	this.is_keydown = false;
-	this.is_keyleft = false;
-	this.is_keyright = false;
+function Player(name, offsetX, offsetY) {
+	this.name 			= name;
+	this.drawY 			= typeof offsetX!=="undefined"?offsetX:0;
+	this.drawX 			= typeof offsetY!=="undefined"?offsetY:0;
+	this.speed			= 1;
+	this.is_keyup		= false;
+	this.is_keydown		= false;
+	this.is_keyleft		= false;
+	this.is_keyright	= false;
 }
 
 Player.prototype.draw = function() {
@@ -77,29 +91,61 @@ Player.prototype.draw = function() {
 };
 
 Player.prototype.keyCheck = function() {
+	var sendViaSocket = false;
 	if (this.is_keyup) {
-		this.drawY-=this.speed;
+		if(((this.drawY-this.speed)<0)) {
+			this.drawY=0;
+		}
+		else {
+			this.drawY-=this.speed;
+		}
+		sendViaSocket=true;
 	}
 	if (this.is_keydown) {
-		this.drawY+=this.speed;
+		if(((this.drawY+this.speed)>fgCanvas.height)) {
+			this.drawY=fgCanvas.height;
+		}
+		else {
+			this.drawY+=this.speed;
+		}
+		sendViaSocket=true;
 	}
 	if (this.is_keyleft) {
-		this.drawX-=this.speed;
+		if(((this.drawX-this.speed)<0)) {
+			this.drawX=0;
+		}
+		else {
+			this.drawX-=this.speed;
+		}
+		sendViaSocket=true;
 	} 
 	if (this.is_keyright) {
-		this.drawX+=this.speed;
-	} 
+		if(((this.drawX+this.speed)>fgCanvas.width)) {
+			this.drawX=fgCanvas.width;
+		}
+		else {
+			this.drawX+=this.speed;
+		}
+		sendViaSocket=true;
+	}
+	if(sendViaSocket) {
+		webSocket.send(this.name+" @ "+this.drawX+" / "+this.drawY);
+	}
 };
 
 Player.prototype.increaseSpeed = function () {
 	if(this.speed < MAX_SPEED) {
 		this.speed++;
+		alert($("#tfSpeed")[0]);
+		$("#tfSpeed")[0].innerHTML = this.speed;
 	}
 };
 
 Player.prototype.decreaseSpeed = function () {
 	if(this.speed > MIN_SPEED) {
 		this.speed--;
+		alert($("#tfSpeed")[0]);
+		$("#tfSpeed")[0].innerHTML = this.speed;
 	}
 };
 
