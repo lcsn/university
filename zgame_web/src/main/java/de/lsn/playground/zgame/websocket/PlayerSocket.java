@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -13,20 +14,29 @@ import javax.websocket.server.ServerEndpoint;
 
 import de.lsn.playground.MyConfigurator;
 
-@ServerEndpoint(value="/ws/player", configurator=MyConfigurator.class)
+@ServerEndpoint(value = "/ws/player",
+	encoders = { MotionBean.MotionBeanCode.class },
+	decoders = { MotionBean.MotionBeanCode.class },
+	configurator = MyConfigurator.class
+	)
 public class PlayerSocket {
     
 	private static Set<Session> clients = Collections.synchronizedSet(new HashSet<Session>());
 
 	
     @OnMessage
-    public void sayHello(String message, Session session) throws IOException {
+    public void sayHello(Object o, Session session) throws IOException {
     	synchronized (clients) {
 			// Iterate over the connected sessions
 			// and broadcast the received message
 			for (Session client : clients) {
 				if (!client.equals(session)) {
-					client.getBasicRemote().sendText(message);
+//					client.getBasicRemote().sendText(message);
+					try {
+						client.getBasicRemote().sendObject(o);
+					} catch (EncodeException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}

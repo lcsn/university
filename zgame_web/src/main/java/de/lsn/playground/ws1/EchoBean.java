@@ -1,5 +1,7 @@
 package de.lsn.playground.ws1;
 
+import de.lsn.playground.JSONCoder;
+
 public class EchoBean {
 
 	public static class EchoBeanCode extends JSONCoder<EchoBean> {

@@ -1,4 +1,5 @@
-package de.lsn.playground.ws1;
+package de.lsn.playground;
+
 
 import java.io.IOException;
 import java.io.Reader;

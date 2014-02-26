@@ -25,12 +25,6 @@ import de.lsn.playground.entity.unit.UnitDefinition;
 import de.lsn.playground.framwork.exception.ZgameException;
 import de.lsn.playground.framwork.remote.RemoteInterfaceFactory;
 import de.lsn.playground.json.JsonHelper;
-import de.lsn.playground.logic.game.field.FieldServiceDAORemote;
-import de.lsn.playground.logic.game.map.MapServiceDAORemote;
-import de.lsn.playground.logic.test.TestEJBRemote;
-import de.lsn.playground.logic.unit.UnitDAORemote;
-import de.lsn.playground.logic.unit.definition.UnitDefinitionDAORemote;
-import de.lsn.playground.logic.unit.service.UnitServiceDAORemote;
 
 public class EJBClient {
 	

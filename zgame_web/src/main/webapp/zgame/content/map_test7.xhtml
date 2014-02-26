@@ -13,6 +13,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			var playerName = $("#tfPlayername").val();
+			alert(playerName);
 			var zGame = new Zgame();
 			zGame.start(playerName);
 		})
@@ -49,10 +50,14 @@
 					</h:panelGroup>
  					-->
  					
- 					<output id="location" style="float: left;">
-						n.a.
-					</output>
- 					
+ 					<h:panelGrid style="float: left" columns="1">
+	 					<output id="location" style="float: left;">
+							n.a.
+						</output>
+						<div id="players" style="width: 200px; height: 250px; overflow: auto;">
+						</div>
+					</h:panelGrid>
+
 					<h:panelGroup id="lblPauseGroup">
 						<h:outputText id="lblPause" value="Pause" style="padding-left: 20px;padding-right: 20px;padding-top: 10px;padding-bottom: 10px;background:#C4D6E0" rendered="#{gameBean.pause}" />
 					</h:panelGroup>
@@ -71,7 +76,7 @@
 						<label style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0">
 							<span>Spielername</span>
 						</label>
-						<h:outputText id="tfPlayername" value="#{playerBean.player.username}" readonly="true" autocomplete="off" style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0" />
+						<input id="tfPlayername" value="#{playerBean.player.username}" autocomplete="off" style="padding-left: 5px;padding-right: 5px;padding-top: 5px;padding-bottom: 5px;background: #C4D6E0" />
 					</p>
 
 					<p>

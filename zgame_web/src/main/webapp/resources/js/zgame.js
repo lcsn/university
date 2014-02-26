@@ -23,25 +23,38 @@ function onOpen(event) {
 }
 
 function onMessage(event) {
-	$("#location")[0].innerHTML = event.data;
+	var data = event.data;
+	var message = data.playerName + "@" + data.x + " / " + data.y;
+	$("#location")[0].innerHTML = message;
+	 var pre = document.createElement("p");
+     pre.style.wordWrap = "break-word";
+     pre.innerHTML = message;
+     players.appendChild(pre);
 }
 
 Zgame.prototype.start = function(name) {
 	alert("Zgame("+this.version+") started!");
+	
+	players = $("#players")[0];
 
 	player = new Player(name);
 	
 	webSocket.onerror = function(event) {
-      onError(event);
-    };
- 
-    webSocket.onopen = function(event) {
-      onOpen(event);
-    };
- 
-    webSocket.onmessage = function(event) {
-      onMessage(event);
-    };
+		onError(event);
+	};
+
+	webSocket.onopen = function(event) {
+		onOpen(event);
+		webSocket.send(name + " has entered");
+	};
+
+	webSocket.onclose = function(event) {
+		webSocket.send(name + " has left");
+	};
+
+	webSocket.onmessage = function(event) {
+		onMessage(event);
+	};
  
 	bgCanvas 	= $("#backgroundCanvas")[0];
 	bgContext 	= bgCanvas.getContext("2d");
@@ -129,7 +142,12 @@ Player.prototype.keyCheck = function() {
 		sendViaSocket=true;
 	}
 	if(sendViaSocket) {
-		webSocket.send(this.name+" @ "+this.drawX+" / "+this.drawY);
+		c = new Object();
+		c.playerName = this.name;
+		c.x = this.drawX;
+		c.Y = this.drawY;
+		//webSocket.send(this.name+" @ "+this.drawX+" / "+this.drawY);
+		webSocket.send(c);
 	}
 };
 
