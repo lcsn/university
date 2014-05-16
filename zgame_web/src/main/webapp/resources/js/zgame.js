@@ -24,11 +24,13 @@ function onOpen(event) {
 
 function onMessage(event) {
 	var data = event.data;
-	var message = data.playerName + "@" + data.x + " / " + data.y;
-	$("#location")[0].innerHTML = message;
+//	var message = data.playerName + "@" + data.x + " / " + data.y;
+//	$("#location")[0].innerHTML = message;
+	$("#location")[0].innerHTML = data;
 	 var pre = document.createElement("p");
      pre.style.wordWrap = "break-word";
-     pre.innerHTML = message;
+//     pre.innerHTML = message;
+     pre.innerHTML = data;
      players.appendChild(pre);
 }
 
@@ -142,12 +144,12 @@ Player.prototype.keyCheck = function() {
 		sendViaSocket=true;
 	}
 	if(sendViaSocket) {
-		c = new Object();
-		c.playerName = this.name;
-		c.x = this.drawX;
-		c.Y = this.drawY;
-		//webSocket.send(this.name+" @ "+this.drawX+" / "+this.drawY);
-		webSocket.send(c);
+//		c = new Object();
+//		c.playerName = this.name;
+//		c.x = this.drawX;
+//		c.Y = this.drawY;
+//		webSocket.send(c);
+		webSocket.send(this.name+" @ "+this.drawX+" / "+this.drawY);
 	}
 };
 

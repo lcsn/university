@@ -1,8 +1,13 @@
 package de.lsn.playground.zgame.websocket;
 
+import de.lsn.playground.MotionCoder;
+
 
 public class MotionBean {
 
+	public static class MotionBeanCode extends MotionCoder {
+	}
+	
 	private String playerName;
 	private String x;
 	private String y;
