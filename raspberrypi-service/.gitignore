@@ -1,0 +1,7 @@
+/target
+.settings
+.prefs
+.classpath
+MANIFEST.MF
+/bin
+/build
