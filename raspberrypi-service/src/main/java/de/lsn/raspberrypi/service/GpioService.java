@@ -87,7 +87,7 @@ public class GpioService {
 		String msg = "";
 		try {
 			PinMode pinMode = gpioHelper.toPinMode(mode);
-			GpioPin pinOut = gpioHelper.toGpioPin(gpioHelper.gpio(), pinMode.getDirection(), pin);
+			GpioPin pinOut = gpioHelper.toGpioPin(pinMode.getDirection(), pin);
 			gpioHelper.gpio().export(pinMode, pinOut);
 			if (pinOut.isExported()) {
 				gpioHelper.export(pin, pinOut);

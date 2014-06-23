@@ -35,8 +35,6 @@ public class GpioHelper {
 
 	@PostConstruct
 	private void init() {
-//		System.loadLibrary("pi4j-native-0.0.5-hard-float.so");
-//		System.loadLibrary("pi4j-native-0.0.5-soft-float.so");
 		gpios();
 		modes();
 	}
@@ -66,11 +64,13 @@ public class GpioHelper {
 	}
 	
 	public void unexport(Integer pin) {
-		if (pinMap.containsKey(pin)) {
-			pinMap.remove(pin);
-		}
 		if (gpioPinMap.containsKey(pin)) {
 			gpioPinMap.remove(pin);
+//			GpioPin gpioPin = gpioPinMap.remove(pin);
+//			if (pinMap.containsKey(pin)) {
+				pinMap.remove(pin);
+//				gpioPin.getProvider().unexport(pin);
+//			}
 		}
 	}
 	
@@ -80,7 +80,7 @@ public class GpioHelper {
 		}
 	}
 	
-	public GpioPin toGpioPin(GpioController gpio, PinDirection direction, Integer pin) throws GpioException {
+	public GpioPin toGpioPin(PinDirection direction, Integer pin) throws GpioException {
 		GpioPin gpioPin = null;
 		Pin raspiPin = toRaspiPin(pin);
 		if (null != raspiPin && gpioPinMap.containsKey(pin)) {
@@ -89,10 +89,10 @@ public class GpioHelper {
 		else {
 			switch (direction) {
 			case IN:
-				gpioPin = gpio.provisionDigitalInputPin(raspiPin);
+				gpioPin = gpio().provisionDigitalInputPin(raspiPin);
 				break;
 			case OUT:
-				gpioPin = gpio.provisionDigitalOutputPin(raspiPin);
+				gpioPin = gpio().provisionDigitalOutputPin(raspiPin);
 				break;
 			}
 			gpioPinMap.put(pin, gpioPin);
@@ -101,7 +101,7 @@ public class GpioHelper {
 	}
 	
 	public GpioPin toGpioPin(Integer pin) throws GpioException {
-		return toGpioPin(gpio(), PinDirection.OUT, pin);
+		return toGpioPin(PinDirection.OUT, pin);
 	}
 	
 	public Pin toRaspiPin(Integer pin) {
