@@ -1,7 +1,6 @@
 package de.lsn.raspberrypi.logic;
 
-import java.util.HashSet;
-import java.util.concurrent.Callable;
+import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -20,22 +19,28 @@ public class LedPwmBean {
 	@Inject
 	private Event<GpioEvent> gpioEvent;
 
-	private HashSet<Integer> pwmPinSet = new HashSet<>();
+	private HashMap<Integer, Integer> pwmPinMap = new HashMap<Integer, Integer>();
 
 	@PostConstruct
 	private void init() {
 		Gpio.wiringPiSetup();
 	}
 
-	public Response on(final Integer pin, final Integer range) {
-		if (!pwmPinSet.contains(pin)) {
-			SoftPwm.softPwmCreate(pin, 0, range);
-			pwmPinSet.add(pin);
+	public Response createPwm(final Integer pin, final Integer value, Integer range) {
+		if (!pwmPinMap.containsKey(pin) || pwmPinMap.get(pin) != range) {
+			SoftPwm.softPwmCreate(pin, value, range);
+			pwmPinMap.put(pin, range);
 		}
-		// // continuous loop
-		// while (true) {
-		// fade LED to fully ON
-		for (int i = 0; i <= range; i++) {
+		return Response.ok().build();
+	}
+	
+	public Response fadeOn(final Integer pin, final Integer value) {
+		return fadeOn(pin, value, 100);
+	}
+	
+	public Response fadeOn(final Integer pin, final Integer value, final Integer range) {
+		createPwm(pin, value, range);
+		for (int i = value; i <= range; i++) {
 			try {
 				final int j = i;
 				gpioEvent.fire(new GpioEvent(new Runnable() {
@@ -50,26 +55,16 @@ public class LedPwmBean {
 				e.printStackTrace();
 			}
 		}
-
-		// fade LED to fully OFF
-		// for (int i = 100; i >= 0; i--) {
-		// value1.set(i);
-		// Thread.sleep(25);
-		// }
-		// }
-
 		return Response.ok().build();
 	}
-
-	public Response off(final Integer pin, final Integer range) {
-		if (!pwmPinSet.contains(pin)) {
-			SoftPwm.softPwmCreate(pin, 0, range);
-			pwmPinSet.add(pin);
-		}
-		// // continuous loop
-		// while (true) {
-		// fade LED to fully ON
-		for (int i = range; i >= 0; i--) {
+	
+	public Response fadeOff(final Integer pin, final Integer value) {
+		return fadeOff(pin, value, 100);
+	}
+	
+	public Response fadeOff(final Integer pin, final Integer value, final Integer range) {
+		createPwm(pin, value, range);
+		for (int i = range; i >= value; i--) {
 			try {
 				final int j = i;
 				gpioEvent.fire(new GpioEvent(new Runnable() {
@@ -84,15 +79,7 @@ public class LedPwmBean {
 				e.printStackTrace();
 			}
 		}
-
-		// fade LED to fully OFF
-		// for (int i = 100; i >= 0; i--) {
-		// value1.set(i);
-		// Thread.sleep(25);
-		// }
-		// }
-
 		return Response.ok().build();
 	}
-
+	
 }

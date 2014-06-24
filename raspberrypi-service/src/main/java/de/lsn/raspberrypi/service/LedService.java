@@ -1,8 +1,10 @@
 package de.lsn.raspberrypi.service;
 
 import javax.inject.Inject;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -14,19 +16,59 @@ public class LedService {
 
 	@Inject
 	private LedPwmBean ledPwmBean;
+
+	@POST
+	@Path("/create/pwm/{pin}")
+	public Response create(@PathParam("pin") Integer pin) {
+		return ledPwmBean.createPwm(pin, 0, 100);
+	}
 	
+	@POST
+	@Path("/create/pwm/{pin}/{range}")
+	public Response create(@PathParam("pin") Integer pin, @PathParam("range") Integer range) {
+		return ledPwmBean.createPwm(pin, 0, range);
+	}
+	
+	@POST
+	@Path("/create/pwm/{pin}/{value}/{range}")
+	public Response create(@PathParam("pin") Integer pin, @PathParam("value") Integer value, @PathParam("range") Integer range) {
+		return ledPwmBean.createPwm(pin, value, range);
+	}
+
 	@PUT
-	@Path("/on/pwm")
-	public Response onPwm() {
-//		Neuer Future typ geht nicht da keine java 8,
-//		aber alter Future typ würde gehen.
-		return ledPwmBean.on();
+	@Path("/fade/on/pwm/{pin}")
+	public Response fadeOn(@PathParam("pin") Integer pin) {
+		return ledPwmBean.fadeOn(pin, 0);
 	}
 	
 	@PUT
-	@Path("/off/pwm")
-	public Response offPwm() {
-		return ledPwmBean.off();
+	@Path("/fade/on/pwm/{pin}/{value}")
+	public Response fadeOn(@PathParam("pin") Integer pin, @PathParam("value") Integer value) {
+		return ledPwmBean.fadeOn(pin, value);
+	}
+	
+	@PUT
+	@Path("/fade/on/pwm/{pin}/{value}/{range}")
+	public Response fadeOn(@PathParam("pin") Integer pin, @PathParam("value") Integer value, @PathParam("range") Integer range) {
+		return ledPwmBean.fadeOn(pin, value, range);
+	}
+	
+	@PUT
+	@Path("/fade/off/pwm/{pin}")
+	public Response fadeOff(@PathParam("pin") Integer pin) {
+		return ledPwmBean.fadeOff(pin, 0);
+	}
+	
+	@PUT
+	@Path("/fade/off/pwm/{pin}/{value}")
+	public Response fadeOff(@PathParam("pin") Integer pin, @PathParam("value") Integer value) {
+		return ledPwmBean.fadeOff(pin, value);
+	}
+	
+	@PUT
+	@Path("/fadeoff/pwm/{pin}/{value}/{range}")
+	public Response fadeOff(@PathParam("pin") Integer pin, @PathParam("value") Integer value, @PathParam("range") Integer range) {
+		return ledPwmBean.fadeOff(pin, value, range);
 	}
 	
 	@PUT
