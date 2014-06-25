@@ -36,6 +36,24 @@ public class LedService {
 	}
 
 	@PUT
+	@Path("/test/pwm/{pin}/{msec}")
+	public Response test(@PathParam("pin") Integer pin, @PathParam("msec") Integer msec) {
+		return ledPwmBean.test(pin, msec);
+	}
+	
+	@PUT
+	@Path("/off/pwm/{pin}")
+	public Response off(@PathParam("pin") Integer pin) {
+		return ledPwmBean.off(pin);
+	}
+	
+	@PUT
+	@Path("/on/pwm/{pin}/{value}/{range}/{freq}")
+	public Response on(@PathParam("pin") Integer pin, @PathParam("value") Integer value, @PathParam("range") Integer range, @PathParam("freq") Integer freq) {
+		return ledPwmBean.on(pin, value, range, freq);
+	}
+	
+	@PUT
 	@Path("/fade/on/pwm/{pin}")
 	public Response fadeOn(@PathParam("pin") Integer pin) {
 		return ledPwmBean.fadeOn(pin, 0);
@@ -66,7 +84,7 @@ public class LedService {
 	}
 	
 	@PUT
-	@Path("/fadeoff/pwm/{pin}/{value}/{range}")
+	@Path("/fade/off/pwm/{pin}/{value}/{range}")
 	public Response fadeOff(@PathParam("pin") Integer pin, @PathParam("value") Integer value, @PathParam("range") Integer range) {
 		return ledPwmBean.fadeOff(pin, value, range);
 	}
