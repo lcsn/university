@@ -12,7 +12,7 @@ public class GpioPwmValueProvider {
 	private ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Long[]>> valueMap = new ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Long[]>>();
 	
 	public GpioPwmValueProvider() {
-		provide();
+//		provide();
 	}
 	
 	public int getGranularity() {
@@ -21,7 +21,6 @@ public class GpioPwmValueProvider {
 	
 	public void setGranularity(int granularity) {
 		this.granularity = granularity<1?1:granularity;
-		provide();
 	}
 	
 	public static GpioPwmValueProvider getInstance() {
@@ -31,7 +30,7 @@ public class GpioPwmValueProvider {
 		return instance;
 	}
 	
-	private void provide() {
+	public void provide() {
 		for (int i = granularity; i <= 100; i+=granularity) {
 			for (int j = 1; j <= 100; j++) {
 				ConcurrentHashMap<Integer, Long[]> dutyMap;
@@ -84,10 +83,14 @@ public class GpioPwmValueProvider {
 	
 	public static void main(String[] args) {
 		
+		GpioPwmValueProvider.getInstance().provide();
+		
 //		1hz
 		System.out.println("1hz");
 		GpioPwmValueProvider.getInstance().print(100, 1);
 		GpioPwmValueProvider.getInstance().print(80, 1);
+		GpioPwmValueProvider.getInstance().print(50, 1);
+		GpioPwmValueProvider.getInstance().print(20, 1);
 		
 //		2hz
 		System.out.println("2hz");
@@ -114,8 +117,10 @@ public class GpioPwmValueProvider {
 		System.out.println("Granularity to 5");
 		System.out.println("1hz");
 		GpioPwmValueProvider.getInstance().setGranularity(5);
+		GpioPwmValueProvider.getInstance().provide();
 		GpioPwmValueProvider.getInstance().print(95, 1);
 		GpioPwmValueProvider.getInstance().print(75, 1);
+		GpioPwmValueProvider.getInstance().print(25, 1);
 	}
 	
 }

@@ -11,7 +11,7 @@ import com.pi4j.io.gpio.Pin;
 
 public class GpioPwmPinController {
 
-	private ConcurrentHashMap<Pin, GpioPwmPin> gpioPwmPinMap = new ConcurrentHashMap<Pin, GpioPwmPin>();
+	private ConcurrentHashMap<Pin, GpioPwmPinDigitalOutput> gpioPwmPinMap = new ConcurrentHashMap<Pin, GpioPwmPinDigitalOutput>();
 	private static GpioPwmPinController instance;
 	public ExecutorService newCachedThreadPool;
 
@@ -26,7 +26,7 @@ public class GpioPwmPinController {
 		return instance;
 	}
 	
-	public Response startNewPwm(GpioPwmPin gpioPwmPin) {
+	public Response startNewPwm(GpioPwmPinDigitalOutput gpioPwmPin) {
 		Response response = Response.ok("Starting PWM signal on pin "+gpioPwmPin.getPin().getAddress()+" ("+gpioPwmPin.getName()+")").build();
 		try {
 			gpioPwmPinMap.put(gpioPwmPin.getPin(), gpioPwmPin);
@@ -38,9 +38,9 @@ public class GpioPwmPinController {
 		return response;
 	}
 	
-	public GpioPwmPin restartPwm(Pin pin) {
+	public GpioPwmPinDigitalOutput restartPwm(Pin pin) {
 //		Response response;
-		GpioPwmPin gpioPwmPin = null;
+		GpioPwmPinDigitalOutput gpioPwmPin = null;
 		try {
 			if (gpioPwmPinMap.containsKey(pin)) {
 				gpioPwmPin = gpioPwmPinMap.get(pin);
@@ -69,7 +69,7 @@ public class GpioPwmPinController {
 	}
 	
 	public void destroy() {
-		for (GpioPwmPin gpioPwmPin: gpioPwmPinMap.values()) {
+		for (GpioPwmPinDigitalOutput gpioPwmPin: gpioPwmPinMap.values()) {
 			gpioPwmPin.stop();
 		}
 		newCachedThreadPool.shutdown();

@@ -6,10 +6,11 @@ import org.junit.Test;
 
 import de.lsn.raspberrypi.framework.pwm.GpioPwmValueProvider;
 
-public class PwmValueProviderTest {
+public class GpioPwmValueProviderTest {
 
 	@Test
 	public void test() {
+		GpioPwmValueProvider.getInstance().provide();
 //		1hz
 		Object[] values = GpioPwmValueProvider.getInstance().getValue(100, 1);
 		assertEquals(1000l, values[0]);

@@ -36,13 +36,13 @@ public class GpioPwmService {
 	}
 
 	@PUT
-	@Path("/pwm/{pin}/duty/{duty}")
+	@Path("/adjust/{pin}/duty/{duty}")
 	public Response duty(@PathParam("pin") Integer pin, @PathParam("duty") Integer duty) {
 		return GpioPwmPinController.getInstance().adjustDuty(gpioHelper.toRaspiPin(pin), duty);
 	}
 	
 	@PUT
-	@Path("/pwm/{pin}/frequency/{freq}")
+	@Path("/adjust/{pin}/frequency/{freq}")
 	public Response frequency(@PathParam("pin") Integer pin, @PathParam("freq") Integer freq) {
 		return GpioPwmPinController.getInstance().adjustFrequency(gpioHelper.toRaspiPin(pin), freq);
 	}

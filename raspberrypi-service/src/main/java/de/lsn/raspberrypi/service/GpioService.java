@@ -219,6 +219,7 @@ public class GpioService {
 		return Response.status(status).entity(msg).build();
 	}
 	
+	@Deprecated
 	@PUT
 	@Path("/pwm/test/{step}")
 	public Response testPwm(@PathParam("step") Integer step) {

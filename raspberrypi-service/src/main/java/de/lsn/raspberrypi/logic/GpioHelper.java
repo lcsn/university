@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -24,7 +22,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
 import de.lsn.raspberrypi.framework.GpioException;
-import de.lsn.raspberrypi.framework.pwm.GpioPwmPin;
+import de.lsn.raspberrypi.framework.pwm.GpioPwmPinDigitalOutput;
 import de.lsn.raspberrypi.framework.pwm.GpioPwmPinController;
 import de.lsn.raspberrypi.framework.pwm.GpioPwmValueProvider;
 
@@ -45,7 +43,8 @@ public class GpioHelper {
 	private void init() {
 		gpios();
 		modes();
-		GpioPwmValueProvider.getInstance();
+		GpioPwmValueProvider.getInstance().setGranularity(5);
+		GpioPwmValueProvider.getInstance().provide();
 	}
 
 	private void gpios() {
@@ -75,11 +74,7 @@ public class GpioHelper {
 	public void unexport(Integer pin) {
 		if (gpioPinMap.containsKey(pin)) {
 			gpioPinMap.remove(pin);
-//			GpioPin gpioPin = gpioPinMap.remove(pin);
-//			if (pinMap.containsKey(pin)) {
-				pinMap.remove(pin);
-//				gpioPin.getProvider().unexport(pin);
-//			}
+			pinMap.remove(pin);
 		}
 	}
 	
@@ -168,6 +163,7 @@ public class GpioHelper {
 		return gpioPinMap.values();
 	}
 
+	@Deprecated
 	public GpioPinPwmOutput getPwmPin() throws GpioException {
 		if (null == pwmPin) {
 			pwmPin = gpio().provisionPwmOutputPin(RaspiPin.GPIO_01);
@@ -175,11 +171,11 @@ public class GpioHelper {
 		return pwmPin;
 	}
 
-	public GpioPwmPin newGpioPwmPin(final Integer pin) throws GpioException {
+	public GpioPwmPinDigitalOutput newGpioPwmPin(final Integer pin) throws GpioException {
 		Pin raspiPin = toRaspiPin(pin);
-		GpioPwmPin gpioPwmPin;
+		GpioPwmPinDigitalOutput gpioPwmPin;
 		if (GpioPwmPinController.getInstance().isNew(raspiPin)) {
-			gpioPwmPin = new GpioPwmPin(gpio(), raspiPin);
+			gpioPwmPin = new GpioPwmPinDigitalOutput(gpio(), raspiPin);
 			GpioPwmPinController.getInstance().startNewPwm(gpioPwmPin);
 		}
 		else {
@@ -187,16 +183,5 @@ public class GpioHelper {
 		}
 		return gpioPwmPin;
 	}
-	
-//	public Response removeGpioPwmPin(final Integer pin) {
-//		Response response = Response.ok("GpioPwmPin "+pin+" was removed").build();
-//		if (gpioPinMap.containsKey(pin)) {
-//			gpioPinMap.remove(pin);
-//		}
-//		else {
-//			response = Response.status(Status.NOT_FOUND).entity("Not GpioPwmPin on address "+toRaspiPin(pin).getAddress()+" provisioned").build();
-//		}
-//		return response;
-//	}
 	
 }

@@ -6,21 +6,23 @@ import com.pi4j.io.gpio.GpioProvider;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.impl.GpioPinImpl;
 
-public class GpioPwmPin extends GpioPinImpl implements Runnable {
+public class GpioPwmPinDigitalOutput extends GpioPinImpl implements Runnable {
 
 	private int duty = 100;
 	private int frequency = 1;
 	private long dutycycle = 1000;
 	private long pausecylce = 0;
+	
 	private GpioPinDigitalOutput gpioPin;
+	
 	private boolean active = false;
 	private Thread mainThread;
 	
-	public GpioPwmPin(GpioController gpio, Pin pin) {
+	public GpioPwmPinDigitalOutput(GpioController gpio, Pin pin) {
 		this(gpio, null, pin);
 	}
 	
-	public GpioPwmPin(GpioController gpio, GpioProvider provider, Pin pin) {
+	public GpioPwmPinDigitalOutput(GpioController gpio, GpioProvider provider, Pin pin) {
 		super(gpio, provider, pin);
 		this.gpioPin = gpio.provisionDigitalOutputPin(pin);
 		this.mainThread = Thread.currentThread();
@@ -30,6 +32,7 @@ public class GpioPwmPin extends GpioPinImpl implements Runnable {
 	public void run() {
 		active = true;
 		while(active) {
+//			System.out.println("Duty: "+dutycycle+", Pause: "+pausecylce);
 			gpioPin.pulse(dutycycle, true);
 			gpioPin.low();
 			if (pausecylce > 0) {
@@ -58,13 +61,23 @@ public class GpioPwmPin extends GpioPinImpl implements Runnable {
 	}
 	
 	public void adjustDuty(int duty) {
+		System.out.println("Adjusting duty");
+		System.out.println(this.duty +" -> "+duty);
 		this.duty = duty;
-		this.dutycycle = GpioPwmValueProvider.getInstance().getValue(duty, frequency)[0];
+		this.dutycycle = GpioPwmValueProvider.getInstance().getValue(duty, this.frequency)[0];
+		this.pausecylce = GpioPwmValueProvider.getInstance().getValue(duty, this.frequency)[1];
+		System.out.println("New dutycycle: "+this.dutycycle);
+		System.out.println("New pausecycle: "+this.pausecylce);
 	}
 
 	public void adjustFrequency(Integer frequency) {
+		System.out.println("Adjusting frequency");
+		System.out.println(this.frequency +" -> "+frequency);
 		this.frequency = frequency;
-		this.pausecylce = GpioPwmValueProvider.getInstance().getValue(duty, frequency)[1];
+		this.dutycycle = GpioPwmValueProvider.getInstance().getValue(this.duty, frequency)[0];
+		this.pausecylce = GpioPwmValueProvider.getInstance().getValue(this.duty, frequency)[1];
+		System.out.println("New dutycycle: "+this.dutycycle);
+		System.out.println("New pausecycle: "+this.pausecylce);
 	}
 	
 	private void asleep(long duration) {
@@ -73,6 +86,18 @@ public class GpioPwmPin extends GpioPinImpl implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public GpioPinDigitalOutput getGpioPin() {
+		return gpioPin;
+	}
+
+	public int getDuty() {
+		return duty;
+	}
+	
+	public int getFrequency() {
+		return frequency;
 	}
 	
 }
