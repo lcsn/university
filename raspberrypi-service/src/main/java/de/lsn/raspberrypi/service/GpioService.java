@@ -13,7 +13,6 @@ import javax.ws.rs.core.Response.Status;
 
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.GpioPinPwmOutput;
 import com.pi4j.io.gpio.PinMode;
 
 import de.lsn.raspberrypi.framework.GpioException;
@@ -88,13 +87,13 @@ public class GpioService {
 		String msg = "";
 		try {
 			PinMode pinMode = gpioHelper.toPinMode(mode);
-			GpioPin pinOut = gpioHelper.toGpioPin(pinMode.getDirection(), pin);
-			gpioHelper.gpio().export(pinMode, pinOut);
-			if (pinOut.isExported()) {
-				gpioHelper.export(pin, pinOut);
-				msg = "Pin \""+pin+"\" with mode \""+mode+"\" exported";
-				status = Status.OK;
+			GpioPin gpioPin = gpioHelper.newGpioPin(pin, pinMode.getDirection());
+			if (!gpioPin.isExported()) {
+				gpioHelper.gpio().export(pinMode, gpioPin);
 			}
+			gpioHelper.export(pin, gpioPin);
+			msg = "Pin \""+pin+"\" with mode \""+mode+"\" exported";
+			status = Status.OK;
 		} catch (GpioException e) {
 			e.printStackTrace();
 			msg = e.getMessage();
@@ -111,7 +110,7 @@ public class GpioService {
 			GpioPin gpioPin = gpioHelper.toGpioPin(pin);
 			if (gpioPin.isExported()) {
 				gpioHelper.gpio().unexport(gpioPin);
-				gpioHelper.unexport(pin);
+//				gpioHelper.unexport(pin);
 				msg = "Pin \""+pin+"\" unexported";
 				status = Status.OK;
 			}
@@ -217,26 +216,6 @@ public class GpioService {
 			msg = e.getMessage();
 		}
 		return Response.status(status).entity(msg).build();
-	}
-	
-	@Deprecated
-	@PUT
-	@Path("/pwm/test/{step}")
-	public Response testPwm(@PathParam("step") Integer step) {
-		try {
-			GpioPinPwmOutput pwmPin = gpioHelper.getPwmPin();
-			for (int i = 0; i < 1024; i+=step) {
-				System.out.println("Add " + i);
-				pwmPin.setPwm(i);
-			}
-			for (int i = 1024; i < 0; i-=step) {
-				System.out.println("Sub " + i);
-				pwmPin.setPwm(i);
-			}
-		} catch (GpioException e) {
-			e.printStackTrace();
-		}
-		return Response.ok().build();
 	}
 	
 }

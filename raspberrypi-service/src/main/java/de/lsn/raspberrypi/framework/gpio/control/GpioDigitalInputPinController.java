@@ -6,6 +6,8 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.Pin;
 
+import de.lsn.raspberrypi.framework.gpio.input.GpioDigitalInputEvent;
+import de.lsn.raspberrypi.framework.gpio.input.GpioDigitalInputListener;
 import de.lsn.raspberrypi.framework.gpio.input.GpioDigitalInputPin;
 
 public class GpioDigitalInputPinController {
@@ -14,7 +16,6 @@ public class GpioDigitalInputPinController {
 	private static GpioDigitalInputPinController instance;
 
 	public GpioDigitalInputPinController() {
-		//		NOP
 	}
 	
 	public static GpioDigitalInputPinController getInstance() {
@@ -28,6 +29,13 @@ public class GpioDigitalInputPinController {
 		GpioDigitalInputPin digitalInputPin;
 		if (isNew(pin)) {
 			digitalInputPin = new GpioDigitalInputPin(gpio, pin);
+			digitalInputPin.addGpioDigitalInputListener(new GpioDigitalInputListener() {
+				
+				@Override
+				public void onInputChanged(GpioDigitalInputEvent event) {
+					System.out.println("Listener says >>> onInputChanged");
+				}
+			});
 			gpioInputPinMap.put(pin, digitalInputPin);
 		}
 		else {

@@ -7,6 +7,7 @@ import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioProvider;
 import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
@@ -25,7 +26,7 @@ public class GpioDigitalInputPin extends GpioPinImpl {
 	
 	public GpioDigitalInputPin(GpioController gpio, GpioProvider provider, Pin pin) {
 		super(gpio, provider, pin);
-		this.gpioPin = gpio.provisionDigitalInputPin(pin);
+		this.gpioPin = gpio.provisionDigitalInputPin(pin, PinPullResistance.PULL_DOWN);
 		init();
 	}
 	
@@ -62,6 +63,10 @@ public class GpioDigitalInputPin extends GpioPinImpl {
 	
 	public boolean isActive() {
 		return active;
+	}
+	
+	public GpioPinDigitalInput getGpioPin() {
+		return gpioPin;
 	}
 	
 }

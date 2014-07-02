@@ -14,7 +14,6 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigital;
-import com.pi4j.io.gpio.GpioPinPwmOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinDirection;
 import com.pi4j.io.gpio.PinMode;
@@ -24,7 +23,6 @@ import com.pi4j.io.gpio.RaspiPin;
 import de.lsn.raspberrypi.framework.GpioException;
 import de.lsn.raspberrypi.framework.gpio.control.GpioDigitalInputPinController;
 import de.lsn.raspberrypi.framework.gpio.control.GpioPwmPinController;
-import de.lsn.raspberrypi.framework.gpio.input.GpioDigitalInputPin;
 import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmDigitalOutputPin;
 import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmValueProvider;
 
@@ -39,8 +37,6 @@ public class GpioHelper {
 	protected ConcurrentHashMap<Integer, Pin> pinMap = new ConcurrentHashMap<Integer, Pin>();
 	protected ConcurrentHashMap<Integer, GpioPin> gpioPinMap = new ConcurrentHashMap<Integer, GpioPin>();
 
-	private GpioPinPwmOutput pwmPin;
-	
 	@PostConstruct
 	private void init() {
 		gpios();
@@ -86,7 +82,7 @@ public class GpioHelper {
 		}
 	}
 	
-	public GpioPin toGpioPin(PinDirection direction, Integer pin) throws GpioException {
+	public GpioPin newGpioPin(Integer pin, PinDirection direction) throws GpioException {
 		GpioPin gpioPin = null;
 		Pin raspiPin = toRaspiPin(pin);
 		if (null != raspiPin && gpioPinMap.containsKey(pin)) {
@@ -95,11 +91,11 @@ public class GpioHelper {
 		else {
 			switch (direction) {
 			case IN:
-				gpioPin = gpio().provisionDigitalInputPin(raspiPin);
+//				gpioPin = gpio().provisionDigitalInputPin(raspiPin);
+				gpioPin = GpioDigitalInputPinController.getInstance().create(gpio(), raspiPin);
 				break;
 			case OUT:
-//				gpioPin = gpio().provisionDigitalOutputPin(raspiPin);
-				gpioPin = GpioDigitalInputPinController.getInstance().create(gpio(), raspiPin);
+				gpioPin = gpio().provisionDigitalOutputPin(raspiPin);
 				break;
 			}
 			gpioPinMap.put(pin, gpioPin);
@@ -108,7 +104,11 @@ public class GpioHelper {
 	}
 	
 	public GpioPin toGpioPin(Integer pin) throws GpioException {
-		return toGpioPin(PinDirection.OUT, pin);
+		Pin raspiPin = toRaspiPin(pin);
+		if (!gpioPinMap.containsKey(raspiPin)) {
+			throw new GpioException("Pin " + pin + " is not exported!");
+		}
+		return gpioPinMap.get(raspiPin);
 	}
 	
 	public Pin toRaspiPin(Integer pin) {
@@ -164,14 +164,6 @@ public class GpioHelper {
 
 	public Collection<GpioPin> getExportedPins() {
 		return gpioPinMap.values();
-	}
-
-	@Deprecated
-	public GpioPinPwmOutput getPwmPin() throws GpioException {
-		if (null == pwmPin) {
-			pwmPin = gpio().provisionPwmOutputPin(RaspiPin.GPIO_01);
-		}
-		return pwmPin;
 	}
 
 	public GpioPwmDigitalOutputPin newGpioPwmPin(final Integer pin) throws GpioException {
