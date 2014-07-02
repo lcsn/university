@@ -1,4 +1,4 @@
-package de.lsn.raspberrypi.framework.pwm;
+package de.lsn.raspberrypi.framework.gpio.output.pwm;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -6,7 +6,7 @@ import com.pi4j.io.gpio.GpioProvider;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.impl.GpioPinImpl;
 
-public class GpioPwmPinDigitalOutput extends GpioPinImpl implements Runnable {
+public class GpioPwmDigitalOutputPin extends GpioPinImpl implements Runnable {
 
 	private int duty = 100;
 	private int frequency = 1;
@@ -18,11 +18,11 @@ public class GpioPwmPinDigitalOutput extends GpioPinImpl implements Runnable {
 	private boolean active = false;
 	private Thread mainThread;
 	
-	public GpioPwmPinDigitalOutput(GpioController gpio, Pin pin) {
+	public GpioPwmDigitalOutputPin(GpioController gpio, Pin pin) {
 		this(gpio, null, pin);
 	}
 	
-	public GpioPwmPinDigitalOutput(GpioController gpio, GpioProvider provider, Pin pin) {
+	public GpioPwmDigitalOutputPin(GpioController gpio, GpioProvider provider, Pin pin) {
 		super(gpio, provider, pin);
 		this.gpioPin = gpio.provisionDigitalOutputPin(pin);
 		this.mainThread = Thread.currentThread();

@@ -1,11 +1,11 @@
 package de.lsn.raspberrypi.framework.rpicomponent;
 
-import de.lsn.raspberrypi.framework.pwm.GpioPwmPinDigitalOutput;
+import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmDigitalOutputPin;
 
 
 public class RpiLed extends RpiPwmOutputComponent {
 
-	public RpiLed(GpioPwmPinDigitalOutput digitalOutputPin) {
+	public RpiLed(GpioPwmDigitalOutputPin digitalOutputPin) {
 		super(digitalOutputPin);
 	}
 	

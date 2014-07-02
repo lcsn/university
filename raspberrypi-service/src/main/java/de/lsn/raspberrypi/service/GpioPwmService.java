@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import de.lsn.raspberrypi.framework.GpioException;
-import de.lsn.raspberrypi.framework.pwm.GpioPwmPinController;
+import de.lsn.raspberrypi.framework.gpio.control.GpioPwmPinController;
 import de.lsn.raspberrypi.logic.GpioHelper;
 
 @Path("/gpio/pwm")

@@ -22,9 +22,11 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
 import de.lsn.raspberrypi.framework.GpioException;
-import de.lsn.raspberrypi.framework.pwm.GpioPwmPinDigitalOutput;
-import de.lsn.raspberrypi.framework.pwm.GpioPwmPinController;
-import de.lsn.raspberrypi.framework.pwm.GpioPwmValueProvider;
+import de.lsn.raspberrypi.framework.gpio.control.GpioDigitalInputPinController;
+import de.lsn.raspberrypi.framework.gpio.control.GpioPwmPinController;
+import de.lsn.raspberrypi.framework.gpio.input.GpioDigitalInputPin;
+import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmDigitalOutputPin;
+import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmValueProvider;
 
 @Singleton
 public class GpioHelper {
@@ -96,7 +98,8 @@ public class GpioHelper {
 				gpioPin = gpio().provisionDigitalInputPin(raspiPin);
 				break;
 			case OUT:
-				gpioPin = gpio().provisionDigitalOutputPin(raspiPin);
+//				gpioPin = gpio().provisionDigitalOutputPin(raspiPin);
+				gpioPin = GpioDigitalInputPinController.getInstance().create(gpio(), raspiPin);
 				break;
 			}
 			gpioPinMap.put(pin, gpioPin);
@@ -171,11 +174,11 @@ public class GpioHelper {
 		return pwmPin;
 	}
 
-	public GpioPwmPinDigitalOutput newGpioPwmPin(final Integer pin) throws GpioException {
+	public GpioPwmDigitalOutputPin newGpioPwmPin(final Integer pin) throws GpioException {
 		Pin raspiPin = toRaspiPin(pin);
-		GpioPwmPinDigitalOutput gpioPwmPin;
+		GpioPwmDigitalOutputPin gpioPwmPin;
 		if (GpioPwmPinController.getInstance().isNew(raspiPin)) {
-			gpioPwmPin = new GpioPwmPinDigitalOutput(gpio(), raspiPin);
+			gpioPwmPin = new GpioPwmDigitalOutputPin(gpio(), raspiPin);
 			GpioPwmPinController.getInstance().startNewPwm(gpioPwmPin);
 		}
 		else {

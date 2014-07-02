@@ -1,15 +1,15 @@
 package de.lsn.raspberrypi.framework.rpicomponent;
 
 import de.lsn.raspberrypi.framework.RpiConstants;
-import de.lsn.raspberrypi.framework.pwm.GpioPwmPinDigitalOutput;
+import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmDigitalOutputPin;
 
 public class RpiPwmOutputComponent implements IDigitalPwmOutput {
 
 	private int fadingStepSize = RpiConstants.DEFAULT_FADING_SPEED;
 	
-	private GpioPwmPinDigitalOutput gpioPwmPin;
+	private GpioPwmDigitalOutputPin gpioPwmPin;
 	
-	public RpiPwmOutputComponent(GpioPwmPinDigitalOutput gpioPwmPin) {
+	public RpiPwmOutputComponent(GpioPwmDigitalOutputPin gpioPwmPin) {
 		this.gpioPwmPin = gpioPwmPin;
 	}
 

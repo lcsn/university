@@ -1,4 +1,4 @@
-package de.lsn.raspberrypi.framework.pwm;
+package de.lsn.raspberrypi.framework.gpio.output.pwm;
 
 import java.util.concurrent.ConcurrentHashMap;
 

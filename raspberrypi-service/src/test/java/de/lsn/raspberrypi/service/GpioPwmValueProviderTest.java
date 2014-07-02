@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import de.lsn.raspberrypi.framework.pwm.GpioPwmValueProvider;
+import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmValueProvider;
 
 public class GpioPwmValueProviderTest {
 
