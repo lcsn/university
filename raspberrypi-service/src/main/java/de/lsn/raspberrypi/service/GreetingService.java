@@ -1,7 +1,6 @@
 package de.lsn.raspberrypi.service;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
@@ -10,7 +9,7 @@ public class GreetingService {
 
 	@GET
 	public String message() {
-		return "Hi REST!";
+		return "Hi, from RaspberryPi-Service!";
 	}
 
 	@GET
@@ -19,9 +18,4 @@ public class GreetingService {
 		return "Hi, " + name + "!";
 	}
 	
-	@POST
-	public String lowerCase(final String message) {
-		return message.toLowerCase();
-	}
-
 }

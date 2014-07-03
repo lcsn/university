@@ -1,4 +1,4 @@
-package de.lsn.raspberrypi.framework.gpio.control;
+package de.lsn.raspberrypi.framework.gpio.control.input;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -6,34 +6,34 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.Pin;
 
-import de.lsn.raspberrypi.framework.gpio.input.GpioDigitalInputEvent;
-import de.lsn.raspberrypi.framework.gpio.input.GpioDigitalInputListener;
-import de.lsn.raspberrypi.framework.gpio.input.GpioDigitalInputPin;
+import de.lsn.raspberrypi.framework.gpio.input.GpioInputEvent;
+import de.lsn.raspberrypi.framework.gpio.input.GpioInputListener;
+import de.lsn.raspberrypi.framework.gpio.input.GpioInputPin;
 
-public class GpioDigitalInputPinController {
+public class GpioInputPinController {
 
-	private ConcurrentHashMap<Pin, GpioDigitalInputPin> gpioInputPinMap = new ConcurrentHashMap<Pin, GpioDigitalInputPin>();
-	private static GpioDigitalInputPinController instance;
+	private ConcurrentHashMap<Pin, GpioInputPin> gpioInputPinMap = new ConcurrentHashMap<Pin, GpioInputPin>();
+	private static GpioInputPinController instance;
 
-	public GpioDigitalInputPinController() {
+	public GpioInputPinController() {
 	}
 	
-	public static GpioDigitalInputPinController getInstance() {
+	public static GpioInputPinController getInstance() {
 		if (null == instance) {
-			instance = new GpioDigitalInputPinController();
+			instance = new GpioInputPinController();
 		}
 		return instance;
 	}
 	
 	public GpioPin create(GpioController gpio, Pin pin) {
-		GpioDigitalInputPin digitalInputPin;
+		GpioInputPin digitalInputPin;
 		if (isNew(pin)) {
-			digitalInputPin = new GpioDigitalInputPin(gpio, pin);
-			digitalInputPin.addGpioDigitalInputListener(new GpioDigitalInputListener() {
+			digitalInputPin = new GpioInputPin(gpio, pin);
+			digitalInputPin.addGpioDigitalInputListener(new GpioInputListener() {
 				
 				@Override
-				public void onInputChanged(GpioDigitalInputEvent event) {
-					System.out.println("Listener says >>> onInputChanged");
+				public void onInputChanged(GpioInputEvent event) {
+					System.out.println("Pin "+event.getPin()+" state changed to "+event.getState());
 				}
 			});
 			gpioInputPinMap.put(pin, digitalInputPin);
@@ -46,14 +46,14 @@ public class GpioDigitalInputPinController {
 	
 	public void restart(Pin pin) {
 		if (!isNew(pin)) {
-			GpioDigitalInputPin digitalInputPin = gpioInputPinMap.get(pin);
+			GpioInputPin digitalInputPin = gpioInputPinMap.get(pin);
 			digitalInputPin.setActive(true);
 		}
 	}
 	
 	public void stop(Pin pin) {
 		if (!isNew(pin)) {
-			GpioDigitalInputPin inputPin = gpioInputPinMap.get(pin);
+			GpioInputPin inputPin = gpioInputPinMap.get(pin);
 			inputPin.setActive(false);
 		}
 	}

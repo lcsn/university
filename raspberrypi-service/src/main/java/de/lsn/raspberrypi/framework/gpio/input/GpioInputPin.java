@@ -3,6 +3,7 @@ package de.lsn.raspberrypi.framework.gpio.input;
 import java.util.Vector;
 
 import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioProvider;
@@ -13,20 +14,22 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.gpio.impl.GpioPinImpl;
 
-public class GpioDigitalInputPin extends GpioPinImpl {
+public class GpioInputPin extends GpioPinImpl {
 
 	private GpioPinDigitalInput gpioPin;
 	private boolean active = true;
+	private PinState state;
 
-	private Vector<GpioDigitalInputListener> gpioDigitalInputListeners = new Vector<GpioDigitalInputListener>();
+	private Vector<GpioInputListener> gpioDigitalInputListeners = new Vector<GpioInputListener>();
 	
-	public GpioDigitalInputPin(GpioController gpio, Pin raspiPin) {
-		this(gpio, null, raspiPin);
+	public GpioInputPin(GpioController gpio, Pin raspiPin) {
+		this(gpio, GpioFactory.getDefaultProvider(), raspiPin);
 	}
 	
-	public GpioDigitalInputPin(GpioController gpio, GpioProvider provider, Pin pin) {
+	public GpioInputPin(GpioController gpio, GpioProvider provider, Pin pin) {
 		super(gpio, provider, pin);
 		this.gpioPin = gpio.provisionDigitalInputPin(pin, PinPullResistance.PULL_DOWN);
+		this.state = gpioPin.getState();
 		init();
 	}
 	
@@ -35,25 +38,25 @@ public class GpioDigitalInputPin extends GpioPinImpl {
 
 			@Override
 			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				if (active) {
-					System.out.println(" GPIO PIN STATE CHANGED: " + event.getPin() + " --> " + event.getState() + " EventType: " + event.getEventType());
+				if (active && !gpioPin.isState(state)) {
 					fireOnInputChanged(event.getPin(), event.getState());
+					state = event.getState();
 				}
 			}
 		});		
 	}
 
 	private void fireOnInputChanged(GpioPin pin, PinState state) {
-		for (GpioDigitalInputListener listener: gpioDigitalInputListeners) {
-			listener.onInputChanged(new GpioDigitalInputEvent(pin, state));
+		for (GpioInputListener listener: gpioDigitalInputListeners) {
+			listener.onInputChanged(new GpioInputEvent(pin, state));
 		} 
 	}
 	
-	public void addGpioDigitalInputListener(GpioDigitalInputListener listener) {
+	public void addGpioDigitalInputListener(GpioInputListener listener) {
 		gpioDigitalInputListeners.add(listener);
 	}
 	
-	public void removeGpioDigitalInputListener(GpioDigitalInputListener listener) {
+	public void removeGpioDigitalInputListener(GpioInputListener listener) {
 		gpioDigitalInputListeners.remove(listener);
 	}
 	

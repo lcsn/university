@@ -1,7 +1,7 @@
 package de.lsn.raspberrypi.framework.gpio.input;
 
-public interface GpioDigitalInputListener {
+public interface GpioInputListener {
 
-	public void onInputChanged(GpioDigitalInputEvent event);
+	public void onInputChanged(GpioInputEvent event);
 	
 }

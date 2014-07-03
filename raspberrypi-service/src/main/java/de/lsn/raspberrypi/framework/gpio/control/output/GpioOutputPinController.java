@@ -1,4 +1,4 @@
-package de.lsn.raspberrypi.framework.gpio.control;
+package de.lsn.raspberrypi.framework.gpio.control.output;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -6,27 +6,27 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.Pin;
 
-import de.lsn.raspberrypi.framework.gpio.output.GpioDigitalOutputPin;
+import de.lsn.raspberrypi.framework.gpio.output.GpioOutputPin;
 
-public class GpioDigitalOutputPinController {
+public class GpioOutputPinController {
 
-	private ConcurrentHashMap<Pin, GpioDigitalOutputPin> gpioOutputPinMap = new ConcurrentHashMap<Pin, GpioDigitalOutputPin>();
-	private static GpioDigitalOutputPinController instance;
+	private ConcurrentHashMap<Pin, GpioOutputPin> gpioOutputPinMap = new ConcurrentHashMap<Pin, GpioOutputPin>();
+	private static GpioOutputPinController instance;
 
-	public GpioDigitalOutputPinController() {
+	public GpioOutputPinController() {
 	}
 	
-	public static GpioDigitalOutputPinController getInstance() {
+	public static GpioOutputPinController getInstance() {
 		if (null == instance) {
-			instance = new GpioDigitalOutputPinController();
+			instance = new GpioOutputPinController();
 		}
 		return instance;
 	}
 	
 	public GpioPin create(GpioController gpio, Pin pin) {
-		GpioDigitalOutputPin digitalInputPin;
+		GpioOutputPin digitalInputPin;
 		if (isNew(pin)) {
-			digitalInputPin = new GpioDigitalOutputPin(gpio, pin);
+			digitalInputPin = new GpioOutputPin(gpio, pin);
 			gpioOutputPinMap.put(pin, digitalInputPin);
 		}
 		else {
@@ -37,14 +37,14 @@ public class GpioDigitalOutputPinController {
 	
 	public void restart(Pin pin) {
 		if (!isNew(pin)) {
-			GpioDigitalOutputPin digitalInputPin = gpioOutputPinMap.get(pin);
+			GpioOutputPin digitalInputPin = gpioOutputPinMap.get(pin);
 			digitalInputPin.setActive(true);
 		}
 	}
 	
 	public void stop(Pin pin) {
 		if (!isNew(pin)) {
-			GpioDigitalOutputPin inputPin = gpioOutputPinMap.get(pin);
+			GpioOutputPin inputPin = gpioOutputPinMap.get(pin);
 			inputPin.setActive(false);
 		}
 	}

@@ -34,13 +34,7 @@ public class GreetingServiceTest {
     @Test
     public void get1() throws IOException {
         final String message = WebClient.create("http://localhost:4204").path("/raspberrypi-service/greeting/").get(String.class);
-        assertEquals("Hi REST!", message);
+        assertEquals("Hi, from RaspberryPi-Service!", message);
     }
 
-    @Test
-    public void post() throws IOException {
-        final String message = WebClient.create("http://localhost:4204").path("/raspberrypi-service/greeting/").post("Hi REST!", String.class);
-        assertEquals("hi rest!", message);
-    }
-    
 }

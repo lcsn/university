@@ -20,10 +20,10 @@ import com.pi4j.io.gpio.PinMode;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
-import de.lsn.raspberrypi.framework.GpioException;
-import de.lsn.raspberrypi.framework.gpio.control.GpioDigitalInputPinController;
-import de.lsn.raspberrypi.framework.gpio.control.GpioPwmPinController;
-import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmDigitalOutputPin;
+import de.lsn.raspberrypi.framework.gpio.control.input.GpioInputPinController;
+import de.lsn.raspberrypi.framework.gpio.control.output.GpioPwmOutputPinController;
+import de.lsn.raspberrypi.framework.gpio.exception.GpioException;
+import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmOutputPin;
 import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmValueProvider;
 
 @Singleton
@@ -92,7 +92,7 @@ public class GpioHelper {
 			switch (direction) {
 			case IN:
 //				gpioPin = gpio().provisionDigitalInputPin(raspiPin);
-				gpioPin = GpioDigitalInputPinController.getInstance().create(gpio(), raspiPin);
+				gpioPin = GpioInputPinController.getInstance().create(gpio(), raspiPin);
 				break;
 			case OUT:
 				gpioPin = gpio().provisionDigitalOutputPin(raspiPin);
@@ -166,15 +166,15 @@ public class GpioHelper {
 		return gpioPinMap.values();
 	}
 
-	public GpioPwmDigitalOutputPin newGpioPwmPin(final Integer pin) throws GpioException {
+	public GpioPwmOutputPin newGpioPwmPin(final Integer pin) throws GpioException {
 		Pin raspiPin = toRaspiPin(pin);
-		GpioPwmDigitalOutputPin gpioPwmPin;
-		if (GpioPwmPinController.getInstance().isNew(raspiPin)) {
-			gpioPwmPin = new GpioPwmDigitalOutputPin(gpio(), raspiPin);
-			GpioPwmPinController.getInstance().startNewPwm(gpioPwmPin);
+		GpioPwmOutputPin gpioPwmPin;
+		if (GpioPwmOutputPinController.getInstance().isNew(raspiPin)) {
+			gpioPwmPin = new GpioPwmOutputPin(gpio(), raspiPin);
+			GpioPwmOutputPinController.getInstance().startNewPwm(gpioPwmPin);
 		}
 		else {
-			gpioPwmPin = GpioPwmPinController.getInstance().restartPwm(raspiPin);
+			gpioPwmPin = GpioPwmOutputPinController.getInstance().restartPwm(raspiPin);
 		}
 		return gpioPwmPin;
 	}

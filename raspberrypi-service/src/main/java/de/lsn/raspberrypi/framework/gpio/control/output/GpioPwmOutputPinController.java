@@ -1,4 +1,4 @@
-package de.lsn.raspberrypi.framework.gpio.control;
+package de.lsn.raspberrypi.framework.gpio.control.output;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -9,26 +9,26 @@ import javax.ws.rs.core.Response.Status;
 
 import com.pi4j.io.gpio.Pin;
 
-import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmDigitalOutputPin;
+import de.lsn.raspberrypi.framework.gpio.output.pwm.GpioPwmOutputPin;
 
-public class GpioPwmPinController {
+public class GpioPwmOutputPinController {
 
-	private ConcurrentHashMap<Pin, GpioPwmDigitalOutputPin> gpioPwmPinMap = new ConcurrentHashMap<Pin, GpioPwmDigitalOutputPin>();
-	private static GpioPwmPinController instance;
+	private ConcurrentHashMap<Pin, GpioPwmOutputPin> gpioPwmPinMap = new ConcurrentHashMap<Pin, GpioPwmOutputPin>();
+	private static GpioPwmOutputPinController instance;
 	public ExecutorService newCachedThreadPool;
 
-	public GpioPwmPinController() {
+	public GpioPwmOutputPinController() {
 		newCachedThreadPool = Executors.newCachedThreadPool();
 	}
 	
-	public static GpioPwmPinController getInstance() {
+	public static GpioPwmOutputPinController getInstance() {
 		if (null == instance) {
-			instance = new GpioPwmPinController();
+			instance = new GpioPwmOutputPinController();
 		}
 		return instance;
 	}
 	
-	public Response startNewPwm(GpioPwmDigitalOutputPin gpioPwmPin) {
+	public Response startNewPwm(GpioPwmOutputPin gpioPwmPin) {
 		Response response = Response.ok("Starting PWM signal on pin "+gpioPwmPin.getPin().getAddress()+" ("+gpioPwmPin.getName()+")").build();
 		try {
 			gpioPwmPinMap.put(gpioPwmPin.getPin(), gpioPwmPin);
@@ -40,9 +40,9 @@ public class GpioPwmPinController {
 		return response;
 	}
 	
-	public GpioPwmDigitalOutputPin restartPwm(Pin pin) {
+	public GpioPwmOutputPin restartPwm(Pin pin) {
 //		Response response;
-		GpioPwmDigitalOutputPin gpioPwmPin = null;
+		GpioPwmOutputPin gpioPwmPin = null;
 		try {
 			if (gpioPwmPinMap.containsKey(pin)) {
 				gpioPwmPin = gpioPwmPinMap.get(pin);
@@ -71,7 +71,7 @@ public class GpioPwmPinController {
 	}
 	
 	public void destroy() {
-		for (GpioPwmDigitalOutputPin gpioPwmPin: gpioPwmPinMap.values()) {
+		for (GpioPwmOutputPin gpioPwmPin: gpioPwmPinMap.values()) {
 			gpioPwmPin.stop();
 		}
 		newCachedThreadPool.shutdown();

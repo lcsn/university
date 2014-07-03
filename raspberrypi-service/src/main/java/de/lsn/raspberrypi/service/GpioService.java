@@ -15,7 +15,7 @@ import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinMode;
 
-import de.lsn.raspberrypi.framework.GpioException;
+import de.lsn.raspberrypi.framework.gpio.exception.GpioException;
 import de.lsn.raspberrypi.logic.GpioHelper;
 
 @Path("/gpio")
@@ -33,7 +33,9 @@ public class GpioService {
 			 Collection<GpioPin> provisionedPins = gpioHelper.gpio().getProvisionedPins();
 			if (null != provisionedPins && provisionedPins.size() > 0) {
 				for (GpioPin gpioPin : gpioHelper.getExportedPins()) {
-					result.append(gpioPin.getName() + " Exported? " + (gpioPin.isExported() ? "Ja" : "Nein") + " State? " + (gpioHelper.getState(gpioPin).toString()));
+//					Bisher werden alle Pins, ob input oder output in dieselbe Map abelegt. Inputpins gelten offenbar nicht als provisioned und daher kann der state nicht abgefragt werden.
+//					Inputpins sind nicht provisioned. Umbauen auf nur Outputpins.
+					result.append(gpioPin.getName() + " Exported? " + (gpioPin.isExported() ? "Ja" : "Nein") + (gpioPin.isExported()?" State? " + (gpioHelper.getState(gpioPin).toString()):""));
 					result.append("\n");
 				}
 			}
@@ -46,6 +48,28 @@ public class GpioService {
 			result.append(e.getMessage());
 		}
 		return Response.status(status).entity(result.toString()).build();
+	}
+	
+	@GET
+	@Path("/pins/{pin}/state")
+	public Response state(@PathParam("pin") Integer pin) {
+		Status status = Status.CONFLICT;
+		String msg = "";
+		GpioPin gpioPin = null;
+		try {
+			gpioPin = gpioHelper.toGpioPin(pin);
+			if (null != gpioPin) {
+				msg = "State of Pin " + pin + " - " + gpioHelper.getState(gpioPin);
+				status = Status.OK;
+			}
+			else {
+				msg = "Pin "+pin+" is not exported";
+			}
+		} catch (GpioException e) {
+			e.printStackTrace();
+			msg = e.getMessage();
+		}
+		return Response.status(status).entity(msg).build();
 	}
 	
 	@GET
