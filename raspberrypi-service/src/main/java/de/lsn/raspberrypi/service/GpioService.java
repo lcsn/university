@@ -24,6 +24,9 @@ public class GpioService {
 	@Inject
 	private GpioHelper gpioHelper;
 	
+	/**
+	 * FIXME Funktioniert nur bedingt, also nicht. Probleme mit exportierten Pins. (provisioned)
+	 */
 	@GET
 	@Path("/pins/list")
 	public Response list() {

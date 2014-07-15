@@ -104,11 +104,10 @@ public class GpioHelper {
 	}
 	
 	public GpioPin toGpioPin(Integer pin) throws GpioException {
-		Pin raspiPin = toRaspiPin(pin);
-		if (!gpioPinMap.containsKey(raspiPin)) {
+		if (!gpioPinMap.containsKey(pin)) {
 			throw new GpioException("Pin " + pin + " is not exported!");
 		}
-		return gpioPinMap.get(raspiPin);
+		return gpioPinMap.get(pin);
 	}
 	
 	public Pin toRaspiPin(Integer pin) {
