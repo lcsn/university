@@ -19,13 +19,19 @@ public class GpioPwmOutputPin extends GpioPinImpl implements Runnable {
 	private Thread mainThread;
 	
 	public GpioPwmOutputPin(GpioController gpio, Pin pin) {
-		this(gpio, null, pin);
+		this(gpio, null, pin, 100, 1);
 	}
 	
-	public GpioPwmOutputPin(GpioController gpio, GpioProvider provider, Pin pin) {
+	public GpioPwmOutputPin(GpioController gpio, Pin pin, Integer duty, Integer frequency) {
+		this(gpio, null, pin, duty, frequency);
+	}
+	
+	public GpioPwmOutputPin(GpioController gpio, GpioProvider provider, Pin pin, Integer duty, Integer frequency) {
 		super(gpio, provider, pin);
 		this.gpioPin = gpio.provisionDigitalOutputPin(pin);
 		this.mainThread = Thread.currentThread();
+		this.duty = duty;
+		this.frequency = frequency;
 	}
 	
 	@Override

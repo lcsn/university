@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response.Status;
 
 import com.pi4j.io.gpio.Pin;
 
-import de.lsn.raspberrypi.logic.GpioHelper;
+import de.lsn.raspberrypi.framework.Rotation;
 import de.lsn.raspberrypi.logic.MotorController;
 
 @Path("/gpio/motor")
@@ -21,12 +21,7 @@ public class MotorService implements Serializable {
 	private static final long serialVersionUID = 8163473394508632847L;
 
 	@Inject
-	private GpioHelper gpioHelper;
-	
-	@Inject
 	private MotorController motorController;
-	
-	private static final String ENGINE_PREFIX = "engine";
 	
 //	#######################################
 //	############ CONFIGURATION ############
@@ -35,58 +30,81 @@ public class MotorService implements Serializable {
 	@GET
 	@Path("{engine}/forward/get")
 	public Response getForwardPin(@PathParam("engine") Integer engine) {
-		String engineId = ENGINE_PREFIX + engine;
 		Status status = Status.BAD_REQUEST;
-		String msg = "No forward pin set for engine " + engineId;
-		if (motorController.getForwardPinMap().containsKey(engineId)) {
-			msg = "Forward pin for engine "+engineId+" set to " +motorController.getForwardPinMap().get(engineId).getName();
-			status = Status.OK;
+		String msg = "";
+		try {
+			Pin pin = motorController.getForwardPinByEngineId(engine);
+			msg = "Engine \""+engine+"\" : Forward >> "+pin.getName();
+		} catch (Exception e) {
+			msg = e.getMessage();
+			e.printStackTrace();
 		}
-		return Response.status(status).entity(msg).build();
-	}
-	
-	@PUT
-	@Path("{engine}/forward/set/{pin}")
-	public Response setForwardPin(@PathParam("engine") Integer engine, @PathParam("pin") Integer pin) {
-		String engineId = ENGINE_PREFIX + engine;
-		Status status = Status.BAD_REQUEST;
-		Pin raspiPin = gpioHelper.toRaspiPin(pin);
-		String msg = "Failed to set forward pin " + raspiPin.getName() + " for engine " + engineId;
-		if (motorController.getForwardPinMap().containsKey(engineId)) {
-			motorController.getForwardPinMap().remove(engineId);
-		}
-		motorController.getForwardPinMap().put(engineId, raspiPin);
-		msg = "Engine " + engineId + " forward pin set to " + raspiPin.getName();
-		status = Status.OK;
+		System.out.println(msg);
 		return Response.status(status).entity(msg).build();
 	}
 	
 	@GET
 	@Path("{engine}/backward/get")
 	public Response getBackwardPin(@PathParam("engine") Integer engine) {
-		String engineId = ENGINE_PREFIX + engine;
 		Status status = Status.BAD_REQUEST;
-		String msg = "No backward pin set for engine " + engineId;
-		if (motorController.getBackwardPinMap().containsKey(engineId)) {
-			msg = "Backward pin for engine " + engineId + " set to " + motorController.getBackwardPinMap().get(engineId).getName();
-			status = Status.OK;
+		String msg = "";
+		try {
+			Pin pin = motorController.getBackwardPinByEngineId(engine);
+			msg = "Engine \""+engine+"\" : Backward >> "+pin.getName();
+		} catch (Exception e) {
+			msg = e.getMessage();
+			e.printStackTrace();
 		}
+		System.out.println(msg);
 		return Response.status(status).entity(msg).build();
+	}
+	
+	@PUT
+	@Path("{engine}/forward/set/{pin}")
+	public Response setForwardPin(@PathParam("engine") Integer engine, @PathParam("pin") Integer pin) {
+		Status status = Status.BAD_REQUEST;
+		String msg = "Engine \""+engine+"\" : Forward >> "+pin;
+		try {
+			motorController.enable(Rotation.FORWARD, engine, pin);
+			status = Status.OK;
+		} catch (Exception e) {
+			msg = "Failed to set forward pin \""+pin+"\" of engine \""+engine+"\" > ("+e.getMessage()+")";
+			e.printStackTrace();
+		}
+		System.out.println(msg);
+		return Response.status(status).entity(msg).build();
+		
 	}
 	
 	@PUT
 	@Path("{engine}/backward/set/{pin}")
 	public Response setBackwardPin(@PathParam("engine") Integer engine, @PathParam("pin") Integer pin) {
-		String engineId = ENGINE_PREFIX + engine;
 		Status status = Status.BAD_REQUEST;
-		Pin raspiPin = gpioHelper.toRaspiPin(pin);
-		String msg = "Failed to set backward pin " + raspiPin.getName() + " for engine " + engineId;
-		if (motorController.getBackwardPinMap().containsKey(engineId)) {
-			motorController.getBackwardPinMap().remove(engineId);
+		String msg = "Engine \""+engine+"\" : Backward >> "+pin;
+		try {
+			motorController.enable(Rotation.BACKWARD, engine, pin);
+			status = Status.OK;
+		} catch (Exception e) {
+			msg = "Failed to set backward pin \""+pin+"\" of engine \""+engine+"\" > ("+e.getMessage()+")";
+			e.printStackTrace();
 		}
-		motorController.getBackwardPinMap().put(engineId, raspiPin);
-		msg = "Engine " + engineId + " backward pin set to " + raspiPin.getName();
-		status = Status.OK;
+		System.out.println(msg);
+		return Response.status(status).entity(msg).build();
+	}
+	
+	@PUT
+	@Path("{engine}/frequency/{frequency}")
+	public Response frequency(@PathParam("engine") Integer engine, @PathParam("frequency") Integer frequency) {
+		Status status = Status.BAD_REQUEST;
+		String msg = "Engine "+engine+" : Frequency >> "+frequency;
+		try {
+			motorController.adjustFrequency(engine, frequency);
+			status = Status.OK;
+		} catch (Exception e) {
+			msg = "Failed to set frequency of engine \""+engine+"\" to \""+frequency+"\" > ("+e.getMessage()+")";
+			e.printStackTrace();
+		}
+		System.out.println(msg);
 		return Response.status(status).entity(msg).build();
 	}
 	
@@ -95,17 +113,17 @@ public class MotorService implements Serializable {
 //	##################################
 	
 	@PUT
-	@Path("{engine}/forward/{power}")
-	public Response forward(@PathParam("engine") Integer engine, @PathParam("power") Integer power) {
-		String msg = "Forward > Engine: " + engine+ " , Power: " + power;
-		System.out.println(msg);
-		return Response.ok().entity(msg).build();
-	}
-	
-	@PUT
-	@Path("{engine}/backward/{power}")
-	public Response backward(@PathParam("engine") Integer engine, @PathParam("power") Integer power) {
-		String msg = "Backward > Engine: " + engine+ " , Power: " + power;
+	@Path("{engine}/start")
+	public Response start(@PathParam("engine") Integer engine) {
+		String msg = "";
+		try {
+//			TODO starten in eigenen Threads?! Wie ist das Verhalten beim Start?
+			motorController.start(engine);
+			msg = "Engines: STARTED";
+		} catch (Exception e) {
+			msg = "Failure > ("+e.getMessage()+")";
+			e.printStackTrace();
+		}
 		System.out.println(msg);
 		return Response.ok().entity(msg).build();
 	}
@@ -113,7 +131,44 @@ public class MotorService implements Serializable {
 	@PUT
 	@Path("{engine}/stop")
 	public Response stop(@PathParam("engine") Integer engine) {
-		String msg = "Stop > Engine: " + engine;
+		String msg = "";
+		try {
+			motorController.stop(engine);
+			msg = "Engine "+engine+" : STOP";
+		} catch (Exception e) {
+			msg = "Failed to stop engine \""+engine+"\" > ("+e.getMessage()+")";
+			e.printStackTrace();
+		}
+		System.out.println(msg);
+		return Response.ok().entity(msg).build();
+	}
+	
+	@PUT
+	@Path("{engine}/forward/{power}")
+	public Response forward(@PathParam("engine") Integer engine, @PathParam("power") Integer power) {
+		String msg = "";
+		try {
+			motorController.forward(engine, power);
+			msg = "Engine "+engine+" : Forward (Power) >> "+power;
+		} catch (Exception e) {
+			msg = "Failed to set backward power of engine \""+engine+"\" to \""+power+"\" > ("+e.getMessage()+")";
+			e.printStackTrace();
+		}
+		System.out.println(msg);
+		return Response.ok().entity(msg).build();
+	}
+	
+	@PUT
+	@Path("{engine}/backward/{power}")
+	public Response backward(@PathParam("engine") Integer engine, @PathParam("power") Integer power) {
+		String msg = "";
+		try {
+			motorController.backward(engine, power);
+			msg = "Engine "+engine+" : Backward (Power) >> "+power;
+		} catch (Exception e) {
+			msg = "Failed to set forward power of engine \""+engine+"\" to \""+power+"\" > ("+e.getMessage()+")";
+			e.printStackTrace();
+		}
 		System.out.println(msg);
 		return Response.ok().entity(msg).build();
 	}

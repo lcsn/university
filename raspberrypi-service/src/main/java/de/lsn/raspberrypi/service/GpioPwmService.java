@@ -30,6 +30,18 @@ public class GpioPwmService {
 	}
 	
 	@PUT
+	@Path("/start/{pin}/{power}/{frequency}")
+	public Response startPwm(@PathParam("pin") Integer pin, @PathParam("power") Integer power, @PathParam("frequency") Integer frequency) {
+		Response response;
+		try {
+			response = GpioPwmOutputPinController.getInstance().startNewPwm(gpioHelper.newGpioPwmPin(pin, power, frequency));
+		} catch (GpioException e) {
+			response = Response.status(Status.CONFLICT).entity(e.getMessage()).build();
+		}
+		return response;
+	}
+	
+	@PUT
 	@Path("/stop/{pin}")
 	public Response stopPwm(@PathParam("pin") Integer pin) {
 		return GpioPwmOutputPinController.getInstance().stopPwm(gpioHelper.toRaspiPin(pin));

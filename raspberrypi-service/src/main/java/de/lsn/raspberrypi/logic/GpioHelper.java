@@ -164,12 +164,17 @@ public class GpioHelper {
 	public Collection<GpioPin> getExportedPins() {
 		return gpioPinMap.values();
 	}
+	
 
 	public GpioPwmOutputPin newGpioPwmPin(final Integer pin) throws GpioException {
+		return newGpioPwmPin(pin, 100, 1);
+	}
+
+	public GpioPwmOutputPin newGpioPwmPin(final Integer pin, final Integer power, final Integer frequency) throws GpioException {
 		Pin raspiPin = toRaspiPin(pin);
 		GpioPwmOutputPin gpioPwmPin;
 		if (GpioPwmOutputPinController.getInstance().isNew(raspiPin)) {
-			gpioPwmPin = new GpioPwmOutputPin(gpio(), raspiPin);
+			gpioPwmPin = new GpioPwmOutputPin(gpio(), raspiPin, power, frequency);
 			GpioPwmOutputPinController.getInstance().startNewPwm(gpioPwmPin);
 		}
 		else {
