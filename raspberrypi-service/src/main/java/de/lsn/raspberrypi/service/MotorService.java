@@ -8,6 +8,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import com.pi4j.io.gpio.Pin;
@@ -34,7 +35,7 @@ public class MotorService implements Serializable {
 		String msg = "";
 		try {
 			Pin pin = motorController.getForwardPinByEngineId(engine);
-			msg = "Engine \""+engine+"\" : Forward >> "+pin.getName();
+			msg = "Engine \""+engine+"\" : Forward (Pin) >> "+pin.getName();
 		} catch (Exception e) {
 			msg = e.getMessage();
 			e.printStackTrace();
@@ -50,7 +51,7 @@ public class MotorService implements Serializable {
 		String msg = "";
 		try {
 			Pin pin = motorController.getBackwardPinByEngineId(engine);
-			msg = "Engine \""+engine+"\" : Backward >> "+pin.getName();
+			msg = "Engine \""+engine+"\" : Backward (Pin) >> "+pin.getName();
 		} catch (Exception e) {
 			msg = e.getMessage();
 			e.printStackTrace();
@@ -63,7 +64,7 @@ public class MotorService implements Serializable {
 	@Path("{engine}/forward/set/{pin}")
 	public Response setForwardPin(@PathParam("engine") Integer engine, @PathParam("pin") Integer pin) {
 		Status status = Status.BAD_REQUEST;
-		String msg = "Engine \""+engine+"\" : Forward >> "+pin;
+		String msg = "Engine \""+engine+"\" : Forward (Pin) >> "+pin;
 		try {
 			motorController.enable(Rotation.FORWARD, engine, pin);
 			status = Status.OK;
@@ -80,7 +81,7 @@ public class MotorService implements Serializable {
 	@Path("{engine}/backward/set/{pin}")
 	public Response setBackwardPin(@PathParam("engine") Integer engine, @PathParam("pin") Integer pin) {
 		Status status = Status.BAD_REQUEST;
-		String msg = "Engine \""+engine+"\" : Backward >> "+pin;
+		String msg = "Engine \""+engine+"\" : Backward (Pin) >> "+pin;
 		try {
 			motorController.enable(Rotation.BACKWARD, engine, pin);
 			status = Status.OK;
@@ -115,62 +116,57 @@ public class MotorService implements Serializable {
 	@PUT
 	@Path("{engine}/start")
 	public Response start(@PathParam("engine") Integer engine) {
-		String msg = "";
+		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);;
 		try {
-//			TODO starten in eigenen Threads?! Wie ist das Verhalten beim Start?
-			motorController.start(engine);
-			msg = "Engines: STARTED";
+			responseBuilder = Response.fromResponse(motorController.start(engine));
+			responseBuilder.entity("Engines: STARTED");
 		} catch (Exception e) {
-			msg = "Failure > ("+e.getMessage()+")";
+			responseBuilder.entity("Failure > ("+e.getMessage()+")");
 			e.printStackTrace();
 		}
-		System.out.println(msg);
-		return Response.ok().entity(msg).build();
+		return responseBuilder.build();
 	}
 	
 	@PUT
 	@Path("{engine}/stop")
 	public Response stop(@PathParam("engine") Integer engine) {
-		String msg = "";
+		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);
 		try {
-			motorController.stop(engine);
-			msg = "Engine "+engine+" : STOP";
+			responseBuilder = Response.fromResponse(motorController.stop(engine));
+			responseBuilder.entity("Engine "+engine+" : STOP");
 		} catch (Exception e) {
-			msg = "Failed to stop engine \""+engine+"\" > ("+e.getMessage()+")";
+			responseBuilder.entity("Failed to stop engine \""+engine+"\" > ("+e.getMessage()+")");
 			e.printStackTrace();
 		}
-		System.out.println(msg);
-		return Response.ok().entity(msg).build();
+		return responseBuilder.build();
 	}
 	
 	@PUT
 	@Path("{engine}/forward/{power}")
 	public Response forward(@PathParam("engine") Integer engine, @PathParam("power") Integer power) {
-		String msg = "";
+		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);
 		try {
-			motorController.forward(engine, power);
-			msg = "Engine "+engine+" : Forward (Power) >> "+power;
+			responseBuilder = Response.fromResponse(motorController.forward(engine, power));
+			responseBuilder.entity("Engine "+engine+" : Forward (Power) >> "+power);
 		} catch (Exception e) {
-			msg = "Failed to set backward power of engine \""+engine+"\" to \""+power+"\" > ("+e.getMessage()+")";
+			responseBuilder.entity("Failed to set backward power of engine \""+engine+"\" to \""+power+"\" > ("+e.getMessage()+")");
 			e.printStackTrace();
 		}
-		System.out.println(msg);
-		return Response.ok().entity(msg).build();
+		return responseBuilder.build();
 	}
 	
 	@PUT
 	@Path("{engine}/backward/{power}")
 	public Response backward(@PathParam("engine") Integer engine, @PathParam("power") Integer power) {
-		String msg = "";
+		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);;
 		try {
-			motorController.backward(engine, power);
-			msg = "Engine "+engine+" : Backward (Power) >> "+power;
+			responseBuilder = Response.fromResponse(motorController.backward(engine, power));
+			responseBuilder.entity("Engine "+engine+" : Backward (Power) >> "+power);
 		} catch (Exception e) {
-			msg = "Failed to set forward power of engine \""+engine+"\" to \""+power+"\" > ("+e.getMessage()+")";
+			responseBuilder.entity("Failed to set forward power of engine \""+engine+"\" to \""+power+"\" > ("+e.getMessage()+")");
 			e.printStackTrace();
 		}
-		System.out.println(msg);
-		return Response.ok().entity(msg).build();
+		return responseBuilder.build();
 	}
 	
 }

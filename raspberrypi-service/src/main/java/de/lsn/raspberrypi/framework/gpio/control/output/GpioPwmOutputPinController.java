@@ -59,13 +59,13 @@ public class GpioPwmOutputPinController {
 		return gpioPwmPin;
 	}
 	
-	public Response stopPwm(Pin pin) {
+	public Response stopPwm(Pin pin) throws Exception {
 		Response response = Response.ok("Stopping pwm signal on pin "+pin.getAddress()).build();
 		if (gpioPwmPinMap.containsKey(pin)) {
 			gpioPwmPinMap.get(pin).stop();
 		}
 		else {
-			response = Response.status(Status.NOT_FOUND).entity("No pwm on pin "+pin.getAddress()+" started").build();
+			throw new Exception("No pwm on pin "+pin.getAddress()+" started");
 		}
 		return response;
 	}
@@ -77,24 +77,24 @@ public class GpioPwmOutputPinController {
 		newCachedThreadPool.shutdown();
 	}
 
-	public Response adjustDuty(Pin pin, Integer duty) {
+	public Response adjustDuty(Pin pin, Integer duty) throws Exception {
 		Response response = Response.ok("Adjusted duty of pin "+pin.getAddress()+" to "+duty).build();
 		if (gpioPwmPinMap.containsKey(pin)) {
 			gpioPwmPinMap.get(pin).adjustDuty(duty);
 		}
 		else {
-			response = Response.status(Status.NOT_FOUND).entity("No pwm on pin "+pin.getAddress()+" started").build();
+			throw new Exception("No pwm on pin "+pin.getAddress()+" started");
 		}
 		return response;
 	}
 
-	public Response adjustFrequency(Pin pin, Integer frequency) {
+	public Response adjustFrequency(Pin pin, Integer frequency) throws Exception {
 		Response response = Response.ok("Adjusted frequency of pin "+pin.getAddress()+" to "+frequency).build();
 		if (gpioPwmPinMap.containsKey(pin)) {
 			gpioPwmPinMap.get(pin).adjustFrequency(frequency);
 		}
 		else {
-			response = Response.status(Status.NOT_FOUND).entity("No pwm on pin "+pin.getAddress()+" started").build();
+			throw new Exception("No pwm on pin "+pin.getAddress()+" started");
 		}
 		return response;
 	}

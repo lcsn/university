@@ -6,10 +6,13 @@ import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 
 import com.pi4j.io.gpio.Pin;
 
+import de.lsn.raspberrypi.framework.MotorConstants;
 import de.lsn.raspberrypi.framework.Rotation;
+import de.lsn.raspberrypi.service.GpioPwmService;
 
 @ApplicationScoped
 public class MotorController implements Serializable {
@@ -23,11 +26,13 @@ public class MotorController implements Serializable {
 	private HashMap<String, Pin> forwardPinMap;
 	private HashMap<String, Pin> backwardPinMap;
 
-//	@Inject
-//	private GpioPwmService gpioPwmService;
+	@Inject
+	private GpioPwmService gpioPwmService;
 
-//	@Inject
-//	private GpioHelper gpioHelper;
+	@Inject
+	private GpioHelper gpioHelper;
+
+	private boolean started = false;
 	
 	@PostConstruct
 	private void init() {
@@ -77,7 +82,7 @@ public class MotorController implements Serializable {
 	private void enableForward(Integer engine, Integer pin) throws Exception {
 		String engineId = toEngineId(engine);
 		if (!forwardPinMap.containsKey(engineId)) {
-//			forwardPinMap.put(engineId, gpioHelper.toRaspiPin(pin));
+			forwardPinMap.put(engineId, gpioHelper.toRaspiPin(pin));
 //			if (backwardPinMap.containsKey(engineId)) {
 //				backwardPinMap.remove(engineId);
 //			}
@@ -90,7 +95,7 @@ public class MotorController implements Serializable {
 	private void enableBackward(Integer engine, Integer pin) throws Exception {
 		String engineId = toEngineId(engine);
 		if (!backwardPinMap.containsKey(engineId)) {
-//			backwardPinMap.put(engineId, gpioHelper.toRaspiPin(pin));
+			backwardPinMap.put(engineId, gpioHelper.toRaspiPin(pin));
 //			if (forwardPinMap.containsKey(engineId)) {
 //				forwardPinMap.remove(engineId);
 //			}
@@ -100,32 +105,36 @@ public class MotorController implements Serializable {
 		}
 	}
 	
-	public void start(Integer engine) throws Exception {
+	public Response start(Integer engine) throws Exception {
+		if (!started ) {
+			gpioHelper.startUp();
+			started = true;
+		}
 		Pin pin = getForwardPinByEngineId(engine);
 		if (null == pin) {
 			pin = getBackwardPinByEngineId(engine);
 		}
-//		gpioPwmService.startPwm(pin.getAddress(), MotorConstants.DEFAULT_STARTUP_POWER, MotorConstants.DEFAULT_FREQUENCY);
+		return gpioPwmService.startPwm(pin.getAddress(), MotorConstants.DEFAULT_STARTUP_POWER, MotorConstants.DEFAULT_FREQUENCY);
 	}
 	
-	public void stop(Integer engine) throws Exception {
+	public Response stop(Integer engine) throws Exception {
 		Pin pin = getForwardPinByEngineId(engine);
 		if (null == pin) {
 			pin = getBackwardPinByEngineId(engine);
 		}
-//		gpioPwmService.stopPwm(pin.getAddress());
+		return gpioPwmService.stopPwm(pin.getAddress());
 	}
 
-	public void forward(Integer engine, Integer power) throws Exception {
-//		gpioPwmService.duty(getForwardPinByEngineId(engine).getAddress(), power);
+	public Response forward(Integer engine, Integer power) throws Exception {
+		return gpioPwmService.duty(getForwardPinByEngineId(engine).getAddress(), power);
 	}
 	
-	public void backward(Integer engine, Integer power) throws Exception {
-//		gpioPwmService.duty(getBackwardPinByEngineId(engine).getAddress(), power);
+	public Response backward(Integer engine, Integer power) throws Exception {
+		return gpioPwmService.duty(getBackwardPinByEngineId(engine).getAddress(), power);
 	}
 
-	public void adjustFrequency(Integer pin, Integer freq) {
-//		gpioPwmService.frequency(pin, freq);
+	public Response adjustFrequency(Integer pin, Integer freq) throws Exception {
+		return gpioPwmService.frequency(pin, freq);
 	}
 	
 }
