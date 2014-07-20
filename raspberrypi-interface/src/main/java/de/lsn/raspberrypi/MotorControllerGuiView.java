@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -55,6 +54,7 @@ public class MotorControllerGuiView extends JDialog {
 	private JPanel mainControlPanel;
 	private JPanel infoPanel;
 	private JButton startButton;
+	private JButton stopButton;
 	private JButton connectButton;
 	private JButton testButton;
 	private JButton forwardButton;
@@ -63,7 +63,7 @@ public class MotorControllerGuiView extends JDialog {
 	private JButton rotateRightButton;
 	private JButton turnRightButton;
 	private JButton backwardButton;
-	private JButton stopButton;
+	private JButton haltButton;
 	private JScrollPane infoScrollPane;
 	private JList<String> infoDataList;
 	private DefaultListModel<String> infoDataListModel;
@@ -147,6 +147,9 @@ public class MotorControllerGuiView extends JDialog {
 		c.gridy = 1;
 		urlPanel.add(getStartButton(), c);
 		c.gridx = 2;
+		c.gridy = 1;
+		urlPanel.add(getStopButton(), c);
+		c.gridx = 3;
 		c.gridy = 1;
 		urlPanel.add(getTestButton(), c);
 		return urlPanel;
@@ -240,6 +243,27 @@ public class MotorControllerGuiView extends JDialog {
 			});
 		}
 		return startButton;
+	}
+	
+	public JButton getStopButton() {
+		if (null == stopButton) {
+			stopButton = new JButton("STOP");
+			stopButton.setEnabled(false);
+			stopButton.addMouseListener(new MouseListener() {
+				public void mouseReleased(MouseEvent e) {
+				}
+				public void mousePressed(MouseEvent e) {
+				}
+				public void mouseExited(MouseEvent e) {
+				}
+				public void mouseEntered(MouseEvent e) {
+				}
+				public void mouseClicked(MouseEvent e) {
+					invokeControllerMethod("stop", "Clicked");
+				}
+			});
+		}
+		return stopButton;
 	}
 	
 	public JButton getTestButton() {
@@ -571,7 +595,7 @@ public class MotorControllerGuiView extends JDialog {
 		controlPanel.add(getBackwardButton(), c);
 		c.gridx = 1;
 		c.gridy = 1;
-		controlPanel.add(getStopButton(), c);
+		controlPanel.add(getHaltButton(), c);
 		return controlPanel;
 	}
 
@@ -648,7 +672,7 @@ public class MotorControllerGuiView extends JDialog {
 //		forwardButton.addActionListener((a) -> System.out.println("forwards pressed"));
 		forwardButton.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				invokeControllerMethod("stop", "Pressed");
+				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("forward", "Pressed");
@@ -668,7 +692,7 @@ public class MotorControllerGuiView extends JDialog {
 //		turnLeftButton.addActionListener((a) -> System.out.println("turn left pressed"));
 		rotateLeftButton.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				invokeControllerMethod("stop", "Pressed");
+				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("rotateLeft", "Pressed");
@@ -688,7 +712,7 @@ public class MotorControllerGuiView extends JDialog {
 //		turnLeftButton.addActionListener((a) -> System.out.println("turn left pressed"));
 		turnLeftButton.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				invokeControllerMethod("stop", "Pressed");
+				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("turnLeft", "Pressed");
@@ -708,7 +732,7 @@ public class MotorControllerGuiView extends JDialog {
 //		turnLeftButton.addActionListener((a) -> System.out.println("turn left pressed"));
 		rotateRightButton.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				invokeControllerMethod("stop", "Pressed");
+				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("rotateRight", "Pressed");
@@ -728,7 +752,7 @@ public class MotorControllerGuiView extends JDialog {
 //		turnRightButton.addActionListener((a) -> System.out.println("turn right pressed"));
 		turnRightButton.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				invokeControllerMethod("stop", "Pressed");
+				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("turnRight", "Pressed");
@@ -748,7 +772,7 @@ public class MotorControllerGuiView extends JDialog {
 //		backwardButton.addActionListener((a) -> System.out.println("backwards pressed"));
 		backwardButton.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
-				invokeControllerMethod("stop", "Pressed");
+				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("backward", "Pressed");
@@ -763,10 +787,10 @@ public class MotorControllerGuiView extends JDialog {
 		return backwardButton;
 	}
 	
-	public JButton getStopButton() {
-		stopButton = new JButton("Stop");
+	public JButton getHaltButton() {
+		haltButton = new JButton("Halt");
 //		stopButton.addActionListener((a) -> System.out.println("stop pressed"));
-		stopButton.addMouseListener(new MouseListener() {
+		haltButton.addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
 			}
 			public void mousePressed(MouseEvent e) {
@@ -776,10 +800,10 @@ public class MotorControllerGuiView extends JDialog {
 			public void mouseEntered(MouseEvent e) {
 			}
 			public void mouseClicked(MouseEvent e) {
-				invokeControllerMethod("stop", "Pressed");
+				invokeControllerMethod("halt", "Pressed");
 			}
 		});
-		return stopButton;
+		return haltButton;
 	}
 	
 	private void invokeControllerMethod(String componentName, String suffix) {

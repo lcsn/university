@@ -44,10 +44,12 @@ public class MotorControllerGuiController {
 		else {
 //			TODO IMPLEMENT DISCONNECT
 			System.out.println("disconnecting ..");
-			System.out.println("not yet implemented");
+			System.out.println("not yet ready");
 			
+			view.getConnectButton().setText("CONNECT");
 			connected = false;
 			view.getStartButton().setEnabled(false);
+			view.getStopButton().setEnabled(false);
 		}
 	}
 	
@@ -139,6 +141,7 @@ public class MotorControllerGuiController {
 	public void startClicked() {
 		System.out.println("start");
 		try {
+			view.getStopButton().setEnabled(true);
 			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/start"));
 			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/start"));
 		} catch (Exception e) {
@@ -147,11 +150,22 @@ public class MotorControllerGuiController {
 		}
 	}
 	
-	public void stopPressed() {
+	public void stopClicked() {
 		System.out.println("stop");
 		try {
 			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/stop"));
 			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/stop"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void haltPressed() {
+		System.out.println("halt");
+		try {
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/halt"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/halt"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
