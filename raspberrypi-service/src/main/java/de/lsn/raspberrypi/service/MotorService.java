@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response.Status;
 
 import com.pi4j.io.gpio.Pin;
 
+import de.lsn.raspberrypi.framework.MotorConstants;
 import de.lsn.raspberrypi.framework.Rotation;
 import de.lsn.raspberrypi.logic.MotorController;
 
@@ -136,6 +137,20 @@ public class MotorService implements Serializable {
 			responseBuilder.entity("Engine "+engine+" : STOP");
 		} catch (Exception e) {
 			responseBuilder.entity("Failed to stop engine \""+engine+"\" > ("+e.getMessage()+")");
+			e.printStackTrace();
+		}
+		return responseBuilder.build();
+	}
+	
+	@PUT
+	@Path("{engine}/halt")
+	public Response halt(@PathParam("engine") Integer engine) {
+		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);
+		try {
+			responseBuilder = Response.fromResponse(motorController.forward(engine, MotorConstants.HALT));
+			responseBuilder.entity("Engine "+engine+" : HALT");
+		} catch (Exception e) {
+			responseBuilder.entity("Failed to halt engine \""+engine+"\" > ("+e.getMessage()+")");
 			e.printStackTrace();
 		}
 		return responseBuilder.build();
