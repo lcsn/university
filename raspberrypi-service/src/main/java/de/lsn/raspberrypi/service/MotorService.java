@@ -11,10 +11,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import com.pi4j.io.gpio.Pin;
-
 import de.lsn.raspberrypi.framework.MotorConstants;
 import de.lsn.raspberrypi.framework.Rotation;
+import de.lsn.raspberrypi.logic.GpioHelper;
 import de.lsn.raspberrypi.logic.MotorController;
 
 @Path("/gpio/motor")
@@ -22,6 +21,9 @@ public class MotorService implements Serializable {
 
 	private static final long serialVersionUID = 8163473394508632847L;
 
+	@Inject
+	private GpioHelper gpioHelper;
+	
 	@Inject
 	private MotorController motorController;
 	
@@ -35,8 +37,10 @@ public class MotorService implements Serializable {
 		Status status = Status.BAD_REQUEST;
 		String msg = "";
 		try {
-			Pin pin = motorController.getForwardPinByEngineId(engine);
-			msg = "Engine \""+engine+"\" : Forward (Pin) >> "+pin.getName();
+//			Pin pin = motorController.getForwardPinByEngineId(engine);
+			Integer pin = motorController.getForwardPinByEngineId(engine);
+//			msg = "Engine \""+engine+"\" : Forward (Pin) >> "+pin.getName();
+			msg = "Engine \""+engine+"\" : Forward (Pin) >> "+gpioHelper.toRaspiPin(pin).getName();
 		} catch (Exception e) {
 			msg = e.getMessage();
 			e.printStackTrace();
@@ -51,8 +55,10 @@ public class MotorService implements Serializable {
 		Status status = Status.BAD_REQUEST;
 		String msg = "";
 		try {
-			Pin pin = motorController.getBackwardPinByEngineId(engine);
-			msg = "Engine \""+engine+"\" : Backward (Pin) >> "+pin.getName();
+//			Pin pin = motorController.getBackwardPinByEngineId(engine);
+			Integer pin = motorController.getBackwardPinByEngineId(engine);
+//			msg = "Engine \""+engine+"\" : Backward (Pin) >> "+pin.getName();
+			msg = "Engine \""+engine+"\" : Backward (Pin) >> "+gpioHelper.toRaspiPin(pin).getName();
 		} catch (Exception e) {
 			msg = e.getMessage();
 			e.printStackTrace();
@@ -120,7 +126,7 @@ public class MotorService implements Serializable {
 		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);;
 		try {
 			responseBuilder = Response.fromResponse(motorController.start(engine));
-			responseBuilder.entity("Engines: STARTED");
+			responseBuilder.entity("Engines: START");
 		} catch (Exception e) {
 			responseBuilder.entity("Failure > ("+e.getMessage()+")");
 			e.printStackTrace();
