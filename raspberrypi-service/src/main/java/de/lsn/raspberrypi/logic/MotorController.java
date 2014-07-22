@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import de.lsn.raspberrypi.framework.MotorConstants;
 import de.lsn.raspberrypi.framework.Rotation;
@@ -141,22 +142,35 @@ public class MotorController implements Serializable {
 			started = true;
 		}
 //		Pin pin = getForwardPinByEngineId(engine);
-		Integer pin = getForwardPinByEngineId(engine);
-		if (null == pin) {
-			pin = getBackwardPinByEngineId(engine);
-		}
+		Integer forwardPin = getForwardPinByEngineId(engine);
+		Integer backwardPin = getBackwardPinByEngineId(engine);
 //		return gpioPwmService.startPwm(pin.getAddress(), MotorConstants.DEFAULT_STARTUP_POWER, MotorConstants.DEFAULT_FREQUENCY);
-		return gpioPwmService.startPwm(pin, MotorConstants.DEFAULT_STARTUP_POWER, MotorConstants.DEFAULT_FREQUENCY);
+		Response response = gpioPwmService.startPwm(forwardPin, MotorConstants.DEFAULT_STARTUP_POWER, MotorConstants.DEFAULT_FREQUENCY);
+		if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+			return Response.status(Status.BAD_REQUEST).entity("Failed to forward pwm for engine: "+engine+" on pin: "+forwardPin).build();
+		}
+		response = gpioPwmService.startPwm(backwardPin, MotorConstants.DEFAULT_STARTUP_POWER, MotorConstants.DEFAULT_FREQUENCY);
+		if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+			return Response.status(Status.BAD_REQUEST).entity("Failed to forward pwm for engine: "+engine+" on pin: "+forwardPin).build();
+		}
+		return Response.ok().entity("Engine: "+engine+", Forward (Pin): "+forwardPin+", Backward (Pin): "+backwardPin).build();
 	}
 	
 	public Response stop(Integer engine) throws Exception {
 //		Pin pin = getForwardPinByEngineId(engine);
-		Integer pin = getForwardPinByEngineId(engine);
-		if (null == pin) {
-			pin = getBackwardPinByEngineId(engine);
-		}
+		Integer forwardPin = getForwardPinByEngineId(engine);
+		Integer backwardPin = getBackwardPinByEngineId(engine);
 //		return gpioPwmService.stopPwm(pin.getAddress());
-		return gpioPwmService.stopPwm(pin);
+//		return gpioPwmService.stopPwm(pin);
+		Response response = gpioPwmService.stopPwm(forwardPin);
+		if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+			return Response.status(Status.BAD_REQUEST).entity("Failed to forward pwm for engine: "+engine+" on pin: "+forwardPin).build();
+		}
+		response = gpioPwmService.stopPwm(backwardPin);
+		if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+			return Response.status(Status.BAD_REQUEST).entity("Failed to forward pwm for engine: "+engine+" on pin: "+forwardPin).build();
+		}
+		return Response.ok().entity("Engine: "+engine+", Forward (Pin): "+forwardPin+", Backward (Pin): "+backwardPin).build();
 	}
 
 	public Response forward(Integer engine, Integer power) throws Exception {

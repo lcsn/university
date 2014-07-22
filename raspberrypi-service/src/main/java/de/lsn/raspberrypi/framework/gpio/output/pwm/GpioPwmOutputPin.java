@@ -30,8 +30,8 @@ public class GpioPwmOutputPin extends GpioPinImpl implements Runnable {
 		super(gpio, provider, pin);
 		this.gpioPin = gpio.provisionDigitalOutputPin(pin);
 		this.mainThread = Thread.currentThread();
-		this.duty = duty;
-		this.frequency = frequency;
+		adjustDuty(duty);
+		adjustFrequency(frequency);
 	}
 	
 	@Override
@@ -39,7 +39,9 @@ public class GpioPwmOutputPin extends GpioPinImpl implements Runnable {
 		active = true;
 		while(active) {
 //			System.out.println("Duty: "+dutycycle+", Pause: "+pausecylce);
-			gpioPin.pulse(dutycycle, true);
+			if (dutycycle > 0) {
+				gpioPin.pulse(dutycycle, true);
+			}
 			gpioPin.low();
 			if (pausecylce > 0) {
 				asleep(pausecylce);

@@ -31,7 +31,7 @@ public class GpioPwmValueProvider {
 	}
 	
 	public void provide() {
-		for (int i = granularity; i <= 100; i+=granularity) {
+		for (int i = 0; i <= 100; i+=granularity) {
 			for (int j = 1; j <= 100; j++) {
 				ConcurrentHashMap<Integer, Long[]> dutyMap;
 				if (valueMap.containsKey(i)) {
@@ -121,6 +121,9 @@ public class GpioPwmValueProvider {
 		GpioPwmValueProvider.getInstance().print(95, 1);
 		GpioPwmValueProvider.getInstance().print(75, 1);
 		GpioPwmValueProvider.getInstance().print(25, 1);
+		
+
+		GpioPwmValueProvider.getInstance().print(0, 30);
 	}
 	
 }

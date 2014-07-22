@@ -123,10 +123,10 @@ public class MotorService implements Serializable {
 	@PUT
 	@Path("{engine}/start")
 	public Response start(@PathParam("engine") Integer engine) {
-		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);;
+		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);
 		try {
 			responseBuilder = Response.fromResponse(motorController.start(engine));
-			responseBuilder.entity("Engines: START");
+			responseBuilder.entity("Engine ["+engine+"] : STARTED");
 		} catch (Exception e) {
 			responseBuilder.entity("Failure > ("+e.getMessage()+")");
 			e.printStackTrace();
@@ -140,7 +140,7 @@ public class MotorService implements Serializable {
 		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);
 		try {
 			responseBuilder = Response.fromResponse(motorController.stop(engine));
-			responseBuilder.entity("Engine "+engine+" : STOP");
+			responseBuilder.entity("Engine ["+engine+"] : STOPPED");
 		} catch (Exception e) {
 			responseBuilder.entity("Failed to stop engine \""+engine+"\" > ("+e.getMessage()+")");
 			e.printStackTrace();
@@ -154,7 +154,7 @@ public class MotorService implements Serializable {
 		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);
 		try {
 			responseBuilder = Response.fromResponse(motorController.forward(engine, MotorConstants.HALT));
-			responseBuilder.entity("Engine "+engine+" : HALT");
+			responseBuilder.entity("Engine ["+engine+"] : HALTED");
 		} catch (Exception e) {
 			responseBuilder.entity("Failed to halt engine \""+engine+"\" > ("+e.getMessage()+")");
 			e.printStackTrace();
@@ -168,7 +168,7 @@ public class MotorService implements Serializable {
 		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);
 		try {
 			responseBuilder = Response.fromResponse(motorController.forward(engine, power));
-			responseBuilder.entity("Engine "+engine+" : Forward (Power) >> "+power);
+			responseBuilder.entity("Engine ["+engine+"] : Forward (Power) >> "+power);
 		} catch (Exception e) {
 			responseBuilder.entity("Failed to set backward power of engine \""+engine+"\" to \""+power+"\" > ("+e.getMessage()+")");
 			e.printStackTrace();
@@ -182,7 +182,7 @@ public class MotorService implements Serializable {
 		ResponseBuilder responseBuilder = Response.status(Status.BAD_REQUEST);;
 		try {
 			responseBuilder = Response.fromResponse(motorController.backward(engine, power));
-			responseBuilder.entity("Engine "+engine+" : Backward (Power) >> "+power);
+			responseBuilder.entity("Engine ["+engine+"] : Backward (Power) >> "+power);
 		} catch (Exception e) {
 			responseBuilder.entity("Failed to set forward power of engine \""+engine+"\" to \""+power+"\" > ("+e.getMessage()+")");
 			e.printStackTrace();
