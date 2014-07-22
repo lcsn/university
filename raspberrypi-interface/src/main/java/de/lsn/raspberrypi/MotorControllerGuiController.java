@@ -75,8 +75,8 @@ public class MotorControllerGuiController {
 	public void forwardPressed() {
 		System.out.println("forward");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/100"));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/100"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/"+view.getEngine1PowerSlider().getValue()));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/"+view.getEngine2PowerSlider().getValue()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -86,8 +86,8 @@ public class MotorControllerGuiController {
 	public void backwardPressed() {
 		System.out.println("backwards");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/100"));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/100"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/"+view.getEngine1PowerSlider().getValue()));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/"+view.getEngine2PowerSlider().getValue()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
