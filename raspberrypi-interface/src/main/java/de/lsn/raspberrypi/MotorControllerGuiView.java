@@ -621,6 +621,7 @@ public class MotorControllerGuiView extends JDialog {
 			engine1PowerSlider.setPaintLabels(true);
 			engine1PowerSlider.setValue(0);
 			engine1PowerSlider.setComponentOrientation (ComponentOrientation.RIGHT_TO_LEFT);
+			engine1PowerSlider.setSnapToTicks(true);
 			engine1PowerSlider.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					JSlider source = (JSlider) e.getSource();
@@ -655,6 +656,7 @@ public class MotorControllerGuiView extends JDialog {
 			engine2PowerSlider.setPaintLabels(true);
 			engine2PowerSlider.setValue(0);
 			engine2PowerSlider.setComponentOrientation (ComponentOrientation.LEFT_TO_RIGHT);
+			engine2PowerSlider.setSnapToTicks(true);
 			engine2PowerSlider.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					JSlider source = (JSlider) e.getSource();
