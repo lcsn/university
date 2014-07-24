@@ -133,8 +133,8 @@ public class MotorControllerGuiController {
 		System.out.println("rotate right");
 		try {
 			int power = view.getEngine1PowerSlider().getValue()+view.getEngine2PowerSlider().getValue();
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/"+(power/2<10?10:(power/2))));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/"+(power/2<10?10:(power/2))));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/"+(power/2<5?5:(power/2))));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/"+(power/2<5?5:(power/2))));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
