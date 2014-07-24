@@ -97,8 +97,8 @@ public class MotorControllerGuiController {
 	public void turnLeftPressed() {
 		System.out.println("turn left");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/50"));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/100"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/"+(view.getEngine1PowerSlider().getValue()/2)));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/"+view.getEngine2PowerSlider().getValue()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -108,8 +108,9 @@ public class MotorControllerGuiController {
 	public void rotateLeftPressed() {
 		System.out.println("rotate left");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/100"));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/100"));
+			int power = view.getEngine1PowerSlider().getValue()+view.getEngine2PowerSlider().getValue();
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/"+(power/2<5?5:(power/2))));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/"+(power/2<5?5:(power/2))));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -119,8 +120,9 @@ public class MotorControllerGuiController {
 	public void turnRightPressed() {
 		System.out.println("turn right");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/100"));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/50"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/"+view.getEngine2PowerSlider().getValue()));
+			int power = view.getEngine1PowerSlider().getValue()/2;
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/"+(power<5?5:power)));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -130,8 +132,9 @@ public class MotorControllerGuiController {
 	public void rotateRightPressed() {
 		System.out.println("rotate right");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/100"));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/100"));
+			int power = view.getEngine1PowerSlider().getValue()+view.getEngine2PowerSlider().getValue();
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/"+(power/2<10?10:(power/2))));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/"+(power/2<10?10:(power/2))));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
