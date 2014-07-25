@@ -71,6 +71,7 @@ public class MotorControllerGuiView extends JDialog {
 	private JComboBox<String> engine1BackwardPinSelectionList;
 	private JComboBox<String> engine2ForwardPinSelectionList;
 	private JComboBox<String> engine2BackwardPinSelectionList;
+	private JComboBox<String> configurationComboBox;
 
 	private JSlider engine1PowerSlider;
 	private JSlider engine2PowerSlider;
@@ -133,25 +134,29 @@ public class MotorControllerGuiView extends JDialog {
 		urlPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.PAGE_END;
 		c.insets = new Insets(5, 5, 5, 5);
 		c.gridwidth = 3;
 		c.gridx = 0;
 		c.gridy = 0;
 		urlPanel.add(getUrlTextField(), c);
 		c.gridwidth = 1;
+		c.gridx = 3;
+		c.gridy = 0;
+		urlPanel.add(getConnectButton(), c);
+		c.gridx = 4;
+		c.gridy = 0;
+		urlPanel.add(getTestButton(), c);
+		c.gridwidth = 3;
 		c.gridx = 0;
 		c.gridy = 1;
-		urlPanel.add(getConnectButton(), c);
-		c.gridx = 1;
-		c.gridy = 1;
-		urlPanel.add(getStartButton(), c);
-		c.gridx = 2;
-		c.gridy = 1;
-		urlPanel.add(getStopButton(), c);
+		urlPanel.add(getConfigurationComboBox(), c);
+		c.gridwidth = 1;
 		c.gridx = 3;
 		c.gridy = 1;
-		urlPanel.add(getTestButton(), c);
+		urlPanel.add(getStartButton(), c);
+		c.gridx = 4;
+		c.gridy = 1;
+		urlPanel.add(getStopButton(), c);
 		return urlPanel;
 	}
 	
@@ -202,6 +207,13 @@ public class MotorControllerGuiView extends JDialog {
 			urlTextField = new JTextField("http://localhost:8080");
 		}
 		return urlTextField;
+	}
+	
+	public JComboBox<String> getConfigurationComboBox() {
+		if (null == configurationComboBox) {
+			configurationComboBox = new JComboBox<String>(getConfigurationArray());
+		}
+		return configurationComboBox;
 	}
 	
 	public JButton getConnectButton() {
@@ -827,6 +839,12 @@ public class MotorControllerGuiView extends JDialog {
 			"5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"};
 		return pins;
 	}
+	
+	private String[] getConfigurationArray() {
+		String pins[] = {NULL_ELEMENT, "CONFIGURATION_0", "CONFIGURATION_1", "CONFIGURATION_2"};
+		return pins;
+	}
+	
 	
 //	public static void main(String[] args) {
 //		SwingUtilities.invokeLater(new Runnable() {
