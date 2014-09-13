@@ -29,10 +29,13 @@ public class MotorControllerGuiController {
 			System.out.println("Uri: " + uri);
 			JerseyMotorConnector.getInstance().start(uri);
 			try {
-				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/set/"+view.getSelectedEngine1ForwardPinSelection()));
-				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/set/"+view.getSelectedEngine1BackwardPinSelection()));
-				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/set/"+view.getSelectedEngine2ForwardPinSelection()));
-				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/set/"+view.getSelectedEngine2BackwardPinSelection()));
+				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/enable/set/"+view.getSelectedEngine1EnablePinSelection()));
+				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnleft/set/"+view.getSelectedEngine1ForwardPinSelection()));
+				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnright/set/"+view.getSelectedEngine1BackwardPinSelection()));
+				
+				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/enable/set/"+view.getSelectedEngine2EnablePinSelection()));
+				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnleft/set/"+view.getSelectedEngine2ForwardPinSelection()));
+				addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnright/set/"+view.getSelectedEngine2BackwardPinSelection()));
 				view.getConnectButton().setText("DISCONNECT");
 				connected = true;
 				view.getStartButton().setEnabled(true);
@@ -75,8 +78,8 @@ public class MotorControllerGuiController {
 	public void forwardPressed() {
 		System.out.println("forward");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/"+view.getEngine1PowerSlider().getValue()));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/"+view.getEngine2PowerSlider().getValue()));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnright"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnleft"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -86,8 +89,8 @@ public class MotorControllerGuiController {
 	public void backwardPressed() {
 		System.out.println("backwards");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/"+view.getEngine1PowerSlider().getValue()));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/"+view.getEngine2PowerSlider().getValue()));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnleft"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnright"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -96,33 +99,33 @@ public class MotorControllerGuiController {
 	
 	public void turnLeftPressed() {
 		System.out.println("turn left");
-		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/"+(view.getEngine1PowerSlider().getValue()/2)));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/"+view.getEngine2PowerSlider().getValue()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-		}
+		addToInfoPanel("Not yet implemented!");
+//		try {
+//			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnleft"));
+//			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnleft"));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//		}
+	}
+	
+	public void turnRightPressed() {
+		System.out.println("turn right");
+		addToInfoPanel("Not yet implemented!");
+//		try {
+//			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnright/"));
+//			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnright/"));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//		}
 	}
 	
 	public void rotateLeftPressed() {
 		System.out.println("rotate left");
 		try {
-			int power = view.getEngine1PowerSlider().getValue()+view.getEngine2PowerSlider().getValue();
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/"+(power/2<5?5:(power/2))));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/"+(power/2<5?5:(power/2))));
-		} catch (Exception e) {
-			e.printStackTrace();
-			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-		}
-	}
-	
-	public void turnRightPressed() {
-		System.out.println("turn right");
-		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/forward/"+view.getEngine2PowerSlider().getValue()));
-			int power = view.getEngine1PowerSlider().getValue()/2;
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/backward/"+(power<5?5:power)));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnleft"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnleft"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -132,9 +135,8 @@ public class MotorControllerGuiController {
 	public void rotateRightPressed() {
 		System.out.println("rotate right");
 		try {
-			int power = view.getEngine1PowerSlider().getValue()+view.getEngine2PowerSlider().getValue();
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/forward/"+(power/2<5?5:(power/2))));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/backward/"+(power/2<5?5:(power/2))));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnright"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnright"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -176,11 +178,61 @@ public class MotorControllerGuiController {
 	}
 	
 	public void engine1PowerChanged() {
-		System.out.println("Power of engine 1 changed to: ");
+		try {
+			int power = view.getEngine1PowerSlider().getValue();
+			if (view.isGlobalEngineSync()) {
+				view.getEngine2PowerSlider().getValue();
+			}
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/power/"+power));
+		} catch (Exception e) {
+			e.printStackTrace();
+			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	public void engine2PowerChanged() {
-		System.out.println("Power of engine 2 changed to: ");
+		try {
+			int power = view.getEngine2PowerSlider().getValue();
+			if (view.isGlobalEngineSync()) {
+				view.getEngine1PowerSlider().getValue();
+			}
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/power/"+power));
+		} catch (Exception e) {
+			e.printStackTrace();
+			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void engine1PowerSyncChanged() {
+		boolean sync = view.getEngine1PowerSyncCheckbox().isSelected();
+		if (sync) {
+			view.setGlobalEngineSync(true);
+			view.getEngine2PowerSyncCheckbox().setSelected(true);
+			int powerOfEngine1 = view.getEngine1PowerSlider().getValue();
+			view.getEngine2PowerSlider().setValue(powerOfEngine1);
+			addToInfoPanel("Engine 1 power sync enabled");
+		}
+		else {
+			view.setGlobalEngineSync(false);
+			view.getEngine2PowerSyncCheckbox().setSelected(false);
+			addToInfoPanel("Engine 1 power sync disabled");
+		}
+	}
+	
+	public void engine2PowerSyncChanged() {
+		boolean sync = view.getEngine2PowerSyncCheckbox().isSelected();
+		if (sync) {
+			view.setGlobalEngineSync(true);
+			view.getEngine1PowerSyncCheckbox().setSelected(true);
+			int powerOfEngine2 = view.getEngine2PowerSlider().getValue();
+			view.getEngine1PowerSlider().setValue(powerOfEngine2);
+			addToInfoPanel("Engine 2 power sync enabled");
+		}
+		else {
+			view.setGlobalEngineSync(false);
+			view.getEngine1PowerSyncCheckbox().setSelected(false);
+			addToInfoPanel("Engine 2 power sync disabled");
+		}
 	}
 	
 	private void addToInfoPanel(String s) {
@@ -193,9 +245,7 @@ public class MotorControllerGuiController {
 	}
 
 	public static void main(String[] args) {
-		
-		MotorControllerGuiController motorController = new MotorControllerGuiController();
-		
+		new MotorControllerGuiController();
 	}
 	
 }

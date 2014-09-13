@@ -150,12 +150,9 @@ class SimpleJoystick extends JPanel {
 		g3.setColor(Color.GRAY);
 		g3.setStroke(lineStroke);
 		g3.drawLine(0, 0, (int) curJoySize, 0);
+		g3.fillOval((int) (curJoySize/2), (int) (curJoySize/2)*(-1), (int) curJoySize, (int) curJoySize);
 		g3.dispose();
 		
-		Graphics2D g4 = (Graphics2D) g2.create();
-		g4.setColor(Color.GRAY);
-		g4.fillOval((int) (mouseX - curJoySize/2), (int) (mouseY - curJoySize/2), (int) curJoySize, (int) curJoySize);
-		g4.dispose();
 		//
 		g2.setColor(Color.GRAY);
 		g2.fillOval((int) joyCenterX - 10, (int) joyCenterY - 10, 20, 20);
