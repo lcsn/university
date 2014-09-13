@@ -1,8 +1,9 @@
 package de.lsn.raspberrypi.framework;
 
-public enum Rotation {
+public enum MotorAction {
 
-	FORWARD,
-	BACKWARD
+	ENABLE,
+	LEFT_TURN,
+	RIGHT_TURN
 	
 }
