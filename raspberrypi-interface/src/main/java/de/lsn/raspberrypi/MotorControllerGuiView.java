@@ -7,10 +7,13 @@ import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
@@ -23,8 +26,8 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -37,13 +40,17 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class MotorControllerGuiView extends JDialog {
+public class MotorControllerGuiView extends JFrame {
 
 	private static final long serialVersionUID = 5114910040411544311L;
 	
 	private static final String TITLE = "Raspberry-Pi MotorController";
 
 	private static final String NULL_ELEMENT = "-";
+
+	private static final String NAME_OF_ENGINE1 = "Engine 1";
+	
+	private static final String NAME_OF_ENGINE2 = "Engine 2";
 	
 	private MotorControllerGuiController controller;
 
@@ -65,21 +72,31 @@ public class MotorControllerGuiView extends JDialog {
 	private JButton backwardButton;
 	private JButton haltButton;
 	private JScrollPane infoScrollPane;
+	private JButton infoClearButton;
 	private JList<String> infoDataList;
 	private DefaultListModel<String> infoDataListModel;
+//	Pins für Motor 1 zur Steuerung über H-Bridge
+	private JComboBox<String> engine1EnablePinSelectionList;
 	private JComboBox<String> engine1ForwardPinSelectionList;
 	private JComboBox<String> engine1BackwardPinSelectionList;
+//	Pins für Motor 2 zur Steuerung über H-Bridge
+	private JComboBox<String> engine2EnablePinSelectionList;
 	private JComboBox<String> engine2ForwardPinSelectionList;
 	private JComboBox<String> engine2BackwardPinSelectionList;
+	
 	private JComboBox<String> configurationComboBox;
 
+	private boolean globalEngineSync = false;
+	
+	private JCheckBox engine1PowerSyncCheckbox;
+	private JCheckBox engine2PowerSyncCheckbox;
 	private JSlider engine1PowerSlider;
 	private JSlider engine2PowerSlider;
 	private JPanel engine2PowerPanel;
 	private JPanel engine1PowerPanel;
 
 	public MotorControllerGuiView() {
-		super(new JFrame(TITLE));
+		super(TITLE);
 		setup();
 	}
 
@@ -88,8 +105,8 @@ public class MotorControllerGuiView extends JDialog {
 			public void componentShown(ComponentEvent e) {
 			}
 			public void componentResized(ComponentEvent e) {
-				JDialog dialog = (JDialog) e.getSource();
-				dialog.setTitle(TITLE + " ("+dialog.getWidth()+"x"+dialog.getHeight()+")");
+				JFrame frame = (JFrame) e.getSource();
+				frame.setTitle(TITLE + " ("+frame.getWidth()+"x"+frame.getHeight()+")");
 			}
 			public void componentMoved(ComponentEvent e) {
 			}
@@ -165,6 +182,7 @@ public class MotorControllerGuiView extends JDialog {
 		infoPanel.setBorder(BorderFactory.createTitledBorder("Info"));
 		infoPanel.setLayout(new BorderLayout());
         infoPanel.add(getInfoScrollpane(), BorderLayout.CENTER);
+        infoPanel.add(getInfoClearButton(), BorderLayout.SOUTH);
 		return infoPanel;
 	}
 
@@ -174,6 +192,18 @@ public class MotorControllerGuiView extends JDialog {
 			infoScrollPane = new JScrollPane(getInfoDataList());
 		}
 		return infoScrollPane;
+	}
+	
+	public JButton getInfoClearButton() {
+		if (null == infoClearButton) {
+			infoClearButton = new JButton("Clear");
+			infoClearButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					((DefaultListModel<String>) getInfoDataList().getModel()).removeAllElements();
+				}
+			});
+		}
+		return infoClearButton;
 	}
 	
 	public JList<String> getInfoDataList() {
@@ -219,17 +249,9 @@ public class MotorControllerGuiView extends JDialog {
 	public JButton getConnectButton() {
 		if (null == connectButton) {
 			connectButton = new JButton("CONNECT");
-			connectButton.addMouseListener(new MouseListener() {
-				public void mouseReleased(MouseEvent e) {
-				}
-				public void mousePressed(MouseEvent e) {
-				}
-				public void mouseExited(MouseEvent e) {
-				}
-				public void mouseEntered(MouseEvent e) {
-				}
-				public void mouseClicked(MouseEvent e) {
-					invokeControllerMethod("connect", "Clicked");
+			connectButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					invokeControllerMethod("connect", "Clicked");					
 				}
 			});
 		}
@@ -240,16 +262,8 @@ public class MotorControllerGuiView extends JDialog {
 		if (null == startButton) {
 			startButton = new JButton("START");
 			startButton.setEnabled(false);
-			startButton.addMouseListener(new MouseListener() {
-				public void mouseReleased(MouseEvent e) {
-				}
-				public void mousePressed(MouseEvent e) {
-				}
-				public void mouseExited(MouseEvent e) {
-				}
-				public void mouseEntered(MouseEvent e) {
-				}
-				public void mouseClicked(MouseEvent e) {
+			startButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 					invokeControllerMethod("start", "Clicked");
 				}
 			});
@@ -261,16 +275,8 @@ public class MotorControllerGuiView extends JDialog {
 		if (null == stopButton) {
 			stopButton = new JButton("STOP");
 			stopButton.setEnabled(false);
-			stopButton.addMouseListener(new MouseListener() {
-				public void mouseReleased(MouseEvent e) {
-				}
-				public void mousePressed(MouseEvent e) {
-				}
-				public void mouseExited(MouseEvent e) {
-				}
-				public void mouseEntered(MouseEvent e) {
-				}
-				public void mouseClicked(MouseEvent e) {
+			stopButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 					invokeControllerMethod("stop", "Clicked");
 				}
 			});
@@ -280,16 +286,8 @@ public class MotorControllerGuiView extends JDialog {
 	
 	public JButton getTestButton() {
 		testButton = new JButton("TEST");
-		testButton.addMouseListener(new MouseListener() {
-			public void mouseReleased(MouseEvent e) {
-			}
-			public void mousePressed(MouseEvent e) {
-			}
-			public void mouseExited(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-			}
-			public void mouseClicked(MouseEvent e) {
+		testButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				invokeControllerMethod("test", "Clicked");
 			}
 		});
@@ -306,33 +304,51 @@ public class MotorControllerGuiView extends JDialog {
 		c.ipadx = 30;
 		c.gridx = 1;
 		c.gridy = 0;
+		configPanel.add(getEnableLabel(), c);
+		c.ipadx = 30;
+		c.gridx = 2;
+		c.gridy = 0;
 		configPanel.add(getForwardLabel(), c);
 		c.ipadx = 20;
-		c.gridx = 2;
+		c.gridx = 3;
 		c.gridy = 0;
 		configPanel.add(getBackwardLabel(), c);
 		c.ipadx = 0;
+//		Engine 1
 		c.gridx = 0;
 		c.gridy = 1;
 		configPanel.add(getMotor1Label(), c);
 		c.gridx = 1;
 		c.gridy = 1;
-		configPanel.add(getEngine1ForwardPinSelection(), c);
+		configPanel.add(getEngine1EnablePinSelection(), c);
 		c.gridx = 2;
 		c.gridy = 1;
+		configPanel.add(getEngine1ForwardPinSelection(), c);
+		c.gridx = 3;
+		c.gridy = 1;
 		configPanel.add(getEngine1BackwardPinSelection(), c);
+//		Engine 2		
 		c.gridx = 0;
 		c.gridy = 2;
 		configPanel.add(getMotor2Label(), c);
 		c.gridx = 1;
 		c.gridy = 2;
-		configPanel.add(getEngine2ForwardPinSelection(), c);
+		configPanel.add(getEngine2EnablePinSelection(), c);
 		c.gridx = 2;
+		c.gridy = 2;
+		configPanel.add(getEngine2ForwardPinSelection(), c);
+		c.gridx = 3;
 		c.gridy = 2;
 		configPanel.add(getEngine2BackwardPinSelection(), c);
 		return configPanel;
 	}
 
+	public JLabel getEnableLabel() {
+		JLabel forwardLabel = new JLabel("Enable");
+		forwardLabel.setHorizontalAlignment(JLabel.CENTER);
+		return forwardLabel;
+	}
+	
 	public JLabel getForwardLabel() {
 		JLabel forwardLabel = new JLabel("Forward");
 		forwardLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -346,9 +362,67 @@ public class MotorControllerGuiView extends JDialog {
 	}
 
 	public JLabel getMotor1Label() {
-		return new JLabel("Engine 1");
+		return new JLabel(NAME_OF_ENGINE1);
 	}
 
+
+	public JComboBox<String> getEngine1EnablePinSelection() {
+		if (null == engine1EnablePinSelectionList) {
+			engine1EnablePinSelectionList = new JComboBox<String>(getRaspiPinArray()) {
+				@Override
+				public void addItem(String item) {
+					List<String> items = new ArrayList<String>();
+                    for(int i = 0; i < getItemCount(); i++){
+                        items.add((String)getItemAt(i));
+                    }
+
+                    if(items.size() == 0){
+                        super.addItem(item);
+                        return;
+                    }else{
+                        if(item.compareTo(items.get(0)) <= 0){
+                            insertItemAt(item, 0);
+                        }else{
+                            int index = 0;
+                            for(int i = 0; i < getItemCount(); i++){
+                                if(item.compareTo(items.get(i)) > 0){
+                                    index = i;
+                                }
+                            }
+                            insertItemAt(item, index+1);
+                        }
+                    }
+				}
+			};
+			engine1EnablePinSelectionList.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					String item = (String) e.getItem();
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						System.out.println("SELECTED:"+item);
+						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1ForwardPinSelection().removeItem(item);
+							getEngine1BackwardPinSelection().removeItem(item);
+							getEngine2EnablePinSelection().removeItem(item);
+							getEngine2ForwardPinSelection().removeItem(item);
+							getEngine2BackwardPinSelection().removeItem(item);
+						}
+					}
+					else {
+						System.out.println("DESELECTED:"+item);
+						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1ForwardPinSelection().addItem(item);
+							getEngine1BackwardPinSelection().addItem(item);
+							getEngine2EnablePinSelection().addItem(item);
+							getEngine2ForwardPinSelection().addItem(item);
+							getEngine2BackwardPinSelection().addItem(item);
+						}
+					}
+				}
+			});
+		}
+		return engine1EnablePinSelectionList;
+	}
+	
 	public JComboBox<String> getEngine1ForwardPinSelection() {
 		if (null == engine1ForwardPinSelectionList) {
 			engine1ForwardPinSelectionList = new JComboBox<String>(getRaspiPinArray()) {
@@ -383,7 +457,9 @@ public class MotorControllerGuiView extends JDialog {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
 						System.out.println("SELECTED:"+item);
 						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().removeItem(item);
 							getEngine1BackwardPinSelection().removeItem(item);
+							getEngine2EnablePinSelection().removeItem(item);
 							getEngine2ForwardPinSelection().removeItem(item);
 							getEngine2BackwardPinSelection().removeItem(item);
 						}
@@ -391,7 +467,9 @@ public class MotorControllerGuiView extends JDialog {
 					else {
 						System.out.println("DESELECTED:"+item);
 						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().addItem(item);
 							getEngine1BackwardPinSelection().addItem(item);
+							getEngine2EnablePinSelection().addItem(item);
 							getEngine2ForwardPinSelection().addItem(item);
 							getEngine2BackwardPinSelection().addItem(item);
 						}
@@ -436,7 +514,9 @@ public class MotorControllerGuiView extends JDialog {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
 						System.out.println("SELECTED:"+item);
 						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().removeItem(item);
 							getEngine1ForwardPinSelection().removeItem(item);
+							getEngine2EnablePinSelection().removeItem(item);
 							getEngine2ForwardPinSelection().removeItem(item);
 							getEngine2BackwardPinSelection().removeItem(item);
 						}
@@ -444,7 +524,9 @@ public class MotorControllerGuiView extends JDialog {
 					else {
 						System.out.println("DESELECTED:"+item);
 						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().addItem(item);
 							getEngine1ForwardPinSelection().addItem(item);
+							getEngine2EnablePinSelection().addItem(item);
 							getEngine2ForwardPinSelection().addItem(item);
 							getEngine2BackwardPinSelection().addItem(item);
 						}
@@ -456,7 +538,64 @@ public class MotorControllerGuiView extends JDialog {
 	}
 
 	public JLabel getMotor2Label() {
-		return new JLabel("Engine 2");
+		return new JLabel(NAME_OF_ENGINE2);
+	}
+	
+	public JComboBox<String> getEngine2EnablePinSelection() {
+		if (null == engine2EnablePinSelectionList) {
+			engine2EnablePinSelectionList = new JComboBox<String>(getRaspiPinArray()) {
+				@Override
+				public void addItem(String item) {
+					List<String> items = new ArrayList<String>();
+                    for(int i = 0; i < getItemCount(); i++){
+                        items.add((String)getItemAt(i));
+                    }
+
+                    if(items.size() == 0){
+                        super.addItem(item);
+                        return;
+                    }else{
+                        if(item.compareTo(items.get(0)) <= 0){
+                            insertItemAt(item, 0);
+                        }else{
+                            int index = 0;
+                            for(int i = 0; i < getItemCount(); i++){
+                                if(item.compareTo(items.get(i)) > 0){
+                                    index = i;
+                                }
+                            }
+                            insertItemAt(item, index+1);
+                        }
+                    }
+				}
+			};
+			engine2EnablePinSelectionList.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					String item = (String) e.getItem();
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						System.out.println("SELECTED:"+item);
+						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().removeItem(item);
+							getEngine1ForwardPinSelection().removeItem(item);
+							getEngine1BackwardPinSelection().removeItem(item);
+							getEngine2ForwardPinSelection().removeItem(item);
+							getEngine2BackwardPinSelection().removeItem(item);
+						}
+					}
+					else {
+						System.out.println("DESELECTED:"+item);
+						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().addItem(item);
+							getEngine1ForwardPinSelection().addItem(item);
+							getEngine1BackwardPinSelection().addItem(item);
+							getEngine2ForwardPinSelection().addItem(item);
+							getEngine2BackwardPinSelection().addItem(item);
+						}
+					}
+				}
+			});
+		}
+		return engine2EnablePinSelectionList;
 	}
 
 	public JComboBox<String> getEngine2ForwardPinSelection() {
@@ -493,16 +632,20 @@ public class MotorControllerGuiView extends JDialog {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
 						System.out.println("SELECTED:"+item);
 						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().removeItem(item);
 							getEngine1ForwardPinSelection().removeItem(item);
 							getEngine1BackwardPinSelection().removeItem(item);
+							getEngine2EnablePinSelection().removeItem(item);
 							getEngine2BackwardPinSelection().removeItem(item);
 						}
 					}
 					else {
 						System.out.println("DESELECTED:"+item);
 						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().addItem(item);
 							getEngine1ForwardPinSelection().addItem(item);
 							getEngine1BackwardPinSelection().addItem(item);
+							getEngine2EnablePinSelection().addItem(item);
 							getEngine2BackwardPinSelection().addItem(item);
 						}
 					}
@@ -546,16 +689,20 @@ public class MotorControllerGuiView extends JDialog {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
 						System.out.println("SELECTED:"+item);
 						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().removeItem(item);
 							getEngine1ForwardPinSelection().removeItem(item);
 							getEngine1BackwardPinSelection().removeItem(item);
+							getEngine2EnablePinSelection().removeItem(item);
 							getEngine2ForwardPinSelection().removeItem(item);
 						}
 					}
 					else {
 						System.out.println("DESELECTED:"+item);
 						if (!item.equals(NULL_ELEMENT)) {
+							getEngine1EnablePinSelection().removeItem(item);
 							getEngine1ForwardPinSelection().addItem(item);
 							getEngine1BackwardPinSelection().addItem(item);
+							getEngine2EnablePinSelection().removeItem(item);
 							getEngine2ForwardPinSelection().addItem(item);
 						}
 					}
@@ -615,8 +762,9 @@ public class MotorControllerGuiView extends JDialog {
 		if (null == engine1PowerPanel) {
 			engine1PowerPanel = new JPanel();
 			engine1PowerPanel.setLayout(new BorderLayout());
+			engine1PowerPanel.add(new JLabel(NAME_OF_ENGINE1), BorderLayout.NORTH);
 			engine1PowerPanel.add(getEngine1PowerSlider(), BorderLayout.CENTER);
-			engine1PowerPanel.add(new JLabel("Engine 1"), BorderLayout.SOUTH);
+			engine1PowerPanel.add(getEngine1PowerSyncCheckbox(), BorderLayout.SOUTH);
 		}
 		return engine1PowerPanel;
 	}
@@ -646,12 +794,28 @@ public class MotorControllerGuiView extends JDialog {
 		return engine1PowerSlider;
 	}
 	
+	public JCheckBox getEngine1PowerSyncCheckbox() {
+		if (null == engine1PowerSyncCheckbox) {
+			engine1PowerSyncCheckbox = new JCheckBox("Sync");
+			engine1PowerSyncCheckbox.setSelected(false);
+			engine1PowerSyncCheckbox.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
+						invokeControllerMethod("engine1PowerSync", "Changed");
+					}
+				}
+			});
+		}
+		return engine1PowerSyncCheckbox;
+	}
+	
 	public JPanel getEngine2PowerPanel() {
 		if (null == engine2PowerPanel) {
 			engine2PowerPanel = new JPanel();
 			engine2PowerPanel.setLayout(new BorderLayout());
+			engine2PowerPanel.add(new JLabel(NAME_OF_ENGINE2), BorderLayout.NORTH);
 			engine2PowerPanel.add(getEngine2PowerSlider(), BorderLayout.CENTER);
-			engine2PowerPanel.add(new JLabel("Engine 2"), BorderLayout.SOUTH);
+			engine2PowerPanel.add(getEngine2PowerSyncCheckbox(), BorderLayout.SOUTH);
 		}
 		return engine2PowerPanel;
 	}
@@ -680,22 +844,39 @@ public class MotorControllerGuiView extends JDialog {
 		}
 		return engine2PowerSlider;
 	}
+	
+	public JCheckBox getEngine2PowerSyncCheckbox() {
+		if (null == engine2PowerSyncCheckbox) {
+			engine2PowerSyncCheckbox = new JCheckBox("Sync");
+			engine2PowerSyncCheckbox.setSelected(false);
+			engine2PowerSyncCheckbox.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
+						invokeControllerMethod("engine2PowerSync", "Changed");
+					}
+				}
+			});
+		}
+		return engine2PowerSyncCheckbox;
+	}
+	
+	public boolean isGlobalEngineSync() {
+		return globalEngineSync;
+	}
+	
+	public void setGlobalEngineSync(boolean globalEngineSync) {
+		this.globalEngineSync = globalEngineSync;
+	}
 
 	public JButton getForwardButton() {
 		forwardButton = new JButton("Forward");
 //		forwardButton.addActionListener((a) -> System.out.println("forwards pressed"));
-		forwardButton.addMouseListener(new MouseListener() {
+		forwardButton.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("forward", "Pressed");
-			}
-			public void mouseExited(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-			}
-			public void mouseClicked(MouseEvent e) {
 			}
 		});
 		return forwardButton;
@@ -704,18 +885,12 @@ public class MotorControllerGuiView extends JDialog {
 	public JButton getRotateLeftButton() {
 		rotateLeftButton = new JButton("Rotate Left");
 //		turnLeftButton.addActionListener((a) -> System.out.println("turn left pressed"));
-		rotateLeftButton.addMouseListener(new MouseListener() {
+		rotateLeftButton.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("rotateLeft", "Pressed");
-			}
-			public void mouseExited(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-			}
-			public void mouseClicked(MouseEvent e) {
 			}
 		});
 		return rotateLeftButton;
@@ -724,18 +899,12 @@ public class MotorControllerGuiView extends JDialog {
 	public JButton getTurnLeftButton() {
 		turnLeftButton = new JButton("Left");
 //		turnLeftButton.addActionListener((a) -> System.out.println("turn left pressed"));
-		turnLeftButton.addMouseListener(new MouseListener() {
+		turnLeftButton.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("turnLeft", "Pressed");
-			}
-			public void mouseExited(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-			}
-			public void mouseClicked(MouseEvent e) {
 			}
 		});
 		return turnLeftButton;
@@ -744,18 +913,12 @@ public class MotorControllerGuiView extends JDialog {
 	public JButton getRotateRightButton() {
 		rotateRightButton = new JButton("Rotate Right");
 //		turnLeftButton.addActionListener((a) -> System.out.println("turn left pressed"));
-		rotateRightButton.addMouseListener(new MouseListener() {
+		rotateRightButton.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("rotateRight", "Pressed");
-			}
-			public void mouseExited(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-			}
-			public void mouseClicked(MouseEvent e) {
 			}
 		});
 		return rotateRightButton;
@@ -764,18 +927,12 @@ public class MotorControllerGuiView extends JDialog {
 	public JButton getTurnRightButton() {
 		turnRightButton = new JButton("Right");
 //		turnRightButton.addActionListener((a) -> System.out.println("turn right pressed"));
-		turnRightButton.addMouseListener(new MouseListener() {
+		turnRightButton.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("turnRight", "Pressed");
-			}
-			public void mouseExited(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-			}
-			public void mouseClicked(MouseEvent e) {
 			}
 		});
 		return turnRightButton;
@@ -784,18 +941,12 @@ public class MotorControllerGuiView extends JDialog {
 	public JButton getBackwardButton() {
 		backwardButton = new JButton("Backward");
 //		backwardButton.addActionListener((a) -> System.out.println("backwards pressed"));
-		backwardButton.addMouseListener(new MouseListener() {
+		backwardButton.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				invokeControllerMethod("halt", "Pressed");
 			}
 			public void mousePressed(MouseEvent e) {
 				invokeControllerMethod("backward", "Pressed");
-			}
-			public void mouseExited(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-			}
-			public void mouseClicked(MouseEvent e) {
 			}
 		});
 		return backwardButton;
@@ -804,15 +955,7 @@ public class MotorControllerGuiView extends JDialog {
 	public JButton getHaltButton() {
 		haltButton = new JButton("Halt");
 //		stopButton.addActionListener((a) -> System.out.println("stop pressed"));
-		haltButton.addMouseListener(new MouseListener() {
-			public void mouseReleased(MouseEvent e) {
-			}
-			public void mousePressed(MouseEvent e) {
-			}
-			public void mouseExited(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-			}
+		haltButton.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				invokeControllerMethod("halt", "Pressed");
 			}
@@ -868,6 +1011,13 @@ public class MotorControllerGuiView extends JDialog {
 		
 	}
 
+	public String getSelectedEngine1EnablePinSelection() throws Exception {
+		if (engine1EnablePinSelectionList.getSelectedItem().equals(NULL_ELEMENT)) {
+			throw new Exception("Engine 1 enable: Pls choose a pin");
+		}
+		return (String) engine1EnablePinSelectionList.getSelectedItem();
+	}
+	
 	public String getSelectedEngine1ForwardPinSelection() throws Exception {
 		if (engine1ForwardPinSelectionList.getSelectedItem().equals(NULL_ELEMENT)) {
 			throw new Exception("Engine 1 forward: Pls choose a pin");
@@ -882,6 +1032,13 @@ public class MotorControllerGuiView extends JDialog {
 		return (String) engine1BackwardPinSelectionList.getSelectedItem();
 	}
 
+	public String getSelectedEngine2EnablePinSelection() throws Exception {
+		if (engine2EnablePinSelectionList.getSelectedItem().equals(NULL_ELEMENT)) {
+			throw new Exception("Engine 2 enable: Pls choose a pin");
+		}
+		return (String) engine2EnablePinSelectionList.getSelectedItem();
+	}
+	
 	public String getSelectedEngine2ForwardPinSelection() throws Exception {
 		if (engine2ForwardPinSelectionList.getSelectedItem().equals(NULL_ELEMENT)) {
 			throw new Exception("Engine 2 forward: Pls choose a pin");
