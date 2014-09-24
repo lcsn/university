@@ -78,8 +78,8 @@ public class MotorControllerGuiController {
 	public void forwardPressed() {
 		System.out.println("forward");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnright"));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnleft"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnleft"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnright"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -89,8 +89,8 @@ public class MotorControllerGuiController {
 	public void backwardPressed() {
 		System.out.println("backwards");
 		try {
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnleft"));
-			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnright"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/turnright"));
+			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/turnleft"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			showPopup(view, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -181,7 +181,7 @@ public class MotorControllerGuiController {
 		try {
 			int power = view.getEngine1PowerSlider().getValue();
 			if (view.isGlobalEngineSync()) {
-				view.getEngine2PowerSlider().getValue();
+				view.getEngine2PowerSlider().setValue(power);
 			}
 			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/1/power/"+power));
 		} catch (Exception e) {
@@ -194,7 +194,7 @@ public class MotorControllerGuiController {
 		try {
 			int power = view.getEngine2PowerSlider().getValue();
 			if (view.isGlobalEngineSync()) {
-				view.getEngine1PowerSlider().getValue();
+				view.getEngine1PowerSlider().setValue(power);
 			}
 			addToInfoPanel(JerseyMotorConnector.getInstance().put(CONTEXT_ROOT+"/gpio/motor/2/power/"+power));
 		} catch (Exception e) {
