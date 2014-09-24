@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:body>
+	<h:form id="motor_controller_form">
+	
+		<h1>Raspberry-Pi Live Stream</h1>
+
+		<video id="video1" controls="controls" autoplay="autoplay">
+			<source src="http://localhost:5004/rpi-stream"/>
+		</video>
+
+		<br />
+		<label>Project Stage: #{facesContext.application.projectStage}</label>
+	</h:form>
+</h:body>
+</html>

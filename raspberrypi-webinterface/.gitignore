@@ -1,0 +1,17 @@
+/target
+/bin
+.settings
+
+*.class
+
+.classpath
+.log
+.swp
+.out
+.lock
+.DS_Store
+~
+
+
+
+
