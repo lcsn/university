@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
 
 import org.apache.commons.io.FileUtils;
 
@@ -21,6 +22,7 @@ public class FsCrudMainView extends MvcCrudView<JFrame> {
 	private JTabbedPane mainTabbedPane;
 	private JPanel customerPanel;
 	private JPanel addressPanel;
+	private JToolBar customerToolBar;
 
 	public FsCrudMainView() {
 		this(null);
@@ -54,8 +56,8 @@ public class FsCrudMainView extends MvcCrudView<JFrame> {
 	private JTabbedPane getMainPanel() throws IOException {
 		if (null == mainTabbedPane) {
 			this.mainTabbedPane = new JTabbedPane();
-			mainTabbedPane.addTab("Kunden", new ImageIcon(FileUtils.readFileToByteArray(new File("src/main/resources/gfx/icon_customer.png")), "Kunden"), getAddressPanel(), "Kundendaten");
-			mainTabbedPane.addTab("Adressen", new ImageIcon(FileUtils.readFileToByteArray(new File("src/main/resources/gfx/icon_contact.png")), "Kunden"), getCustomerPanel(), "Kundendaten");
+			mainTabbedPane.addTab("Kunden", new ImageIcon(FileUtils.readFileToByteArray(new File("src/main/resources/gfx/icon_customer.png")), "Adressen"), getCustomerPanel(), "Adressdaten");
+			mainTabbedPane.addTab("Adressen", new ImageIcon(FileUtils.readFileToByteArray(new File("src/main/resources/gfx/icon_contact.png")), "Kunden"), getAddressPanel(), "Kundendaten");
 		}
 		return mainTabbedPane;
 	}
@@ -63,9 +65,20 @@ public class FsCrudMainView extends MvcCrudView<JFrame> {
 	private JPanel getCustomerPanel() {
 		if (null == customerPanel) {
 			this.customerPanel = new JPanel();
-			this.customerPanel.setLayout(new GridLayout(3, 3, 5, 5));
+			this.customerPanel.setLayout(new BorderLayout(5, 5));
+			this.customerPanel.add(getCustomerToolBar(), BorderLayout.NORTH);
 		}
 		return customerPanel;
+	}
+	
+	private JToolBar getCustomerToolBar() {
+		if (null == customerToolBar) {
+			this.customerToolBar = new JToolBar();
+			this.customerToolBar.add(new JButton("Moo"));
+			this.customerToolBar.add(new JButton("Foo"));
+			this.customerToolBar.add(new JButton("Koo"));
+		}
+		return customerToolBar;
 	}
 	
 	private JPanel getAddressPanel() {
