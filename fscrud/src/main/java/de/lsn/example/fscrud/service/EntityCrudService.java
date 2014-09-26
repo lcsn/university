@@ -1,19 +1,12 @@
 package de.lsn.example.fscrud.service;
 
-import static org.junit.Assert.*;
-
 import java.util.logging.Logger;
-
-import javax.inject.Inject;
-
-import org.junit.Test;
 
 import de.lsn.example.fscrud.model.CrudEntity;
 
-public class EntityCrudService implements CrudService<CrudEntity> {
+public abstract class EntityCrudService implements CrudService<CrudEntity> {
 	
-	@Inject
-	private Logger log;
+	private Logger log = Logger.getLogger(EntityCrudService.class.getSimpleName());
 
 	public CrudEntity loadAll(Class<CrudEntity> classOfT) {
 		log.info("NOT YET IMPLEMENTED!");
@@ -33,4 +26,5 @@ public class EntityCrudService implements CrudService<CrudEntity> {
 	public void test() {
 		log.info("Test succeeded!");
 	}
+	
 }

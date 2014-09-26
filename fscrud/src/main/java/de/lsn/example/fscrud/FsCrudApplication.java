@@ -1,43 +1,40 @@
 package de.lsn.example.fscrud;
 
-import javax.swing.SwingUtilities;
+import java.util.logging.Logger;
 
-import org.apache.deltaspike.cdise.api.CdiContainer;
-import org.apache.deltaspike.cdise.api.CdiContainerLoader;
+import javax.swing.SwingUtilities;
 
 import de.lsn.example.fscrud.view.FsCrudMainController;
 
 public class FsCrudApplication {
-
-	private CdiContainer cdiContainer;
+	
+	private Logger log = Logger.getLogger(FsCrudApplication.class.getSimpleName());
 	
 	public void start() {
-		cdiContainer = CdiContainerLoader.getCdiContainer();
-		cdiContainer.boot();
-		cdiContainer.getContextControl().startContexts();
-
+		log.info("Starting FsCrudApp!");
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new FsCrudMainController();
 			}
 		});
-		stop();
 	}
 	
 	public void stop() {
-        cdiContainer.getContextControl().stopContexts();
-		cdiContainer.shutdown();
-		clean();
+		log.info("NOT YET IMPLEMENTED!");
 	}
 	
-	private void clean() {
-		System.out.println("NOT YET IMPLEMENTED!");
-	}
-
 	public static void main(String[] args) {
 
 		FsCrudApplication app = new FsCrudApplication();
 		app.start();
+		
+		/*
+		Weld weld = new Weld();
+		WeldSingleton.getInstance().setContainer(weld.initialize());
+		FsCrudApplication application = WeldSingleton.container().instance().select(FsCrudApplication.class).get();
+	    application.start();
+	    weld.shutdown();
+	    */
 		
 	}
 
