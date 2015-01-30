@@ -1,12 +1,14 @@
 package de.lsn.fh.msc.mining;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -24,7 +26,10 @@ public class ID3 {
 	public static DefaultMutableTreeNode buildId3Tree(DefaultMutableTreeNode node, String targetAsString, String[] headers, Object[][] data, String path, HashSet<String> cache) {
 		System.out.println(">>>"+path);
 		TreeMap<String, Id3Attribute> attributeMap = toAttributeMap(headers, data);
-		if (!attributeMap.isEmpty()) {
+//		if (!(attributeMap.isEmpty() || (!cache.isEmpty() && Arrays.asList(headers).containsAll(cache)))) {
+		List<String> headersAsList = Arrays.stream(headers).collect(Collectors.toList());
+		headersAsList.remove(targetAsString);
+		if (!attributeMap.isEmpty() && !cache.containsAll(headersAsList)) {
 			Id3Attribute target = attributeMap.remove(targetAsString);
 			if (target.getEntropy() > 0) {
 				String attributeName = null;

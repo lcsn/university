@@ -8,6 +8,8 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.swing.border.EtchedBorder;
+
 public abstract class Id3Attribute implements Cloneable {
 
 	protected String name;
@@ -80,6 +82,27 @@ public abstract class Id3Attribute implements Cloneable {
 	
 	public HashMap<String, TreeSet<Integer>> getIndicatedValueMap() {
 		return indicatedValueMap;
+	}
+
+	@Override
+	public String toString() {
+		return name.toUpperCase()+":[Werte:["+collectValueSet()+"], Index:["+collectIndicatedValueMap()+"]]";
+	}
+
+	private String collectIndicatedValueMap() {
+		List<String> l = new ArrayList<String>();
+		for (String key : getIndicatedValueMap().keySet()) {
+			TreeSet<Integer> treeSet = getIndicatedValueMap().get(key);
+			l.add(key.toUpperCase()+":{"+treeSet.stream().map(String::valueOf).reduce((u, v) -> u+", "+v).orElse("N.A.")+"}");
+		}
+//		String indicesAsString = l.stream().reduce("",  String::concat, (u, v) -> u+", "+v);
+		String indicesAsString = l.stream().collect(Collectors.joining(", "));
+		return indicesAsString;
+//		return l.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
+	}
+
+	private String collectValueSet() {
+		return getValueSet().stream().reduce((u, v) -> u+", "+v).orElse("N.A.");
 	}
 
 }
