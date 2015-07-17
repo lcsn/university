@@ -6,6 +6,7 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.Pin;
 
+import de.lsn.raspberrypi.framework.gpio.pin.IGpioPin;
 import de.lsn.raspberrypi.framework.gpio.pin.output.GpioOutputPin;
 
 public class GpioOutputPinController {
@@ -23,7 +24,7 @@ public class GpioOutputPinController {
 		return instance;
 	}
 	
-	public GpioPin create(GpioController gpio, Pin pin) {
+	public IGpioPin create(GpioController gpio, Pin pin) {
 		GpioOutputPin digitalInputPin;
 		if (isNew(pin)) {
 			digitalInputPin = new GpioOutputPin(gpio, pin);
@@ -48,6 +49,19 @@ public class GpioOutputPinController {
 			inputPin.setActive(false);
 		}
 	}
+	
+	public void unexport(Pin pin) {
+		stop(pin);
+		gpioOutputPinMap.remove(pin).getPin();
+	}
+	
+//	public void stopAll() {
+//		if (null != gpioOutputPinMap && gpioOutputPinMap.size() > 0) {
+//			for (GpioOutputPin gpioPin : gpioOutputPinMap.values()) {
+//				stop(gpioPin.getPin());
+//			}
+//		}
+//	}
 	
 	public boolean isNew(Pin pin) {
 		return !gpioOutputPinMap.containsKey(pin);

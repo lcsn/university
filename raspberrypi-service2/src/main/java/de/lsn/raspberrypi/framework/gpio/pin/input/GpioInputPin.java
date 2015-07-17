@@ -16,8 +16,9 @@ import com.pi4j.io.gpio.impl.GpioPinImpl;
 
 import de.lsn.raspberrypi.framework.gpio.event.GpioInputEvent;
 import de.lsn.raspberrypi.framework.gpio.listener.GpioInputListener;
+import de.lsn.raspberrypi.framework.gpio.pin.IGpioPin;
 
-public class GpioInputPin extends GpioPinImpl {
+public class GpioInputPin extends GpioPinImpl implements IGpioPin {
 
 	private GpioPinDigitalInput gpioPin;
 	private boolean active = true;
@@ -32,6 +33,7 @@ public class GpioInputPin extends GpioPinImpl {
 	public GpioInputPin(GpioController gpio, GpioProvider provider, Pin pin) {
 		super(gpio, provider, pin);
 		this.gpioPin = gpio.provisionDigitalInputPin(pin, PinPullResistance.PULL_DOWN);
+		this.gpioPin.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
 		this.state = gpioPin.getState();
 		init();
 	}

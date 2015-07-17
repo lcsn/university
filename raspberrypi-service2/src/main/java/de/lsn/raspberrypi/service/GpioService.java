@@ -13,8 +13,6 @@ import com.pi4j.io.gpio.GpioPin;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinMode;
 
-import de.lsn.raspberrypi.framework.gpio.control.input.GpioInputPinController;
-import de.lsn.raspberrypi.framework.gpio.control.output.GpioPwmOutputPinController;
 import de.lsn.raspberrypi.framework.gpio.exception.GpioException;
 import de.lsn.raspberrypi.logic.GpioHelper;
 
@@ -97,7 +95,6 @@ public class GpioService {
 			if (!gpioPin.isExported()) {
 				gpioHelper.gpio().export(pinMode, gpioPin);
 			}
-			gpioHelper.export(pin, gpioPin);
 			msg = "Pin \""+pin+"\" with mode \""+mode+"\" exported";
 			status = Status.OK;
 		} catch (GpioException e) {
@@ -115,7 +112,7 @@ public class GpioService {
 		try {
 			GpioPin gpioPin = gpioHelper.toGpioPin(pin);
 			if (gpioPin.isExported()) {
-				gpioHelper.gpio().unexport(gpioPin);
+				gpioHelper.unexport(pin);
 				msg = "Pin \""+pin+"\" unexported";
 				status = Status.OK;
 			}
@@ -137,7 +134,7 @@ public class GpioService {
 		try {
 			final GpioPinDigitalOutput gpioPin = (GpioPinDigitalOutput) gpioHelper.toGpioPin(pin);
 			gpioPin.high();
-			msg = "Pin "+pin+" has state: " + gpioHelper.gpio().getState(gpioPin);
+			msg = "Pin "+pin+" has state: " + gpioHelper.getState(gpioPin);
 			status = Status.OK;
 		} catch (GpioException e) {
 			e.printStackTrace();
@@ -154,7 +151,7 @@ public class GpioService {
 		try {
 			final GpioPinDigitalOutput gpioPin = (GpioPinDigitalOutput) gpioHelper.toGpioPin(pin);
 			gpioPin.low();
-			msg = "Pin "+pin+" has state: " + gpioHelper.gpio().getState(gpioPin);
+			msg = "Pin "+pin+" has state: " + gpioHelper.getState(gpioPin);
 			status = Status.OK;
 		} catch (GpioException e) {
 			e.printStackTrace();
@@ -171,7 +168,7 @@ public class GpioService {
 		try {
 			final GpioPinDigitalOutput gpioPin = (GpioPinDigitalOutput) gpioHelper.toGpioPin(pin);
 			gpioPin.toggle();
-			msg = "Pin "+pin+" has state: " + gpioHelper.gpio().getState(gpioPin);
+			msg = "Pin "+pin+" has state: " + gpioHelper.getState(gpioPin);
 			status = Status.OK;
 		} catch (GpioException e) {
 			e.printStackTrace();
@@ -214,15 +211,13 @@ public class GpioService {
 		Status status = Status.CONFLICT;
 		String msg = "";
 		try {
-			GpioInputPinController.getInstance().stopAll();
-			GpioPwmOutputPinController.getInstance().stopAll();
-			gpioHelper.unexportAll();
 			gpioHelper.shutdown();
 			gpioHelper.gpio().shutdown();
 			if (gpioHelper.gpio().isShutdown()) {
 				msg = "Shutdown successful!";
 				status = Status.OK;
 			}
+			gpioHelper.gpio(null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			msg = e.getMessage();

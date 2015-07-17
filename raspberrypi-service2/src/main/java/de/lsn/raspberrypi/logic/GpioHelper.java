@@ -2,7 +2,6 @@ package de.lsn.raspberrypi.logic;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
@@ -23,8 +22,10 @@ import com.pi4j.io.gpio.RaspiPin;
 
 import de.lsn.raspberrypi.framework.GpioPwmConstants;
 import de.lsn.raspberrypi.framework.gpio.control.input.GpioInputPinController;
+import de.lsn.raspberrypi.framework.gpio.control.output.GpioOutputPinController;
 import de.lsn.raspberrypi.framework.gpio.control.output.GpioPwmOutputPinController;
 import de.lsn.raspberrypi.framework.gpio.exception.GpioException;
+import de.lsn.raspberrypi.framework.gpio.pin.IGpioPin;
 import de.lsn.raspberrypi.framework.gpio.pin.output.pwm.GpioPwmOutputPin;
 import de.lsn.raspberrypi.framework.gpio.pin.output.pwm.GpioPwmValueProvider;
 
@@ -36,7 +37,7 @@ public class GpioHelper {
 	protected ConcurrentHashMap<String, PinMode> pinModeMap = new ConcurrentHashMap<String, PinMode>();
 	protected ConcurrentHashMap<Integer, Pin> raspiPinMap = new ConcurrentHashMap<Integer, Pin>();
 	
-	protected ConcurrentHashMap<Integer, GpioPin> gpioPinMap = new ConcurrentHashMap<Integer, GpioPin>();
+	protected ConcurrentHashMap<Integer, IGpioPin> gpioPinMap = new ConcurrentHashMap<Integer, IGpioPin>();
 
 	@PostConstruct
 	private void init() {
@@ -71,28 +72,35 @@ public class GpioHelper {
 		}
 	}
 
-	public void export(Integer pin, GpioPin gpioPin) {
-		if (gpioPinMap.containsKey(pin)) {
+	public void export(Integer pin, IGpioPin gpioPin) {
+		if (!gpioPinMap.containsKey(pin)) {
 			gpioPinMap.put(pin, gpioPin);
 		}
 	}
 	
 	public void unexport(Integer pin) {
 		if (gpioPinMap.containsKey(pin)) {
-			GpioPin gpioPin = gpioPinMap.remove(pin);
+			GpioPin gpioPin = gpioPinMap.remove(pin).getGpioPin();
+			if (gpioPin.getMode().equals(PinMode.DIGITAL_INPUT)) {
+				GpioInputPinController.getInstance().unexport(gpioPin.getPin());
+			}
+			else if (gpioPin.getMode().equals(PinMode.DIGITAL_OUTPUT)) {
+				GpioOutputPinController.getInstance().unexport(gpioPin.getPin());
+			}
+			gpio.unexport(gpioPin);
 			gpio.unprovisionPin(gpioPin);
 		}
-		gpioPinMap.clear();
 	}
 	
-	public void unexportAll() {
-		for (Integer pin : gpioPinMap.keySet()) {
-			unexport(pin);
+	public void unexportAll() throws Exception {
+		for (IGpioPin iGpioPin : gpioPinMap.values()) {
+			unexport(iGpioPin.getGpioPin().getPin().getAddress());
 		}
+		GpioPwmOutputPinController.getInstance().unexportAll();
 	}
 	
 	public GpioPin newGpioPin(Integer pin, PinDirection direction) throws GpioException {
-		GpioPin gpioPin = null;
+		IGpioPin gpioPin = null;
 		Pin raspiPin = toRaspiPin(pin);
 		if (null != raspiPin && gpioPinMap.containsKey(pin)) {
 			gpioPin = gpioPinMap.get(pin);
@@ -104,20 +112,21 @@ public class GpioHelper {
 				gpioPin = GpioInputPinController.getInstance().create(gpio(), raspiPin);
 				break;
 			case OUT:
-//				FIXME ALT - Muss analog zu case IN: aussehen.
-				gpioPin = gpio().provisionDigitalOutputPin(raspiPin);
+				gpioPin = GpioOutputPinController.getInstance().create(gpio(), raspiPin);
+//				gpioPin = gpio().provisionDigitalOutputPin(raspiPin);
+//				gpioPin.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
 				break;
 			}
-			gpioPinMap.put(pin, gpioPin);
+			export(pin, gpioPin);
 		}
-		return gpioPin;
+		return gpioPin.getGpioPin();
 	}
 	
 	public GpioPin toGpioPin(Integer pin) throws GpioException {
 		if (!gpioPinMap.containsKey(pin)) {
 			throw new GpioException("Pin " + pin + " is not exported!");
 		}
-		return gpioPinMap.get(pin);
+		return gpioPinMap.get(pin).getGpioPin();
 	}
 	
 	public Pin toRaspiPin(Integer pin) throws GpioException {
@@ -155,19 +164,13 @@ public class GpioHelper {
 		gpio(GpioFactory.getInstance());		
 	}
 	
-	public void shutdown() {
+	public void shutdown() throws Exception {
 		unexportAll();
-		gpio(null);
 	}
 
 	public PinState getState(GpioPin gpioPin) {
 		return gpio.getState((GpioPinDigital) gpioPin);
 	}
-
-	public Collection<GpioPin> getExportedPins() {
-		return gpioPinMap.values();
-	}
-	
 
 	public Response newGpioPwmPin(final Integer pin) throws GpioException {
 		return newGpioPwmPin(pin, GpioPwmConstants.OFF, GpioPwmConstants.DEFAULT_FREQUENCY);

@@ -5,9 +5,14 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.GpioProvider;
 import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinMode;
+import com.pi4j.io.gpio.PinPullResistance;
+import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.impl.GpioPinImpl;
 
-public class GpioOutputPin extends GpioPinImpl {
+import de.lsn.raspberrypi.framework.gpio.pin.IGpioPin;
+
+public class GpioOutputPin extends GpioPinImpl implements IGpioPin {
 
 	private GpioPinDigitalOutput gpioPin;
 	private boolean active = true;
@@ -19,6 +24,7 @@ public class GpioOutputPin extends GpioPinImpl {
 	public GpioOutputPin(GpioController gpio, GpioProvider provider, Pin pin) {
 		super(gpio, provider, pin);
 		this.gpioPin = gpio.provisionDigitalOutputPin(pin);
+		this.gpioPin.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF, PinMode.DIGITAL_OUTPUT);
 		init();
 	}
 	

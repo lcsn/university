@@ -4,6 +4,9 @@ import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.GpioProvider;
 import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinMode;
+import com.pi4j.io.gpio.PinPullResistance;
+import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.impl.GpioPinImpl;
 
 public class GpioPwmOutputPin extends GpioPinImpl implements Runnable {
@@ -29,6 +32,7 @@ public class GpioPwmOutputPin extends GpioPinImpl implements Runnable {
 	public GpioPwmOutputPin(GpioController gpio, GpioProvider provider, Pin pin, Integer duty, Integer frequency) {
 		super(gpio, provider, pin);
 		this.gpioPin = gpio.provisionDigitalOutputPin(pin);
+		this.gpioPin.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF, PinMode.DIGITAL_INPUT);
 		this.mainThread = Thread.currentThread();
 		adjustDuty(duty);
 		adjustFrequency(frequency);

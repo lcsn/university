@@ -64,9 +64,17 @@ public class GpioPwmOutputPinController {
 		return response;
 	}
 	
-	public void stopAll() throws Exception {
-		for (Pin pin : gpioPwmPinMap.keySet()) {
-			stopPwm(pin);
+	public void unexport(Pin pin) throws Exception {
+		stopPwm(pin);
+		GpioPwmOutputPin gpioPwmOutputPin = gpioPwmPinMap.remove(pin);
+		gpioPwmOutputPin.getGpioPin().unexport();
+	}
+	
+	public void unexportAll() throws Exception {
+		if (null != gpioPwmPinMap && gpioPwmPinMap.size() > 0) {
+			for (GpioPwmOutputPin gpioPwmPin : gpioPwmPinMap.values()) {
+				unexport(gpioPwmPin.getPin());
+			}
 		}
 	}
 	
