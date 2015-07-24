@@ -24,6 +24,7 @@ import de.lsn.raspberrypi.framework.GpioPwmConstants;
 import de.lsn.raspberrypi.framework.gpio.control.input.GpioInputPinController;
 import de.lsn.raspberrypi.framework.gpio.control.output.GpioOutputPinController;
 import de.lsn.raspberrypi.framework.gpio.control.output.GpioPwmOutputPinController;
+import de.lsn.raspberrypi.framework.gpio.dev.servo.ServoController;
 import de.lsn.raspberrypi.framework.gpio.exception.GpioException;
 import de.lsn.raspberrypi.framework.gpio.pin.IGpioPin;
 import de.lsn.raspberrypi.framework.gpio.pin.output.pwm.GpioPwmOutputPin;
@@ -43,7 +44,7 @@ public class GpioHelper {
 	private void init() {
 		gpios();
 		modes();
-		GpioPwmValueProvider.getInstance().setGranularity(5);
+		GpioPwmValueProvider.getInstance().setGranularity(1);
 		GpioPwmValueProvider.getInstance().provide();
 	}
 
@@ -96,7 +97,8 @@ public class GpioHelper {
 		for (IGpioPin iGpioPin : gpioPinMap.values()) {
 			unexport(iGpioPin.getGpioPin().getPin().getAddress());
 		}
-		GpioPwmOutputPinController.getInstance().unexportAll();
+		GpioPwmOutputPinController.getInstance().unexportAll(gpio);
+		ServoController.getInstance().unexportAll(gpio);
 	}
 	
 	public GpioPin newGpioPin(Integer pin, PinDirection direction) throws GpioException {

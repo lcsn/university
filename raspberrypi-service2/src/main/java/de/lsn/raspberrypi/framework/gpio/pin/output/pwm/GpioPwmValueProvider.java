@@ -83,47 +83,56 @@ public class GpioPwmValueProvider {
 	
 	public static void main(String[] args) {
 		
+		
+		GpioPwmValueProvider.getInstance().setGranularity(1);
 		GpioPwmValueProvider.getInstance().provide();
 		
-//		1hz
+//		50hz
 		System.out.println("1hz");
-		GpioPwmValueProvider.getInstance().print(100, 1);
-		GpioPwmValueProvider.getInstance().print(80, 1);
-		GpioPwmValueProvider.getInstance().print(50, 1);
-		GpioPwmValueProvider.getInstance().print(20, 1);
+		for (int i = 1; i < 101; i++) {
+			GpioPwmValueProvider.getInstance().print(i, 50);
+	
+		}
 		
-//		2hz
-		System.out.println("2hz");
-		GpioPwmValueProvider.getInstance().print(100, 2);
-		GpioPwmValueProvider.getInstance().print(80, 2);
-		
-//		10hz
-		System.out.println("10hz");
-		GpioPwmValueProvider.getInstance().print(100, 10);
-		GpioPwmValueProvider.getInstance().print(80, 10);
-		
-//		20hz
-		System.out.println("20hz");
-		GpioPwmValueProvider.getInstance().print(100, 20);
-		GpioPwmValueProvider.getInstance().print(80, 20);
-
-//		40hz
-		System.out.println("40hz");
-		GpioPwmValueProvider.getInstance().print(100, 40);
-		GpioPwmValueProvider.getInstance().print(80, 40);
-		GpioPwmValueProvider.getInstance().print(20, 40);
-
-//		1hz, granularity 5 
-		System.out.println("Granularity to 5");
-		System.out.println("1hz");
-		GpioPwmValueProvider.getInstance().setGranularity(5);
-		GpioPwmValueProvider.getInstance().provide();
-		GpioPwmValueProvider.getInstance().print(95, 1);
-		GpioPwmValueProvider.getInstance().print(75, 1);
-		GpioPwmValueProvider.getInstance().print(25, 1);
-		
-
-		GpioPwmValueProvider.getInstance().print(0, 30);
+////		1hz
+//		System.out.println("1hz");
+//		GpioPwmValueProvider.getInstance().print(100, 1);
+//		GpioPwmValueProvider.getInstance().print(80, 1);
+//		GpioPwmValueProvider.getInstance().print(50, 1);
+//		GpioPwmValueProvider.getInstance().print(20, 1);
+//		
+////		2hz
+//		System.out.println("2hz");
+//		GpioPwmValueProvider.getInstance().print(100, 2);
+//		GpioPwmValueProvider.getInstance().print(80, 2);
+//		
+////		10hz
+//		System.out.println("10hz");
+//		GpioPwmValueProvider.getInstance().print(100, 10);
+//		GpioPwmValueProvider.getInstance().print(80, 10);
+//		
+////		20hz
+//		System.out.println("20hz");
+//		GpioPwmValueProvider.getInstance().print(100, 20);
+//		GpioPwmValueProvider.getInstance().print(80, 20);
+//
+////		40hz
+//		System.out.println("40hz");
+//		GpioPwmValueProvider.getInstance().print(100, 40);
+//		GpioPwmValueProvider.getInstance().print(80, 40);
+//		GpioPwmValueProvider.getInstance().print(20, 40);
+//
+////		1hz, granularity 5 
+//		System.out.println("Granularity to 5");
+//		System.out.println("1hz");
+//		GpioPwmValueProvider.getInstance().setGranularity(5);
+//		GpioPwmValueProvider.getInstance().provide();
+//		GpioPwmValueProvider.getInstance().print(95, 1);
+//		GpioPwmValueProvider.getInstance().print(75, 1);
+//		GpioPwmValueProvider.getInstance().print(25, 1);
+//		
+//
+//		GpioPwmValueProvider.getInstance().print(0, 30);
 	}
 	
 }

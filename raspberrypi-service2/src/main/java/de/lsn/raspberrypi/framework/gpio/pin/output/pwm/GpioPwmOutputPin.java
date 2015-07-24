@@ -1,5 +1,7 @@
 package de.lsn.raspberrypi.framework.gpio.pin.output.pwm;
 
+import java.util.concurrent.TimeUnit;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.GpioProvider;
@@ -48,7 +50,13 @@ public class GpioPwmOutputPin extends GpioPinImpl implements Runnable {
 			}
 			gpioPin.low();
 			if (pausecylce > 0) {
-				asleep(pausecylce);
+//				asleep(pausecylce);
+				try {
+					TimeUnit.MILLISECONDS.sleep(pausecylce);
+//					Thread.sleep(pausecylce);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		System.out.println("PWM on "+gpioPin.getName()+" is stopping");

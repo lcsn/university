@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.Pin;
 
 import de.lsn.raspberrypi.framework.gpio.pin.output.pwm.GpioPwmOutputPin;
@@ -64,18 +65,21 @@ public class GpioPwmOutputPinController {
 		return response;
 	}
 	
-	public void unexport(Pin pin) throws Exception {
+	public void unexport(Pin pin, GpioController gpio) throws Exception {
 		stopPwm(pin);
 		GpioPwmOutputPin gpioPwmOutputPin = gpioPwmPinMap.remove(pin);
-		gpioPwmOutputPin.getGpioPin().unexport();
+//		gpioPwmOutputPin.getGpioPin().unexport();
+		gpio.unexport(gpioPwmOutputPin.getGpioPin());
+		gpio.unprovisionPin(gpioPwmOutputPin.getGpioPin());
 	}
 	
-	public void unexportAll() throws Exception {
+	public void unexportAll(GpioController gpio) throws Exception {
 		if (null != gpioPwmPinMap && gpioPwmPinMap.size() > 0) {
 			for (GpioPwmOutputPin gpioPwmPin : gpioPwmPinMap.values()) {
-				unexport(gpioPwmPin.getPin());
+				unexport(gpioPwmPin.getPin(), gpio);
 			}
 		}
+		newCachedThreadPool.shutdown();
 	}
 	
 //	public void destroy() {
